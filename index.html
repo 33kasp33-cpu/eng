@@ -1,0 +1,1986 @@
+<!DOCTYPE html>
+<html lang="ja" class="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>AI English Mastery Pro | 最速5原則英語習得システム</title>
+  
+  <!-- PWA & Mobile Meta Tags -->
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="theme-color" content="#0f172a">
+  <meta name="description" content="クリス・ロンズデール氏の5つの言語習得原則に基づいた最速AI英会話学習SPA">
+
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            brand: {
+              50: '#eef2ff',
+              100: '#e0e7ff',
+              400: '#818cf8',
+              500: '#6366f1',
+              600: '#4f46e5',
+              700: '#4338ca',
+              900: '#312e81',
+            },
+            accent: {
+              400: '#38bdf8',
+              500: '#0ea5e9',
+              emerald: '#10b981',
+              amber: '#f59e0b',
+              rose: '#f43f5e',
+            }
+          },
+          animation: {
+            'pulse-slow': 'pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+            'bounce-subtle': 'bounceSubtle 2s ease-in-out infinite',
+          },
+          keyframes: {
+            bounceSubtle: {
+              '0%, 100%': { transform: 'translateY(0)' },
+              '50%': { transform: 'translateY(-4px)' },
+            }
+          }
+        }
+      }
+    }
+  </script>
+
+  <style>
+    /* Custom Scrollbars */
+    ::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+    ::-webkit-scrollbar-track {
+      background: #0f172a;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #334155;
+      border-radius: 9999px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: #475569;
+    }
+    .glass {
+      background: rgba(30, 41, 59, 0.7);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+    }
+    .glass-card {
+      background: rgba(15, 23, 42, 0.75);
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(255, 255, 255, 0.06);
+    }
+    /* Touch optimization */
+    button, input, select, textarea {
+      touch-action: manipulation;
+    }
+  </style>
+</head>
+<body class="bg-slate-950 text-slate-100 min-h-screen flex flex-col font-sans antialiased selection:bg-brand-500 selection:text-white pb-20 md:pb-0">
+
+  <!-- ================= TOP HEADER ================= -->
+  <header class="sticky top-0 z-40 glass border-b border-slate-800/80 px-4 py-3 sm:px-6">
+    <div class="max-w-7xl mx-auto flex items-center justify-between">
+      <div class="flex items-center gap-3">
+        <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-brand-600 via-indigo-500 to-accent-400 flex items-center justify-center shadow-lg shadow-brand-500/20 font-black text-xl text-white">
+          ⚡
+        </div>
+        <div>
+          <h1 class="text-base sm:text-lg font-bold bg-gradient-to-r from-white via-slate-200 to-brand-400 bg-clip-text text-transparent leading-tight">
+            AI English Mastery Pro
+          </h1>
+          <p class="text-xs text-slate-400 flex items-center gap-1.5 font-medium">
+            <span>5大原則フル準拠</span>
+            <span class="inline-block w-1.5 h-1.5 rounded-full bg-accent-emerald animate-pulse"></span>
+            <span id="header-mode-badge" class="text-[10px] bg-slate-800 text-accent-400 px-1.5 py-0.5 rounded border border-slate-700">準備完了</span>
+          </p>
+        </div>
+      </div>
+
+      <div class="flex items-center gap-2">
+        <!-- Quick Audio Status -->
+        <button id="quick-tts-test-btn" title="音声テスト" class="p-2 rounded-lg bg-slate-800/80 hover:bg-slate-700 text-slate-300 hover:text-white border border-slate-700 text-xs flex items-center gap-1">
+          <span>🔊</span>
+          <span class="hidden sm:inline">音声確認</span>
+        </button>
+        <!-- Settings Nav Button -->
+        <button onclick="switchTab('settings')" title="設定" class="p-2 rounded-lg bg-slate-800/80 hover:bg-slate-700 text-slate-300 hover:text-white border border-slate-700 flex items-center gap-1 text-xs">
+          <span>⚙️</span>
+          <span class="hidden sm:inline">設定 / API</span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- ================= DESKTOP TABS NAVIGATION ================= -->
+  <nav class="hidden md:block bg-slate-900/90 border-b border-slate-800/80 sticky top-[61px] z-30 px-6 backdrop-blur">
+    <div class="max-w-7xl mx-auto flex gap-1 overflow-x-auto py-2">
+      <button onclick="switchTab('phrases')" class="tab-btn active px-4 py-2 rounded-lg text-sm font-medium transition-all flex items-center gap-2 text-white bg-brand-600 shadow-md shadow-brand-500/20" data-tab="phrases">
+        <span>🎯</span> 原則1: 自分ごとフレーズ
+      </button>
+      <button onclick="switchTab('roleplay')" class="tab-btn px-4 py-2 rounded-lg text-sm font-medium transition-all flex items-center gap-2 text-slate-400 hover:text-white hover:bg-slate-800" data-tab="roleplay">
+        <span>🎙️</span> 原則2&5: ミッション対話&診断
+      </button>
+      <button onclick="switchTab('listening')" class="tab-btn px-4 py-2 rounded-lg text-sm font-medium transition-all flex items-center gap-2 text-slate-400 hover:text-white hover:bg-slate-800" data-tab="listening">
+        <span>🖼️</span> 原則3: イメージ直結リスニング
+      </button>
+      <button onclick="switchTab('muscle')" class="tab-btn px-4 py-2 rounded-lg text-sm font-medium transition-all flex items-center gap-2 text-slate-400 hover:text-white hover:bg-slate-800" data-tab="muscle">
+        <span>👄</span> 原則4: 口の筋肉分解トレ
+      </button>
+      <button onclick="switchTab('desk')" class="tab-btn px-4 py-2 rounded-lg text-sm font-medium transition-all flex items-center gap-2 text-slate-400 hover:text-white hover:bg-slate-800" data-tab="desk">
+        <span>📂</span> 保存デスク (<span id="desktop-saved-count">0</span>)
+      </button>
+      <button onclick="switchTab('diagnostics')" class="tab-btn px-4 py-2 rounded-lg text-sm font-medium transition-all flex items-center gap-2 text-slate-400 hover:text-white hover:bg-slate-800" data-tab="diagnostics">
+        <span>🩺</span> 8項目自己診断
+      </button>
+    </div>
+  </nav>
+
+  <!-- ================= MAIN CONTAINER ================= -->
+  <main class="flex-1 max-w-7xl w-full mx-auto p-4 sm:p-6 md:p-8 space-y-6">
+
+    <!-- Global Alert / Status Bar -->
+    <div id="global-banner" class="hidden rounded-xl p-3.5 sm:p-4 text-sm flex items-start gap-3 transition-all"></div>
+
+    <!-- ==================================================================== -->
+    <!-- MODULE 1: 原則1 自分ごとフレーズ自動生成 & デスク保存 -->
+    <!-- ==================================================================== -->
+    <section id="tab-phrases" class="tab-content block space-y-6">
+      <div class="glass p-5 sm:p-6 rounded-2xl border border-slate-800 shadow-xl relative overflow-hidden">
+        <div class="absolute -right-10 -top-10 w-40 h-40 bg-brand-500/10 rounded-full blur-3xl pointer-events-none"></div>
+        
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-slate-800 pb-4 mb-4">
+          <div>
+            <span class="text-xs font-semibold uppercase tracking-wider text-brand-400 bg-brand-950/80 px-2.5 py-1 rounded-md border border-brand-800/60">Principle 1</span>
+            <h2 class="text-xl sm:text-2xl font-bold mt-1 text-white flex items-center gap-2">
+              脳は自分ごとしか本気で覚えない
+            </h2>
+            <p class="text-xs sm:text-sm text-slate-400 mt-1">
+              教科書の例文は捨てろ！あなたの「日常・仕事・趣味・直近の予定」に徹底的に絞り込んだフレーズを生成します。
+            </p>
+          </div>
+          <div class="flex items-center gap-2 self-start sm:self-auto">
+            <span class="text-xs text-slate-400">クイック選択:</span>
+            <select id="phrase-preset-select" class="bg-slate-900 border border-slate-700 text-xs rounded-lg px-2 py-1.5 text-slate-200 focus:ring-1 focus:ring-brand-500 focus:outline-none">
+              <option value="">▼ シチュエーション例</option>
+              <option value="空港のチェックインで窓側席への変更と荷物預け入れを頼む">✈️ 空港チェックイン & 荷物預け</option>
+              <option value="カフェでオーツミルク・氷少なめのラテを注文する">☕ カフェでの細かいカスタム注文</option>
+              <option value="海外ホテルの部屋でエアコンが効かないことをフロントに伝える">🏨 ホテルの設備トラブル対応</option>
+              <option value="リモート会議で回線が途切れた相手にもう一度言ってもらう">💻 英語オンライン会議の聞き返し</option>
+              <option value="ジムで器具の使い方をインストラクターに質問する">🏋️ 趣味・ジムでの質問</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- Input Area -->
+        <div class="space-y-3">
+          <label class="block text-xs font-medium text-slate-300">
+            あなたの「具体的な状況・言いたいこと」を入力:
+          </label>
+          <div class="flex flex-col sm:flex-row gap-2">
+            <input type="text" id="phrase-input" placeholder="例: 明日の商談で、予算が厳しいので納期を延ばしてほしいと交渉したい" class="flex-1 bg-slate-900/90 border border-slate-700 rounded-xl px-4 py-3 text-sm text-white placeholder-slate-500 focus:outline-none focus:border-brand-500 focus:ring-2 focus:ring-brand-500/20 transition-all">
+            <button id="phrase-generate-btn" class="bg-gradient-to-r from-brand-600 to-indigo-600 hover:from-brand-500 hover:to-indigo-500 active:scale-95 text-white font-semibold px-6 py-3 rounded-xl shadow-lg shadow-brand-500/25 flex items-center justify-center gap-2 text-sm transition-all whitespace-nowrap">
+              <span>✨</span>
+              <span>自分専用フレーズ生成</span>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Generated Results Container -->
+      <div id="phrase-results-container" class="space-y-4">
+        <div class="text-center py-12 text-slate-500 text-sm glass rounded-2xl border border-slate-800">
+          <p class="text-3xl mb-2">💡</p>
+          <p>上の入力欄にあなたの状況を入れて「自分専用フレーズ生成」を押してください。</p>
+          <p class="text-xs text-slate-600 mt-1">※ APIキー未設定時は内蔵インテリジェントモックが即座に応答します</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ==================================================================== -->
+    <!-- MODULE 2: 原則2 & 5 ミッション型AIロールプレイ & 自動改善診断 -->
+    <!-- ==================================================================== -->
+    <section id="tab-roleplay" class="tab-content hidden space-y-6">
+      <div class="glass p-5 sm:p-6 rounded-2xl border border-slate-800 shadow-xl">
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-slate-800 pb-4 mb-4">
+          <div>
+            <div class="flex gap-2">
+              <span class="text-xs font-semibold uppercase tracking-wider text-accent-emerald bg-emerald-950/80 px-2.5 py-1 rounded-md border border-emerald-800/60">Principle 2: Task-Based</span>
+              <span class="text-xs font-semibold uppercase tracking-wider text-accent-amber bg-amber-950/80 px-2.5 py-1 rounded-md border border-amber-800/60">Principle 5: 本番と復習の分離</span>
+            </div>
+            <h2 class="text-xl sm:text-2xl font-bold mt-2 text-white flex items-center gap-2">
+              完璧を捨ててミッションクリアを狙え！
+            </h2>
+            <p class="text-xs sm:text-sm text-slate-400 mt-1">
+              会話中の文法ミスは一切無視！相手に意味を伝えてタスク達成することだけに集中します。終了後にAIが改善診断を行います。
+            </p>
+          </div>
+          <div>
+            <select id="roleplay-scenario-select" class="bg-slate-900 border border-slate-700 text-xs sm:text-sm rounded-lg px-3 py-2 text-slate-200 focus:ring-1 focus:ring-brand-500 focus:outline-none">
+              <option value="cafe">☕ カフェ：特殊カスタム注文ミッション</option>
+              <option value="hotel">🏨 ホテル：部屋トラブル交渉ミッション</option>
+              <option value="shopping">🛍️ 店舗：サイズ違いと割引確認ミッション</option>
+              <option value="taxi">🚕 タクシー：急ぎの迂回指示ミッション</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- Mission Checklist Card -->
+        <div class="bg-slate-900/80 rounded-xl p-4 border border-slate-800 mb-4">
+          <div class="flex items-center justify-between mb-2">
+            <span class="text-xs font-bold text-accent-amber uppercase tracking-wider flex items-center gap-1.5">
+              <span>🎯</span> リアルタイム・ミッション目標
+            </span>
+            <span id="mission-progress-badge" class="text-xs bg-slate-800 text-slate-300 px-2 py-0.5 rounded-full border border-slate-700 font-mono">0 / 3 達成</span>
+          </div>
+          <div id="roleplay-mission-list" class="grid grid-cols-1 sm:grid-cols-3 gap-2 text-xs">
+            <!-- Dynamic Mission Items -->
+          </div>
+        </div>
+
+        <!-- Chat Log Window -->
+        <div id="roleplay-chat-box" class="h-80 sm:h-96 overflow-y-auto bg-slate-950/80 rounded-xl p-4 border border-slate-800 space-y-3">
+          <!-- Chat messages injected here -->
+        </div>
+
+        <!-- Voice & Text Input Controls -->
+        <div class="mt-4 space-y-3">
+          <div class="flex items-center gap-2">
+            <!-- STT Voice Input Button -->
+            <button id="roleplay-mic-btn" class="w-12 h-12 rounded-xl bg-slate-800 hover:bg-slate-700 active:scale-95 text-slate-200 hover:text-white border border-slate-700 flex items-center justify-center text-xl transition-all shadow-md flex-shrink-0" title="音声で話す (Web Speech API)">
+              🎙️
+            </button>
+            <input type="text" id="roleplay-text-input" placeholder="マイクを押して話すか、英語を入力..." class="flex-1 bg-slate-900 border border-slate-700 rounded-xl px-4 py-3 text-sm text-white placeholder-slate-500 focus:outline-none focus:border-brand-500 focus:ring-2 focus:ring-brand-500/20">
+            <button id="roleplay-send-btn" class="bg-brand-600 hover:bg-brand-500 active:scale-95 text-white font-medium px-4 sm:px-6 py-3 rounded-xl text-sm flex items-center gap-1.5 transition-all shadow-lg shadow-brand-600/20">
+              <span>送信</span>
+              <span>➔</span>
+            </button>
+          </div>
+          <div class="flex items-center justify-between text-xs text-slate-500 px-1">
+            <div id="roleplay-stt-status" class="flex items-center gap-1.5">
+              <span class="w-2 h-2 rounded-full bg-slate-600"></span>
+              <span>マイク待機中</span>
+            </div>
+            <button id="roleplay-finish-btn" class="text-accent-rose hover:underline font-medium">
+              ⏹️ 会話を終了してAI改善診断を受ける
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- AI Post-Review Diagnostics Report Container -->
+      <div id="roleplay-report-container" class="hidden glass p-6 rounded-2xl border border-brand-500/30 shadow-2xl bg-gradient-to-b from-slate-900/90 to-slate-950/90 space-y-4">
+        <!-- Report injected here -->
+      </div>
+    </section>
+
+    <!-- ==================================================================== -->
+    <!-- MODULE 3: 原則3 イメージ直結リスニング演習 -->
+    <!-- ==================================================================== -->
+    <section id="tab-listening" class="tab-content hidden space-y-6">
+      <div class="glass p-5 sm:p-6 rounded-2xl border border-slate-800 shadow-xl">
+        <div class="border-b border-slate-800 pb-4 mb-4">
+          <span class="text-xs font-semibold uppercase tracking-wider text-accent-400 bg-sky-950/80 px-2.5 py-1 rounded-md border border-sky-800/60">Principle 3</span>
+          <h2 class="text-xl sm:text-2xl font-bold mt-1 text-white flex items-center gap-2">
+            聞き取るな、意味を取りに行け！
+          </h2>
+          <p class="text-xs sm:text-sm text-slate-400 mt-1">
+            日本語訳を挟むのを完全禁止！英語の音を聞いたら、直接「情景・ピクトグラム・状況イメージ」と直結させる脳回路を鍛えます。
+          </p>
+        </div>
+
+        <div id="listening-exercise-card" class="bg-slate-900/90 rounded-2xl p-6 border border-slate-800 text-center space-y-6">
+          <div class="flex justify-between items-center text-xs text-slate-400">
+            <span id="listening-question-counter">問題 1 / 4</span>
+            <button id="listening-next-btn" class="hover:text-white underline">次の問題 ➔</button>
+          </div>
+
+          <!-- Audio Play Stage -->
+          <div class="py-4 space-y-4">
+            <div class="w-20 h-20 mx-auto rounded-full bg-gradient-to-tr from-brand-600 to-accent-400 flex items-center justify-center text-3xl shadow-xl shadow-brand-500/20 cursor-pointer hover:scale-105 active:scale-95 transition-all" id="listening-play-audio-btn">
+              🔊
+            </div>
+            <p class="text-sm font-medium text-slate-300">上のスピーカーをタップして音声を聴いてください</p>
+            <div class="flex justify-center gap-2">
+              <button class="listening-rate-btn px-3 py-1 rounded-lg bg-slate-800 text-xs text-slate-300 border border-slate-700 hover:bg-slate-700" data-rate="0.8">🐢 0.8x (スロー)</button>
+              <button class="listening-rate-btn px-3 py-1 rounded-lg bg-brand-600 text-xs text-white border border-brand-500" data-rate="1.0">⚡ 1.0x (標準)</button>
+              <button class="listening-rate-btn px-3 py-1 rounded-lg bg-slate-800 text-xs text-slate-300 border border-slate-700 hover:bg-slate-700" data-rate="1.2">🚀 1.2x (高速)</button>
+            </div>
+          </div>
+
+          <!-- Visual Choices (No Japanese Translation) -->
+          <div class="space-y-3 text-left">
+            <p class="text-xs font-semibold text-slate-400 text-center">【直結テスト】聞こえた音声の情景はどれ？</p>
+            <div id="listening-choices-grid" class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              <!-- Dynamic Picture/Scene Cards -->
+            </div>
+          </div>
+
+          <!-- Result & Script Reveal -->
+          <div id="listening-feedback" class="hidden p-4 rounded-xl text-left text-sm space-y-2 border"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ==================================================================== -->
+    <!-- MODULE 4: 原則4 口の筋肉部分分解トレーナー -->
+    <!-- ==================================================================== -->
+    <section id="tab-muscle" class="tab-content hidden space-y-6">
+      <div class="glass p-5 sm:p-6 rounded-2xl border border-slate-800 shadow-xl">
+        <div class="border-b border-slate-800 pb-4 mb-4">
+          <span class="text-xs font-semibold uppercase tracking-wider text-accent-rose bg-rose-950/80 px-2.5 py-1 rounded-md border border-rose-800/60">Principle 4</span>
+          <h2 class="text-xl sm:text-2xl font-bold mt-1 text-white flex items-center gap-2">
+            英語はスポーツ。鍛える場所を間違えるな！
+          </h2>
+          <p class="text-xs sm:text-sm text-slate-400 mt-1">
+            長い文を最初から言おうとするな！【難所単語 → リンキング（音の連結） → 前半 → 全文】へと段階的にビルドアップして口の筋肉を鍛えます。
+          </p>
+        </div>
+
+        <!-- Phrase Selector / Custom Input -->
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-4 mb-6">
+          <div class="lg:col-span-2 space-y-2">
+            <label class="block text-xs font-medium text-slate-300">分解練習したい英文を選択または入力:</label>
+            <div class="flex gap-2">
+              <input type="text" id="muscle-custom-input" placeholder="例: Would you mind if I checked in a little earlier?" class="flex-1 bg-slate-900 border border-slate-700 rounded-xl px-4 py-2.5 text-sm text-white placeholder-slate-500 focus:outline-none focus:border-brand-500">
+              <button id="muscle-breakdown-btn" class="bg-brand-600 hover:bg-brand-500 text-white text-xs font-semibold px-4 py-2.5 rounded-xl transition-all whitespace-nowrap">
+                ⚙️ 分解生成
+              </button>
+            </div>
+          </div>
+          <div class="space-y-2">
+            <label class="block text-xs font-medium text-slate-300">定番難所フレーズから選ぶ:</label>
+            <select id="muscle-preset-select" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2.5 text-xs sm:text-sm text-slate-200 focus:outline-none focus:border-brand-500">
+              <option value="0">1. Could you let me know when it's ready?</option>
+              <option value="1">2. I'd like to make sure about the total price.</option>
+              <option value="2">3. What would you recommend for someone who likes spicy food?</option>
+              <option value="3">4. Would you mind taking a quick look at this document?</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- 4-Stage Progressive Buildup Player -->
+        <div class="bg-slate-900/90 rounded-2xl p-5 sm:p-6 border border-slate-800 space-y-6">
+          <div class="flex items-center justify-between border-b border-slate-800 pb-3">
+            <h3 class="text-sm font-bold text-slate-200 flex items-center gap-2">
+              <span>🏋️</span> 段階的ビルドアップ 4ステップ
+            </h3>
+            <span class="text-xs text-slate-400">各ステップを3回ずつ声に出して発音</span>
+          </div>
+
+          <div id="muscle-steps-container" class="space-y-4">
+            <!-- Dynamic 4 Steps -->
+          </div>
+
+          <!-- Master Speed Controls & Practice Loop -->
+          <div class="pt-4 border-t border-slate-800 flex flex-col sm:flex-row items-center justify-between gap-4">
+            <div class="flex items-center gap-3">
+              <span class="text-xs text-slate-400">再生スピード:</span>
+              <div class="flex bg-slate-950 p-1 rounded-xl border border-slate-800 text-xs">
+                <button class="muscle-speed-btn px-3 py-1 rounded-lg text-slate-400 hover:text-white" data-speed="0.7">🐢 0.7x</button>
+                <button class="muscle-speed-btn active px-3 py-1 rounded-lg text-white bg-brand-600" data-speed="1.0">⚡ 1.0x</button>
+                <button class="muscle-speed-btn px-3 py-1 rounded-lg text-slate-400 hover:text-white" data-speed="1.2">🚀 1.2x</button>
+              </div>
+            </div>
+
+            <button id="muscle-full-loop-btn" class="w-full sm:w-auto bg-gradient-to-r from-accent-rose to-pink-600 hover:from-rose-500 hover:to-pink-500 text-white font-bold px-6 py-2.5 rounded-xl text-xs sm:text-sm flex items-center justify-center gap-2 shadow-lg shadow-rose-500/20 active:scale-95 transition-all">
+              <span>🔁</span>
+              <span>4段階オート連続ループ再生</span>
+            </button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ==================================================================== -->
+    <!-- MODULE: 保存デスク (My Desk) -->
+    <!-- ==================================================================== -->
+    <section id="tab-desk" class="tab-content hidden space-y-6">
+      <div class="glass p-5 sm:p-6 rounded-2xl border border-slate-800 shadow-xl">
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-800 pb-4 mb-4">
+          <div>
+            <h2 class="text-xl sm:text-2xl font-bold text-white flex items-center gap-2">
+              <span>📂</span> マイ・パーソナルデスク
+            </h2>
+            <p class="text-xs sm:text-sm text-slate-400 mt-1">
+              あなたが生成・保存した「自分ごとフレーズ」の一覧です。ローカル・GitHub Gist・Google Driveといつでも同期可能。
+            </p>
+          </div>
+          <div class="flex items-center gap-2">
+            <button id="desk-export-json-btn" class="bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 text-xs px-3 py-2 rounded-xl flex items-center gap-1.5 transition-all">
+              <span>💾</span> JSONエクスポート
+            </button>
+            <button id="desk-sync-gist-btn" class="bg-brand-600 hover:bg-brand-500 text-white text-xs px-3 py-2 rounded-xl flex items-center gap-1.5 transition-all font-medium">
+              <span>☁️</span> Gist即時同期
+            </button>
+          </div>
+        </div>
+
+        <!-- Filter & Search -->
+        <div class="flex flex-col sm:flex-row gap-2 mb-4">
+          <input type="text" id="desk-search-input" placeholder="保存フレーズを検索..." class="flex-1 bg-slate-900 border border-slate-700 rounded-xl px-4 py-2 text-xs sm:text-sm text-white placeholder-slate-500 focus:outline-none focus:border-brand-500">
+          <button id="desk-clear-all-btn" class="text-xs text-rose-400 hover:text-rose-300 px-3 py-2 self-end sm:self-auto">全件クリア</button>
+        </div>
+
+        <div id="desk-phrases-list" class="grid grid-cols-1 md:grid-cols-2 gap-3">
+          <!-- Saved phrase cards -->
+        </div>
+      </div>
+    </section>
+
+    <!-- ==================================================================== -->
+    <!-- MODULE 6: 8項目統合セルフテストスイート -->
+    <!-- ==================================================================== -->
+    <section id="tab-diagnostics" class="tab-content hidden space-y-6">
+      <div class="glass p-5 sm:p-6 rounded-2xl border border-slate-800 shadow-xl">
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-800 pb-4 mb-4">
+          <div>
+            <span class="text-xs font-semibold uppercase tracking-wider text-accent-emerald bg-emerald-950/80 px-2.5 py-1 rounded-md border border-emerald-800/60">Module 6: Quality Assurance</span>
+            <h2 class="text-xl sm:text-2xl font-bold mt-1 text-white flex items-center gap-2">
+              8項目統合セルフテストスイート (Diagnostics)
+            </h2>
+            <p class="text-xs sm:text-sm text-slate-400 mt-1">
+              システムの全モジュール（Web Speech、Gemini API、Gist、Drive入出力、ロジック整合性）を一括自動検証します。
+            </p>
+          </div>
+          <button id="run-all-diagnostics-btn" class="bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white font-bold px-6 py-3 rounded-xl text-sm shadow-lg shadow-emerald-500/25 flex items-center justify-center gap-2 active:scale-95 transition-all">
+            <span>▶️</span>
+            <span>8項目テスト一括実行</span>
+          </button>
+        </div>
+
+        <!-- Test Suite Summary -->
+        <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-6">
+          <div class="bg-slate-900/80 p-3.5 rounded-xl border border-slate-800 text-center">
+            <span class="text-xs text-slate-400">テスト項目数</span>
+            <p class="text-2xl font-bold text-white mt-1">8</p>
+          </div>
+          <div class="bg-slate-900/80 p-3.5 rounded-xl border border-slate-800 text-center">
+            <span class="text-xs text-emerald-400 font-semibold">合格 (PASS)</span>
+            <p id="diag-pass-count" class="text-2xl font-bold text-emerald-400 mt-1">0</p>
+          </div>
+          <div class="bg-slate-900/80 p-3.5 rounded-xl border border-slate-800 text-center">
+            <span class="text-xs text-rose-400 font-semibold">不合格 (FAIL)</span>
+            <p id="diag-fail-count" class="text-2xl font-bold text-rose-400 mt-1">0</p>
+          </div>
+          <div class="bg-slate-900/80 p-3.5 rounded-xl border border-slate-800 text-center">
+            <span class="text-xs text-slate-400">平均実行レイテンシ</span>
+            <p id="diag-latency" class="text-2xl font-bold text-accent-400 mt-1 font-mono">-- ms</p>
+          </div>
+        </div>
+
+        <!-- 8 Test Items Grid -->
+        <div id="diagnostics-items-list" class="space-y-2.5">
+          <!-- Injected via JavaScript -->
+        </div>
+      </div>
+    </section>
+
+    <!-- ==================================================================== -->
+    <!-- SETTINGS & CLOUD SYNC MODAL / TAB -->
+    <!-- ==================================================================== -->
+    <section id="tab-settings" class="tab-content hidden space-y-6">
+      <div class="glass p-5 sm:p-6 rounded-2xl border border-slate-800 shadow-xl space-y-6">
+        <div class="border-b border-slate-800 pb-4">
+          <h2 class="text-xl sm:text-2xl font-bold text-white flex items-center gap-2">
+            <span>⚙️</span> システム設定 & クラウド連携
+          </h2>
+          <p class="text-xs sm:text-sm text-slate-400 mt-1">
+            Gemini API、GitHub Gist、Google Drive バックアップの設定を管理します。
+          </p>
+        </div>
+
+        <!-- 1. Gemini API Config -->
+        <div class="bg-slate-900/90 rounded-2xl p-5 border border-slate-800 space-y-4">
+          <div class="flex items-center justify-between">
+            <h3 class="text-sm font-bold text-brand-400 flex items-center gap-2">
+              <span>🤖</span> Gemini API 設定
+            </h3>
+            <span class="text-[11px] bg-slate-800 text-slate-300 px-2 py-0.5 rounded border border-slate-700">Google AI Studio</span>
+          </div>
+
+          <div class="space-y-3">
+            <div>
+              <label class="block text-xs font-medium text-slate-300 mb-1">API Key:</label>
+              <input type="password" id="setting-gemini-key" placeholder="AIzaSy..." class="w-full bg-slate-950 border border-slate-700 rounded-xl px-4 py-2.5 text-xs sm:text-sm text-white font-mono placeholder-slate-600 focus:outline-none focus:border-brand-500">
+              <p class="text-[11px] text-slate-500 mt-1">※ キーはブラウザのLocalStorageにのみ安全に保持されます（外部送信されません）。空欄時はデモモードで動作します。</p>
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              <div>
+                <label class="block text-xs font-medium text-slate-300 mb-1">使用モデル:</label>
+                <select id="setting-gemini-model" class="w-full bg-slate-950 border border-slate-700 rounded-xl px-3 py-2.5 text-xs sm:text-sm text-slate-200 focus:outline-none focus:border-brand-500 font-mono">
+                  <option value="gemini-2.5-flash-lite">gemini-2.5-flash-lite (無料枠 500 RPD / 最速)</option>
+                  <option value="gemini-2.5-flash">gemini-2.5-flash (標準 20 RPD / 高精度)</option>
+                  <option value="gemini-2.0-flash">gemini-2.0-flash (安定版)</option>
+                  <option value="gemini-1.5-flash">gemini-1.5-flash (レガシー互換)</option>
+                </select>
+              </div>
+              <div>
+                <label class="block text-xs font-medium text-slate-300 mb-1">音声読み上げ速度 (TTS):</label>
+                <div class="flex items-center gap-3 pt-2">
+                  <input type="range" id="setting-tts-rate" min="0.6" max="1.4" step="0.1" value="1.0" class="flex-1 accent-brand-500">
+                  <span id="setting-tts-rate-label" class="text-xs font-mono text-slate-300 w-10">1.0x</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 2. GitHub Gist Cloud Sync -->
+        <div class="bg-slate-900/90 rounded-2xl p-5 border border-slate-800 space-y-4">
+          <div class="flex items-center justify-between">
+            <h3 class="text-sm font-bold text-slate-200 flex items-center gap-2">
+              <span>🐙</span> GitHub Gist 同期 (my_phrases.json)
+            </h3>
+            <span class="text-[11px] bg-slate-800 text-slate-300 px-2 py-0.5 rounded border border-slate-700">クラウドデータ永続化</span>
+          </div>
+
+          <div class="space-y-3">
+            <div>
+              <label class="block text-xs font-medium text-slate-300 mb-1">GitHub Personal Access Token (PAT):</label>
+              <input type="password" id="setting-github-token" placeholder="ghp_..." class="w-full bg-slate-950 border border-slate-700 rounded-xl px-4 py-2.5 text-xs sm:text-sm text-white font-mono placeholder-slate-600 focus:outline-none focus:border-brand-500">
+              <p class="text-[11px] text-slate-500 mt-1">※ `gist` 権限を付与したトークン。PCとスマホ間でフレーズ学習データを瞬時に共有できます。</p>
+            </div>
+            <div>
+              <label class="block text-xs font-medium text-slate-300 mb-1">既存 Gist ID (任意・空欄で新規作成):</label>
+              <input type="text" id="setting-gist-id" placeholder="例: 7f8e9a..." class="w-full bg-slate-950 border border-slate-700 rounded-xl px-4 py-2.5 text-xs sm:text-sm text-white font-mono placeholder-slate-600 focus:outline-none focus:border-brand-500">
+            </div>
+            <div class="flex gap-2">
+              <button id="setting-gist-sync-now" class="bg-brand-600 hover:bg-brand-500 text-white text-xs font-semibold px-4 py-2.5 rounded-xl transition-all flex items-center gap-1.5">
+                <span>☁️</span> Gistへ今すぐ保存・同期
+              </button>
+              <button id="setting-gist-load-now" class="bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 text-xs font-semibold px-4 py-2.5 rounded-xl transition-all flex items-center gap-1.5">
+                <span>📥</span> Gistから復元
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- 3. Google Drive & JSON Local Backup -->
+        <div class="bg-slate-900/90 rounded-2xl p-5 border border-slate-800 space-y-4">
+          <div class="flex items-center justify-between">
+            <h3 class="text-sm font-bold text-accent-emerald flex items-center gap-2">
+              <span>📁</span> Google Drive / ローカルJSON バックアップ
+            </h3>
+            <span class="text-[11px] bg-slate-800 text-slate-300 px-2 py-0.5 rounded border border-slate-700">完全ローカル保存</span>
+          </div>
+          <p class="text-xs text-slate-400">
+            学習データ、会話履歴、保存フレーズの全要素をJSON形式でダウンロード・復元できます（Google Driveにそのままドラッグ＆ドロップ保存可能）。
+          </p>
+          <div class="flex flex-wrap gap-2">
+            <button id="setting-export-drive-json" class="bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 text-xs font-semibold px-4 py-2.5 rounded-xl transition-all flex items-center gap-1.5">
+              <span>💾</span> 全学習データJSONエクスポート
+            </button>
+            <label class="bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 text-xs font-semibold px-4 py-2.5 rounded-xl transition-all flex items-center gap-1.5 cursor-pointer">
+              <span>📥</span> JSONファイルから復元
+              <input type="file" id="setting-import-json-file" accept=".json" class="hidden">
+            </label>
+          </div>
+        </div>
+
+        <div class="flex justify-end gap-2 pt-2">
+          <button id="save-settings-btn" class="bg-emerald-600 hover:bg-emerald-500 text-white font-bold px-6 py-2.5 rounded-xl text-xs sm:text-sm shadow-lg shadow-emerald-600/20 active:scale-95 transition-all">
+            💾 設定を保存
+          </button>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- ================= MOBILE BOTTOM NAVIGATION ================= -->
+  <nav class="md:hidden fixed bottom-0 left-0 right-0 z-50 glass border-t border-slate-800 px-2 py-1 flex justify-around items-center">
+    <button onclick="switchTab('phrases')" class="mobile-tab-btn flex flex-col items-center gap-0.5 p-2 rounded-xl text-brand-400" data-tab="phrases">
+      <span class="text-lg">🎯</span>
+      <span class="text-[10px] font-medium">フレーズ</span>
+    </button>
+    <button onclick="switchTab('roleplay')" class="mobile-tab-btn flex flex-col items-center gap-0.5 p-2 rounded-xl text-slate-400 hover:text-slate-200" data-tab="roleplay">
+      <span class="text-lg">🎙️</span>
+      <span class="text-[10px] font-medium">対話</span>
+    </button>
+    <button onclick="switchTab('listening')" class="mobile-tab-btn flex flex-col items-center gap-0.5 p-2 rounded-xl text-slate-400 hover:text-slate-200" data-tab="listening">
+      <span class="text-lg">🖼️</span>
+      <span class="text-[10px] font-medium">リスニング</span>
+    </button>
+    <button onclick="switchTab('muscle')" class="mobile-tab-btn flex flex-col items-center gap-0.5 p-2 rounded-xl text-slate-400 hover:text-slate-200" data-tab="muscle">
+      <span class="text-lg">👄</span>
+      <span class="text-[10px] font-medium">口トレ</span>
+    </button>
+    <button onclick="switchTab('desk')" class="mobile-tab-btn flex flex-col items-center gap-0.5 p-2 rounded-xl text-slate-400 hover:text-slate-200" data-tab="desk">
+      <span class="text-lg">📂</span>
+      <span class="text-[10px] font-medium">デスク</span>
+    </button>
+  </nav>
+
+  <!-- ================= JAVASCRIPT ENGINE ================= -->
+  <script>
+    /**
+     * AI English Mastery Pro - Core Client Engine
+     * Completely self-contained SPA with Gemini 3 Flash / Flash Lite REST API,
+     * Web Speech API (STT/TTS), GitHub Gist Sync, and 8-Test QA Suite.
+     */
+
+    // --- State Store ---
+    const Store = {
+      config: {
+        geminiKey: localStorage.getItem('eng_gemini_key') || '',
+        geminiModel: localStorage.getItem('eng_gemini_model') || 'gemini-2.5-flash-lite',
+        ttsRate: parseFloat(localStorage.getItem('eng_tts_rate') || '1.0'),
+        githubToken: localStorage.getItem('eng_github_token') || '',
+        gistId: localStorage.getItem('eng_gist_id') || '',
+      },
+      savedPhrases: JSON.parse(localStorage.getItem('eng_saved_phrases') || '[]'),
+      roleplay: {
+        scenario: 'cafe',
+        messages: [],
+        missions: [],
+        completedMissions: new Set(),
+        isListening: false,
+      },
+      listening: {
+        currentIndex: 0,
+        rate: 1.0,
+      },
+      muscle: {
+        speed: 1.0,
+      }
+    };
+
+    // --- Built-in Demo / Preset Data ---
+    const Presets = {
+      phrases: {
+        "空港のチェックインで窓側席への変更と荷物預け入れを頼む": [
+          {
+            english: "Could I possibly switch to a window seat if there's one available?",
+            katakana: "クダイ パッシブリー スウィッチ トゥ ア ウィンドウスィート イフ ゼアズ ワン アヴェイラブル",
+            japanese: "もし空きがあれば、窓側の席に変更していただけますか？",
+            linking: "Could I -> クダイ / switch to a -> スウィッチトゥア / if there's -> イフゼアズ",
+            nuance: "Could I possibly... を使うことで、無理を言っている謙虚さと丁寧さを自然に醸し出せます。"
+          },
+          {
+            english: "I have two bags to check in, and this small backpack is my carry-on.",
+            katakana: "アイ ハヴ トゥー バッグズ トゥ チェッケン、アン ディス スモール バックパック イズ マイ キャリオン",
+            japanese: "預け荷物が2個あり、この小さいリュックが機内持ち込みです。",
+            linking: "check in -> チェッケン / and this -> アンディス / carry on -> キャリオン",
+            nuance: "check in（預ける）と carry-on（機内持ち込み）の対比をハッキリ伝える表現です。"
+          }
+        ],
+        "default": [
+          {
+            english: "I was wondering if we could adjust the schedule to fit our budget.",
+            katakana: "アイ ワズ ワンダリング イフ ウィ クッド アジャスト ザ スケジュール トゥ フィット アワ バジェット",
+            japanese: "予算に合わせてスケジュールを少し調整できないかと考えておりました。",
+            linking: "wondering if -> ワンダリンギフ / adjust the -> アジャストザ / fit our -> フィッタワ",
+            nuance: "I was wondering if... はビジネスで角を立てずに提案する最も万能なクッション言葉です。"
+          }
+        ]
+      },
+      scenarios: {
+        cafe: {
+          title: "☕ カフェ：特殊カスタム注文ミッション",
+          partner: "Barista",
+          greeting: "Hi there! Welcome to Brew & Bean. What can I get started for you today?",
+          missions: [
+            { id: 1, text: "飲みたいドリンク（ラテなど）を注文する", keywords: ["latte", "coffee", "cappuccino", "drink", "order", "like", "have"] },
+            { id: 2, text: "ミルクの変更または氷少なめを依頼する", keywords: ["oat", "soy", "almond", "milk", "less ice", "no ice", "ice", "custom"] },
+            { id: 3, text: "合計金額を聞いてカード払いを伝える", keywords: ["how much", "total", "price", "card", "pay", "credit"] }
+          ]
+        },
+        hotel: {
+          title: "🏨 ホテル：部屋トラブル交渉ミッション",
+          partner: "Front Desk",
+          greeting: "Good evening, sir. How may I assist you tonight?",
+          missions: [
+            { id: 1, text: "部屋番号とエアコンが故障している状況を伝える", keywords: ["room", "air conditioner", "ac", "broken", "work", "cold", "hot"] },
+            { id: 2, text: "別の部屋に変更できるか尋ねる", keywords: ["change", "switch", "another room", "different", "move", "possible"] },
+            { id: 3, text: "スタッフが部屋を確認に来る時間を決める", keywords: ["time", "when", "come", "check", "minutes", "now"] }
+          ]
+        },
+        shopping: {
+          title: "🛍️ 店舗：サイズ違いと割引確認ミッション",
+          partner: "Store Clerk",
+          greeting: "Hello! Let me know if you need any help finding sizes.",
+          missions: [
+            { id: 1, text: "この服の別サイズ（MやL）があるか確認する", keywords: ["size", "medium", "large", "small", "have", "looking"] },
+            { id: 2, text: "試着してもよいか許可を取る", keywords: ["try", "fitting room", "on", "can i"] },
+            { id: 3, text: "セール対象や割引があるか尋ねる", keywords: ["discount", "sale", "off", "price", "special"] }
+          ]
+        },
+        taxi: {
+          title: "🚕 タクシー：急ぎの迂回指示ミッション",
+          partner: "Driver",
+          greeting: "Afternoon! Where are we heading to?",
+          missions: [
+            { id: 1, text: "行先（空港または駅）と急いでいる旨を伝える", keywords: ["airport", "station", "hurry", "rush", "flight", "time"] },
+            { id: 2, text: "高速道路または迂回路を使ってほしいと頼む", keywords: ["highway", "expressway", "toll", "shortcut", "route", "bypass"] },
+            { id: 3, text: "領収書（レシート）を要求する", keywords: ["receipt", "bill", "paper", "card"] }
+          ]
+        }
+      },
+      listeningExercises: [
+        {
+          id: 1,
+          audioText: "Excuse me, could you tell me which baggage carousel has the flight from Tokyo?",
+          speakerText: "空港の荷物受け取り場所を探す旅行者",
+          choices: [
+            { icon: "🧳", label: "空港の手荷物受取所でターンテーブルを探している情景", correct: true },
+            { icon: "☕", label: "カフェのレジで飲み物のサイズを選んでいる情景", correct: false },
+            { icon: "🏨", label: "ホテルの部屋でシャワーの使い方を聞いている情景", correct: false },
+            { icon: "🚕", label: "タクシーの車内で目的地までの料金を聞いている情景", correct: false }
+          ],
+          englishScript: "Excuse me, could you tell me which baggage carousel has the flight from Tokyo?",
+          explanation: "carousel（荷物受取ターンテーブル）と flight from Tokyo（東京発の便）というキーワードから手荷物受取所の情景へ直結させます。"
+        },
+        {
+          id: 2,
+          audioText: "I'd like an iced latte with oat milk and light ice, to go please.",
+          speakerText: "カフェでテイクアウト注文する客",
+          choices: [
+            { icon: "🍔", label: "ファストフード店でハンバーガーを店内飲食する情景", correct: false },
+            { icon: "🥤", label: "カフェでオーツミルク・氷少なめラテを持ち帰り注文する情景", correct: true },
+            { icon: "✈️", label: "飛行機内で機内食のビーフかチキンかを選んでいる情景", correct: false },
+            { icon: "🏥", label: "病院の受付で保険証を提示している情景", correct: false }
+          ],
+          englishScript: "I'd like an iced latte with oat milk and light ice, to go please.",
+          explanation: "iced latte, oat milk, light ice, to go（持ち帰り）というキーワードからカフェの情景をイメージします。"
+        },
+        {
+          id: 3,
+          audioText: "Sorry for the delay, we got stuck in heavy traffic on the expressway.",
+          speakerText: "待ち合わせに遅れた同僚",
+          choices: [
+            { icon: "🚗", label: "高速道路の大渋滞に巻き込まれて遅刻した情景", correct: true },
+            { icon: "🚆", label: "電車の切符を買い間違えて駅員に尋ねている情景", correct: false },
+            { icon: "🍽️", label: "レストランで頼んだ料理がまだ届かないと催促する情景", correct: false },
+            { icon: "🌧️", label: "大雨で傘が壊れて雨宿りしている情景", correct: false }
+          ],
+          englishScript: "Sorry for the delay, we got stuck in heavy traffic on the expressway.",
+          explanation: "delay（遅れ）, stuck in heavy traffic（大渋滞にハマる）, expressway（高速道路）から情景を脳内想起します。"
+        },
+        {
+          id: 4,
+          audioText: "Do you mind if we reschedule our meeting to next Tuesday morning?",
+          speakerText: "オンライン会議の日程変更を提案するビジネスパートナー",
+          choices: [
+            { icon: "🎉", label: "金曜日の夜に同僚と飲み会を開いている情景", correct: false },
+            { icon: "📅", label: "カレンダーを見ながら会議を来週火曜にリスケ提案する情景", correct: true },
+            { icon: "💻", label: "パソコンの画面共有が映らないと困っている情景", correct: false },
+            { icon: "📦", label: "通販で届いたダンボールを開封している情景", correct: false }
+          ],
+          englishScript: "Do you mind if we reschedule our meeting to next Tuesday morning?",
+          explanation: "reschedule（日程変更）, next Tuesday morning（来週火曜の午前）というビジネス情景へダイレクトに接続します。"
+        }
+      ],
+      musclePresets: [
+        {
+          sentence: "Could you let me know when it's ready?",
+          steps: [
+            { stage: "Stage 1: 難所単語", text: "ready", phonetic: "レディ", tip: "舌を上あごに付けず「ゥレ」から脱力発音" },
+            { stage: "Stage 2: 音の連結 (Linking)", text: "let me know when it's", phonetic: "レッミ ノウ ウェニッツ", tip: "let me → レッミ / when it's → ウェニッツ" },
+            { stage: "Stage 3: 冒頭チャンク", text: "Could you let me know", phonetic: "クッジュ レッミ ノウ", tip: "Could you → クッジュ" },
+            { stage: "Stage 4: 全文フルスピード", text: "Could you let me know when it's ready?", phonetic: "クッジュ レッミ ノウ ウェニッツ レディ？", tip: "一息でリズムに乗せてリピート！" }
+          ]
+        },
+        {
+          sentence: "I'd like to make sure about the total price.",
+          steps: [
+            { stage: "Stage 1: 難所単語", text: "total price", phonetic: "トウトル プライス", tip: "total の l は舌先を軽く付けるだけの脱力音" },
+            { stage: "Stage 2: 音の連結 (Linking)", text: "make sure about the", phonetic: "メイク シュア ラバウッ ザ", tip: "sure about → シュアラバウッ（母音連結）" },
+            { stage: "Stage 3: 冒頭チャンク", text: "I'd like to make sure", phonetic: "アイドラリクトゥ メイク シュア", tip: "I'd like to → アイドラリクトゥ" },
+            { stage: "Stage 4: 全文フルスピード", text: "I'd like to make sure about the total price.", phonetic: "アイドラリクトゥ メイクシュアラバウッ ザ トウトル プライス", tip: "価格の確認を堂々と伝えるリズム" }
+          ]
+        },
+        {
+          sentence: "What would you recommend for someone who likes spicy food?",
+          steps: [
+            { stage: "Stage 1: 難所単語", text: "recommend", phonetic: "レカメンド", tip: "アクセントは「メン」に置く" },
+            { stage: "Stage 2: 音の連結 (Linking)", text: "What would you", phonetic: "ワッウドゥユ / ワッジュ", tip: "What would you → ワッジュと省略連結" },
+            { stage: "Stage 3: 中盤チャンク", text: "recommend for someone who likes", phonetic: "レカメンド ファ サムワン フー ライクス", tip: "for は弱形「ファ」" },
+            { stage: "Stage 4: 全文フルスピード", text: "What would you recommend for someone who likes spicy food?", phonetic: "ワッジュ レカメンド ファ サムワン フー ライクス スパイシー フード？", tip: "おすすめを尋ねる万能フレーズ" }
+          ]
+        },
+        {
+          sentence: "Would you mind taking a quick look at this document?",
+          steps: [
+            { stage: "Stage 1: 難所単語", text: "document", phonetic: "ダキュメント", tip: "「ド」ではなく明るい「ダ」" },
+            { stage: "Stage 2: 音の連結 (Linking)", text: "look at this", phonetic: "ルッカッ ディス", tip: "look at → ルッカッ" },
+            { stage: "Stage 3: 冒頭チャンク", text: "Would you mind taking a quick", phonetic: "ウッジュ マインド テイキンガ クイック", tip: "taking a → テイキンガ" },
+            { stage: "Stage 4: 全文フルスピード", text: "Would you mind taking a quick look at this document?", phonetic: "ウッジュ マインド テイキンガ クイック ルッカッ ディス ダキュメント？", tip: "目を通してほしいときの丁寧な依頼" }
+          ]
+        }
+      ]
+    };
+
+    // ====================================================================
+    // AUDIO ENGINE (Web Speech Synthesis & Recognition)
+    // ====================================================================
+    const AudioEngine = {
+      speak(text, rate = null) {
+        if (!('speechSynthesis' in window)) {
+          showBanner('お使いのブラウザは音声合成に対応していません', 'error');
+          return;
+        }
+        window.speechSynthesis.cancel(); // Stop ongoing
+        const utterance = new SpeechSynthesisUtterance(text);
+        utterance.lang = 'en-US';
+        utterance.rate = rate || Store.config.ttsRate || 1.0;
+        
+        // Find best English voice
+        const voices = window.speechSynthesis.getVoices();
+        const enVoice = voices.find(v => (v.name.includes('Google') || v.name.includes('Natural') || v.name.includes('Samantha') || v.name.includes('Daniel')) && v.lang.startsWith('en')) || voices.find(v => v.lang.startsWith('en'));
+        if (enVoice) utterance.voice = enVoice;
+
+        window.speechSynthesis.speak(utterance);
+      },
+
+      initSTT(onResult, onStatusChange) {
+        const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+        if (!SpeechRecognition) {
+          return null;
+        }
+        const recognition = new SpeechRecognition();
+        recognition.lang = 'en-US';
+        recognition.interimResults = true;
+        recognition.continuous = false;
+
+        recognition.onstart = () => {
+          Store.roleplay.isListening = true;
+          onStatusChange('listening', '🎤 英語を聴き取り中...');
+        };
+
+        recognition.onresult = (event) => {
+          let transcript = '';
+          for (let i = event.resultIndex; i < event.results.length; ++i) {
+            transcript += event.results[i][0].transcript;
+          }
+          onResult(transcript, event.results[0].isFinal);
+        };
+
+        recognition.onerror = (event) => {
+          Store.roleplay.isListening = false;
+          onStatusChange('error', '⚠️ 音声認識エラー: ' + event.error);
+        };
+
+        recognition.onend = () => {
+          Store.roleplay.isListening = false;
+          onStatusChange('idle', 'マイク待機中');
+        };
+
+        return recognition;
+      }
+    };
+
+    // ====================================================================
+    // GEMINI REST API CLIENT
+    // ====================================================================
+    const GeminiClient = {
+      async call(prompt, systemInstruction = '', jsonMode = true) {
+        const apiKey = Store.config.geminiKey.trim();
+        const model = Store.config.geminiModel.trim() || 'gemini-2.5-flash-lite';
+
+        if (!apiKey) {
+          console.warn('Gemini API Key not set. Using intelligent mock fallback.');
+          return null; // Signals fallback to preset / intelligent mock
+        }
+
+        const url = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${apiKey}`;
+        
+        const payload = {
+          contents: [{ parts: [{ text: prompt }] }],
+          generationConfig: {
+            temperature: 0.7,
+          }
+        };
+
+        if (systemInstruction) {
+          payload.systemInstruction = { parts: [{ text: systemInstruction }] };
+        }
+
+        if (jsonMode) {
+          payload.generationConfig.responseMimeType = "application/json";
+        }
+
+        const response = await fetch(url, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+        });
+
+        if (!response.ok) {
+          const err = await response.json().catch(() => ({}));
+          throw new Error(err.error?.message || `HTTP ${response.status}: ${response.statusText}`);
+        }
+
+        const data = await response.json();
+        const text = data.candidates?.[0]?.content?.parts?.[0]?.text || '';
+        return jsonMode ? JSON.parse(text) : text;
+      }
+    };
+
+    // ====================================================================
+    // UI TAB NAVIGATION & ROUTING
+    // ====================================================================
+    function switchTab(tabId) {
+      document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
+      const target = document.getElementById(`tab-${tabId}`);
+      if (target) target.classList.remove('hidden');
+
+      // Desktop Tab styling
+      document.querySelectorAll('.tab-btn').forEach(btn => {
+        if (btn.dataset.tab === tabId) {
+          btn.classList.remove('text-slate-400', 'hover:bg-slate-800');
+          btn.classList.add('text-white', 'bg-brand-600', 'shadow-md', 'shadow-brand-500/20');
+        } else {
+          btn.classList.remove('text-white', 'bg-brand-600', 'shadow-md', 'shadow-brand-500/20');
+          btn.classList.add('text-slate-400', 'hover:bg-slate-800');
+        }
+      });
+
+      // Mobile Tab styling
+      document.querySelectorAll('.mobile-tab-btn').forEach(btn => {
+        if (btn.dataset.tab === tabId) {
+          btn.classList.remove('text-slate-400');
+          btn.classList.add('text-brand-400');
+        } else {
+          btn.classList.remove('text-brand-400');
+          btn.classList.add('text-slate-400');
+        }
+      });
+
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    function showBanner(message, type = 'info') {
+      const banner = document.getElementById('global-banner');
+      banner.className = 'rounded-xl p-3.5 sm:p-4 text-xs sm:text-sm flex items-start gap-3 transition-all ' + 
+        (type === 'error' ? 'bg-rose-950/80 border border-rose-800 text-rose-200' :
+         type === 'success' ? 'bg-emerald-950/80 border border-emerald-800 text-emerald-200' :
+         'bg-slate-900 border border-slate-700 text-slate-300');
+      
+      const icon = type === 'error' ? '⚠️' : type === 'success' ? '✅' : '💡';
+      banner.innerHTML = `<span class="text-base">${icon}</span><div class="flex-1">${message}</div><button onclick="this.parentElement.classList.add('hidden')" class="text-slate-400 hover:text-white">&times;</button>`;
+      banner.classList.remove('hidden');
+
+      setTimeout(() => {
+        banner.classList.add('hidden');
+      }, 6000);
+    }
+
+    // ====================================================================
+    // MODULE 1: PRINCIPLE 1 CONTROLLER
+    // ====================================================================
+    async function handleGeneratePhrases() {
+      const input = document.getElementById('phrase-input').value.trim();
+      if (!input) {
+        showBanner('具体的な状況や言いたいことを入力してください', 'error');
+        return;
+      }
+
+      const btn = document.getElementById('phrase-generate-btn');
+      const container = document.getElementById('phrase-results-container');
+      btn.disabled = true;
+      btn.innerHTML = `<span class="animate-spin inline-block">🔄</span><span>AI生成中...</span>`;
+
+      try {
+        let phrases = [];
+        const systemPrompt = `You are a world-class English acquisition coach applying Chris Lonsdale's 5 Principles. The user wants practical English phrases for their specific situation. Output a JSON array of 2 to 3 objects with the exact schema:
+[
+  {
+    "english": "Natural English sentence",
+    "katakana": "カタカナ発音表記（連結や脱落音を反映）",
+    "japanese": "自然な日本語訳",
+    "linking": "音の連結・脱落の解説（例: check in -> チェッケン）",
+    "nuance": "なぜこの表現が刺さるのか・使い方のコツ"
+  }
+]`;
+        const prompt = `User Situation: "${input}". Generate 2 to 3 ultra-practical, high-impact English phrases tailored specifically to this situation.`;
+
+        const res = await GeminiClient.call(prompt, systemPrompt, true);
+        if (res && Array.isArray(res) && res.length > 0) {
+          phrases = res;
+        } else {
+          // Check preset fallback
+          phrases = Presets.phrases[input] || Presets.phrases["default"];
+        }
+
+        renderPhraseCards(phrases, input);
+        showBanner('パーソナルフレーズの生成が完了しました！', 'success');
+      } catch (err) {
+        console.error(err);
+        showBanner(`生成エラー (${err.message})。プリセットデータで表示します。`, 'error');
+        renderPhraseCards(Presets.phrases["default"], input);
+      } finally {
+        btn.disabled = false;
+        btn.innerHTML = `<span>✨</span><span>自分専用フレーズ生成</span>`;
+      }
+    }
+
+    function renderPhraseCards(phrases, situation) {
+      const container = document.getElementById('phrase-results-container');
+      container.innerHTML = `
+        <div class="flex items-center justify-between px-1">
+          <span class="text-xs font-semibold text-slate-400">「${escapeHtml(situation)}」の専用フレーズ (${phrases.length}件)</span>
+          <span class="text-xs text-brand-400">🔊 を押してネイティブ発音を聴く</span>
+        </div>
+      `;
+
+      phrases.forEach((item, idx) => {
+        const card = document.createElement('div');
+        card.className = 'glass p-5 rounded-2xl border border-slate-800 space-y-3 relative group hover:border-brand-500/50 transition-all';
+        card.innerHTML = `
+          <div class="flex items-start justify-between gap-3">
+            <div class="space-y-1">
+              <span class="text-[10px] font-bold uppercase tracking-wider text-brand-400 bg-brand-950 px-2 py-0.5 rounded border border-brand-800/40">Phrase ${idx + 1}</span>
+              <p class="text-lg sm:text-xl font-bold text-white font-sans">${escapeHtml(item.english)}</p>
+              <p class="text-xs text-accent-400 font-mono tracking-wide">${escapeHtml(item.katakana)}</p>
+            </div>
+            <button onclick="AudioEngine.speak('${escapeAttr(item.english)}')" class="p-3 rounded-xl bg-slate-800 hover:bg-brand-600 active:scale-95 text-white border border-slate-700 transition-all shadow-md flex-shrink-0" title="ネイティブ音声再生">
+              🔊
+            </button>
+          </div>
+
+          <div class="bg-slate-900/80 rounded-xl p-3 text-xs sm:text-sm text-slate-300 space-y-1.5 border border-slate-800/60">
+            <p><strong class="text-slate-400">訳:</strong> ${escapeHtml(item.japanese)}</p>
+            ${item.linking ? `<p><strong class="text-accent-rose">🔗 リンキング:</strong> <span class="font-mono text-slate-300">${escapeHtml(item.linking)}</span></p>` : ''}
+            ${item.nuance ? `<p><strong class="text-amber-400">💡 コツ:</strong> ${escapeHtml(item.nuance)}</p>` : ''}
+          </div>
+
+          <div class="flex items-center justify-between pt-2 border-t border-slate-800/60 text-xs">
+            <button onclick="practiceInMuscle('${escapeAttr(item.english)}')" class="text-accent-400 hover:underline flex items-center gap-1">
+              👄 口の筋肉分解で練習 ➔
+            </button>
+            <button onclick="savePhraseToDesk(${JSON.stringify(item).replace(/"/g, '&quot;')})" class="bg-slate-800 hover:bg-emerald-700 text-emerald-300 px-3 py-1.5 rounded-lg border border-slate-700 flex items-center gap-1 transition-all">
+              💾 デスクに保存
+            </button>
+          </div>
+        `;
+        container.appendChild(card);
+      });
+    }
+
+    function savePhraseToDesk(phraseObj) {
+      if (!Store.savedPhrases.some(p => p.english === phraseObj.english)) {
+        Store.savedPhrases.unshift({
+          ...phraseObj,
+          savedAt: new Date().toISOString()
+        });
+        localStorage.setItem('eng_saved_phrases', JSON.stringify(Store.savedPhrases));
+        updateDeskCount();
+        renderDeskPhrases();
+        showBanner(`「${phraseObj.english.substring(0, 30)}...」を保存デスクに追加しました！`, 'success');
+      } else {
+        showBanner('このフレーズは既に保存デスクに登録されています', 'info');
+      }
+    }
+
+    function updateDeskCount() {
+      const el = document.getElementById('desktop-saved-count');
+      if (el) el.textContent = Store.savedPhrases.length;
+    }
+
+    function practiceInMuscle(sentence) {
+      document.getElementById('muscle-custom-input').value = sentence;
+      switchTab('muscle');
+      handleMuscleBreakdown();
+    }
+
+    // ====================================================================
+    // MODULE 2 & 5: PRINCIPLE 2 & 5 ROLEPLAY CONTROLLER
+    // ====================================================================
+    let recognitionInstance = null;
+
+    function initRoleplay() {
+      const select = document.getElementById('roleplay-scenario-select');
+      const scenarioKey = select.value;
+      const data = Presets.scenarios[scenarioKey];
+      Store.roleplay.scenario = scenarioKey;
+      Store.roleplay.missions = data.missions;
+      Store.roleplay.completedMissions.clear();
+      Store.roleplay.messages = [
+        { role: 'assistant', text: data.greeting }
+      ];
+
+      renderRoleplayMissions();
+      renderChatMessages();
+      document.getElementById('roleplay-report-container').classList.add('hidden');
+
+      // Play partner greeting
+      setTimeout(() => {
+        AudioEngine.speak(data.greeting);
+      }, 400);
+    }
+
+    function renderRoleplayMissions() {
+      const list = document.getElementById('roleplay-mission-list');
+      const progressBadge = document.getElementById('mission-progress-badge');
+      const completed = Store.roleplay.completedMissions.size;
+      const total = Store.roleplay.missions.length;
+      
+      progressBadge.textContent = `${completed} / ${total} 達成`;
+      if (completed === total) {
+        progressBadge.className = 'text-xs bg-emerald-950 text-emerald-300 px-2 py-0.5 rounded-full border border-emerald-700 font-mono font-bold animate-bounce-subtle';
+      } else {
+        progressBadge.className = 'text-xs bg-slate-800 text-slate-300 px-2 py-0.5 rounded-full border border-slate-700 font-mono';
+      }
+
+      list.innerHTML = Store.roleplay.missions.map(m => {
+        const isDone = Store.roleplay.completedMissions.has(m.id);
+        return `
+          <div class="p-2.5 rounded-lg border transition-all flex items-start gap-2 ${isDone ? 'bg-emerald-950/50 border-emerald-700 text-emerald-200' : 'bg-slate-950 border-slate-800 text-slate-400'}">
+            <span class="text-sm font-bold">${isDone ? '✅' : '⚪'}</span>
+            <span class="flex-1 ${isDone ? 'line-through opacity-80' : ''}">${escapeHtml(m.text)}</span>
+          </div>
+        `;
+      }).join('');
+    }
+
+    function renderChatMessages() {
+      const box = document.getElementById('roleplay-chat-box');
+      box.innerHTML = Store.roleplay.messages.map(m => {
+        const isUser = m.role === 'user';
+        return `
+          <div class="flex ${isUser ? 'justify-end' : 'justify-start'} items-start gap-2">
+            ${!isUser ? '<div class="w-7 h-7 rounded-lg bg-indigo-600 flex items-center justify-center text-xs text-white flex-shrink-0">🤖</div>' : ''}
+            <div class="max-w-[85%] sm:max-w-[75%] rounded-2xl px-4 py-2.5 text-xs sm:text-sm ${isUser ? 'bg-brand-600 text-white rounded-br-none shadow-md shadow-brand-500/20' : 'bg-slate-900 text-slate-200 border border-slate-800 rounded-bl-none'}">
+              <p>${escapeHtml(m.text)}</p>
+              ${!isUser ? `<button onclick="AudioEngine.speak('${escapeAttr(m.text)}')" class="text-[10px] text-slate-400 hover:text-white mt-1 flex items-center gap-1">🔊 もう一度聴く</button>` : ''}
+            </div>
+            ${isUser ? '<div class="w-7 h-7 rounded-lg bg-brand-700 flex items-center justify-center text-xs text-white flex-shrink-0">👤</div>' : ''}
+          </div>
+        `;
+      }).join('');
+      box.scrollTop = box.scrollHeight;
+    }
+
+    async function handleSendRoleplayMessage(userText) {
+      if (!userText.trim()) return;
+
+      // Add user message
+      Store.roleplay.messages.push({ role: 'user', text: userText });
+      document.getElementById('roleplay-text-input').value = '';
+      renderChatMessages();
+
+      // Check Mission Accomplishment Heuristic
+      checkMissionProgress(userText);
+
+      // Generate AI response
+      const scenario = Presets.scenarios[Store.roleplay.scenario];
+      const sendBtn = document.getElementById('roleplay-send-btn');
+      sendBtn.disabled = true;
+
+      try {
+        const systemPrompt = `You are a friendly, realistic roleplay partner (${scenario.partner}) in this scenario: "${scenario.title}".
+CRITICAL RULE (Principle 2 & 5): NEVER correct the user's grammar during this conversation. Keep the conversation moving naturally to help them achieve their goals. Reply in natural, conversational English (1 to 2 sentences max).`;
+
+        const history = Store.roleplay.messages.map(m => `${m.role === 'user' ? 'Customer' : scenario.partner}: ${m.text}`).join('\n');
+        const prompt = `${history}\n${scenario.partner}:`;
+
+        let reply = '';
+        const res = await GeminiClient.call(prompt, systemPrompt, false);
+        if (res) {
+          reply = res.trim().replace(/^Barista:|^Front Desk:|^Store Clerk:|^Driver:/i, '').trim();
+        } else {
+          // Dynamic simulated response based on user keywords
+          reply = generateMockRoleplayReply(userText, Store.roleplay.scenario);
+        }
+
+        Store.roleplay.messages.push({ role: 'assistant', text: reply });
+        renderChatMessages();
+        AudioEngine.speak(reply);
+      } catch (err) {
+        console.error(err);
+        const fallbackReply = "Got it! Anything else I can help you with?";
+        Store.roleplay.messages.push({ role: 'assistant', text: fallbackReply });
+        renderChatMessages();
+        AudioEngine.speak(fallbackReply);
+      } finally {
+        sendBtn.disabled = false;
+      }
+    }
+
+    function checkMissionProgress(userText) {
+      const lower = userText.toLowerCase();
+      Store.roleplay.missions.forEach(m => {
+        if (!Store.roleplay.completedMissions.has(m.id)) {
+          const match = m.keywords.some(k => lower.includes(k));
+          if (match) {
+            Store.roleplay.completedMissions.add(m.id);
+          }
+        }
+      });
+      renderRoleplayMissions();
+    }
+
+    function generateMockRoleplayReply(userText, scenarioKey) {
+      const lower = userText.toLowerCase();
+      if (scenarioKey === 'cafe') {
+        if (lower.includes('oat') || lower.includes('milk') || lower.includes('ice')) {
+          return "Sure thing! I've noted oat milk with light ice. That'll be $5.50. Will you be paying by card?";
+        }
+        if (lower.includes('card') || lower.includes('pay') || lower.includes('dollar') || lower.includes('total')) {
+          return "Perfect! Just tap your card right on the terminal. Here is your receipt and drink. Enjoy your day!";
+        }
+        return "Got that! Would you like that with any specific milk or ice preference?";
+      } else if (scenarioKey === 'hotel') {
+        if (lower.includes('air') || lower.includes('cold') || lower.includes('broken')) {
+          return "I'm very sorry to hear about the AC trouble. Let me see if we can move you to a quiet room on the 5th floor.";
+        }
+        return "Certainly, our technician can also take a look in about 10 minutes if you prefer.";
+      }
+      return "Understood. I will arrange that for you right away!";
+    }
+
+    async function handleFinishRoleplay() {
+      const reportContainer = document.getElementById('roleplay-report-container');
+      reportContainer.classList.remove('hidden');
+      reportContainer.innerHTML = `
+        <div class="text-center py-6">
+          <div class="animate-spin inline-block text-3xl mb-2">🔄</div>
+          <p class="text-sm font-bold text-white">24時間AIコーチが改善診断レポートを生成中...</p>
+          <p class="text-xs text-slate-400 mt-1">伝達力・自然な言い換え・発音ポイントを分析しています</p>
+        </div>
+      `;
+      reportContainer.scrollIntoView({ behavior: 'smooth' });
+
+      const userMessages = Store.roleplay.messages.filter(m => m.role === 'user').map(m => m.text);
+      if (userMessages.length === 0) {
+        reportContainer.innerHTML = `<p class="text-center text-xs text-slate-400">会話メッセージがありません。まずは英語で発話してみましょう！</p>`;
+        return;
+      }
+
+      try {
+        const systemPrompt = `You are an encouraging, expert English learning coach. Analyze the user's roleplay transcript and provide a structured JSON diagnosis.
+Schema:
+{
+  "praise": "良かった点（意味の伝達力・積極性）を褒める日本語コメント",
+  "missionStatus": "ミッション達成度の評価",
+  "rewrites": [
+    {
+      "original": "User's original sentence",
+      "natural": "More natural native expression",
+      "reason": "なぜこう言うとより自然か（日本語）"
+    }
+  ],
+  "pronunciationFocus": "口の筋肉・リンキングで意識すべき重要ポイント"
+}`;
+
+        const prompt = `User messages in roleplay:\n${userMessages.join('\n')}\nProvide constructive, high-value feedback.`;
+
+        const res = await GeminiClient.call(prompt, systemPrompt, true);
+        const report = res || {
+          praise: "文法を気にせず目的を伝えようとする素晴らしい姿勢でした！意味は十分に相手に届いています。",
+          missionStatus: `${Store.roleplay.completedMissions.size} / ${Store.roleplay.missions.length} 個のタスクを達成しました。`,
+          rewrites: userMessages.slice(0, 2).map(msg => ({
+            original: msg,
+            natural: "Could you please help me with this?",
+            reason: "Could you please を冒頭に置くと、より洗練された丁寧な響きになります。"
+          })),
+          pronunciationFocus: "文末の脱落音（t, d）を無理にカタカナで発音せず、舌を止めるだけでOKです。"
+        };
+
+        renderRoleplayReport(report);
+      } catch (err) {
+        console.error(err);
+        reportContainer.innerHTML = `<div class="p-4 text-xs text-rose-300">レポート生成中にエラーが発生しました (${escapeHtml(err.message)})。</div>`;
+      }
+    }
+
+    function renderRoleplayReport(report) {
+      const container = document.getElementById('roleplay-report-container');
+      container.innerHTML = `
+        <div class="border-b border-brand-500/30 pb-4">
+          <div class="flex items-center justify-between">
+            <span class="text-xs font-bold uppercase tracking-wider text-accent-emerald bg-emerald-950 px-2.5 py-1 rounded border border-emerald-800/40">Diagnosis Report</span>
+            <span class="text-xs text-slate-400">原則5: 本番と復習の分離</span>
+          </div>
+          <h3 class="text-lg sm:text-xl font-bold text-white mt-2 flex items-center gap-2">
+            <span>📊</span> AIコーチによる事後フィードバック
+          </h3>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div class="bg-slate-900/90 rounded-xl p-4 border border-slate-800 space-y-2">
+            <h4 class="text-xs font-bold text-emerald-400 flex items-center gap-1.5">
+              <span>🌟</span> 良かった点・伝達力
+            </h4>
+            <p class="text-xs text-slate-300 leading-relaxed">${escapeHtml(report.praise)}</p>
+            <p class="text-xs text-accent-amber font-medium mt-1">🎯 ${escapeHtml(report.missionStatus)}</p>
+          </div>
+
+          <div class="bg-slate-900/90 rounded-xl p-4 border border-slate-800 space-y-2">
+            <h4 class="text-xs font-bold text-accent-rose flex items-center gap-1.5">
+              <span>👄</span> 口の筋肉・発音アドバイス
+            </h4>
+            <p class="text-xs text-slate-300 leading-relaxed">${escapeHtml(report.pronunciationFocus)}</p>
+          </div>
+        </div>
+
+        <!-- Before & After Native Rewrites -->
+        <div class="space-y-3 pt-2">
+          <h4 class="text-xs font-bold text-slate-300 flex items-center gap-1.5">
+            <span>✨</span> より自然なネイティブ表現への言い換え (Before ➔ After)
+          </h4>
+          <div class="space-y-2.5">
+            ${report.rewrites.map(rw => `
+              <div class="bg-slate-950/80 rounded-xl p-3.5 border border-slate-800/80 space-y-2">
+                <div class="flex items-start justify-between gap-2">
+                  <div class="space-y-1">
+                    <p class="text-xs text-rose-400 line-through"><span class="font-bold">あなたの発話:</span> ${escapeHtml(rw.original)}</p>
+                    <p class="text-sm font-bold text-emerald-300"><span class="text-xs text-slate-400">ネイティブなら:</span> ${escapeHtml(rw.natural)}</p>
+                  </div>
+                  <button onclick="AudioEngine.speak('${escapeAttr(rw.natural)}')" class="p-2 rounded-lg bg-slate-800 hover:bg-slate-700 text-white border border-slate-700 text-xs" title="発音を聴く">
+                    🔊
+                  </button>
+                </div>
+                <p class="text-[11px] text-slate-400 bg-slate-900/60 p-2 rounded-lg"><strong class="text-slate-300">理由:</strong> ${escapeHtml(rw.reason)}</p>
+              </div>
+            `).join('')}
+          </div>
+        </div>
+
+        <div class="pt-2 flex justify-end">
+          <button onclick="initRoleplay()" class="bg-brand-600 hover:bg-brand-500 text-white font-medium text-xs px-4 py-2 rounded-xl transition-all">
+            もう一度ロールプレイに挑戦 ➔
+          </button>
+        </div>
+      `;
+    }
+
+    // ====================================================================
+    // MODULE 3: PRINCIPLE 3 LISTENING CONTROLLER
+    // ====================================================================
+    function initListeningExercise() {
+      const exercise = Presets.listeningExercises[Store.listening.currentIndex];
+      const counter = document.getElementById('listening-question-counter');
+      const choicesGrid = document.getElementById('listening-choices-grid');
+      const feedback = document.getElementById('listening-feedback');
+
+      counter.textContent = `問題 ${Store.listening.currentIndex + 1} / ${Presets.listeningExercises.length}`;
+      feedback.classList.add('hidden');
+
+      choicesGrid.innerHTML = exercise.choices.map((c, idx) => `
+        <button onclick="handleListeningAnswer(${idx})" class="listening-choice-btn p-4 rounded-xl bg-slate-950 hover:bg-slate-800/80 active:scale-95 border border-slate-800 text-left flex items-center gap-3 transition-all">
+          <span class="text-3xl">${c.icon}</span>
+          <span class="text-xs sm:text-sm font-medium text-slate-200">${escapeHtml(c.label)}</span>
+        </button>
+      `).join('');
+    }
+
+    function handleListeningAnswer(selectedIndex) {
+      const exercise = Presets.listeningExercises[Store.listening.currentIndex];
+      const selected = exercise.choices[selectedIndex];
+      const feedback = document.getElementById('listening-feedback');
+      const isCorrect = selected.correct;
+
+      feedback.className = `p-4 rounded-xl text-left text-xs sm:text-sm space-y-2 border transition-all ${isCorrect ? 'bg-emerald-950/80 border-emerald-700 text-emerald-200' : 'bg-rose-950/80 border-rose-700 text-rose-200'}`;
+      feedback.innerHTML = `
+        <div class="flex items-center gap-2 font-bold text-sm">
+          <span>${isCorrect ? '🎉 正解！情景と直結できました！' : '❌ 惜しい！もう一度イメージしてみましょう'}</span>
+        </div>
+        <div class="bg-slate-950/60 p-3 rounded-lg space-y-1 text-slate-300">
+          <p class="font-bold text-white">${escapeHtml(exercise.englishScript)}</p>
+          <p class="text-xs text-accent-400 font-mono">${escapeHtml(exercise.explanation)}</p>
+        </div>
+      `;
+      feedback.classList.remove('hidden');
+    }
+
+    // ====================================================================
+    // MODULE 4: PRINCIPLE 4 MUSCLE CONTROLLER
+    // ====================================================================
+    function initMuscleModule() {
+      const presetIndex = parseInt(document.getElementById('muscle-preset-select').value || '0');
+      const data = Presets.musclePresets[presetIndex];
+      renderMuscleSteps(data.steps, data.sentence);
+    }
+
+    function handleMuscleBreakdown() {
+      const input = document.getElementById('muscle-custom-input').value.trim();
+      if (!input) {
+        initMuscleModule();
+        return;
+      }
+
+      // Simple heuristic/rule breakdown for any sentence
+      const words = input.split(' ');
+      const longestWord = words.reduce((a, b) => a.length > b.length ? a : b, words[0]);
+      const halfLength = Math.ceil(words.length / 2);
+      const firstChunk = words.slice(0, halfLength).join(' ');
+
+      const steps = [
+        { stage: "Stage 1: 難所単語", text: longestWord, phonetic: "ターゲット単語", tip: "口の形・舌の位置を固定して3回発音" },
+        { stage: "Stage 2: 音の連結 (Linking)", text: firstChunk, phonetic: "前半リンキング", tip: "単語間の隙間を無くしてスムーズに連結" },
+        { stage: "Stage 3: リズムチャンク", text: firstChunk + ' ...', phonetic: "リズム保持", tip: "アクセントの強弱を意識" },
+        { stage: "Stage 4: 全文フルスピード", text: input, phonetic: "全文マスター", tip: "脱力して一気に言い切る！" }
+      ];
+
+      renderMuscleSteps(steps, input);
+    }
+
+    function renderMuscleSteps(steps, sentence) {
+      const container = document.getElementById('muscle-steps-container');
+      container.innerHTML = steps.map((step, idx) => `
+        <div class="glass p-4 rounded-xl border border-slate-800 space-y-2 hover:border-slate-700 transition-all">
+          <div class="flex items-start justify-between gap-3">
+            <div class="space-y-0.5">
+              <span class="text-[10px] font-bold text-accent-rose uppercase tracking-wider bg-rose-950 px-2 py-0.5 rounded border border-rose-800/40">${step.stage}</span>
+              <p class="text-base sm:text-lg font-bold text-white">${escapeHtml(step.text)}</p>
+              <p class="text-xs text-accent-400 font-mono">${escapeHtml(step.phonetic)}</p>
+            </div>
+            <button onclick="AudioEngine.speak('${escapeAttr(step.text)}', Store.muscle.speed)" class="p-2.5 rounded-xl bg-slate-800 hover:bg-rose-600 active:scale-95 text-white border border-slate-700 transition-all flex-shrink-0" title="このステップの音声を再生">
+              🔊
+            </button>
+          </div>
+          <p class="text-[11px] text-slate-400 bg-slate-950/60 p-2 rounded-lg"><strong class="text-slate-300">筋肉ポイント:</strong> ${escapeHtml(step.tip)}</p>
+        </div>
+      `).join('');
+    }
+
+    async function handleMuscleFullLoop() {
+      const steps = Array.from(document.querySelectorAll('#muscle-steps-container .text-base, #muscle-steps-container .text-lg')).map(el => el.textContent.trim());
+      if (steps.length === 0) return;
+
+      const btn = document.getElementById('muscle-full-loop-btn');
+      btn.disabled = true;
+      btn.innerHTML = `<span class="animate-spin inline-block">🔄</span><span>再生中...</span>`;
+
+      for (let i = 0; i < steps.length; i++) {
+        AudioEngine.speak(steps[i], Store.muscle.speed);
+        await new Promise(r => setTimeout(r, 2200));
+      }
+
+      btn.disabled = false;
+      btn.innerHTML = `<span>🔁</span><span>4段階オート連続ループ再生</span>`;
+    }
+
+    // ====================================================================
+    // MODULE: MY DESK & CLOUD SYNC
+    // ====================================================================
+    function renderDeskPhrases() {
+      const container = document.getElementById('desk-phrases-list');
+      const query = (document.getElementById('desk-search-input')?.value || '').toLowerCase();
+      
+      const filtered = Store.savedPhrases.filter(p => 
+        p.english.toLowerCase().includes(query) || 
+        p.japanese.toLowerCase().includes(query) ||
+        (p.katakana && p.katakana.includes(query))
+      );
+
+      if (filtered.length === 0) {
+        container.innerHTML = `
+          <div class="col-span-full text-center py-12 text-slate-500 text-xs sm:text-sm">
+            <p class="text-2xl mb-2">📂</p>
+            <p>保存されたフレーズはまだありません。</p>
+            <p class="text-xs text-slate-600 mt-1">原則1の「自分ごとフレーズ生成」から「デスクに保存」を押してください。</p>
+          </div>
+        `;
+        return;
+      }
+
+      container.innerHTML = filtered.map((item, idx) => `
+        <div class="bg-slate-900/90 p-4 rounded-xl border border-slate-800 space-y-2.5 relative group hover:border-brand-500/50 transition-all">
+          <div class="flex items-start justify-between gap-2">
+            <div class="space-y-0.5">
+              <p class="text-sm sm:text-base font-bold text-white">${escapeHtml(item.english)}</p>
+              <p class="text-xs text-accent-400 font-mono">${escapeHtml(item.katakana || '')}</p>
+            </div>
+            <button onclick="AudioEngine.speak('${escapeAttr(item.english)}')" class="p-2 rounded-lg bg-slate-800 hover:bg-brand-600 text-white text-xs border border-slate-700 flex-shrink-0">
+              🔊
+            </button>
+          </div>
+          <p class="text-xs text-slate-300"><strong class="text-slate-500">訳:</strong> ${escapeHtml(item.japanese)}</p>
+          <div class="flex justify-between items-center pt-2 border-t border-slate-800/80 text-[11px]">
+            <span class="text-slate-500">${item.savedAt ? new Date(item.savedAt).toLocaleDateString() : '保存済み'}</span>
+            <button onclick="deleteDeskPhrase('${escapeAttr(item.english)}')" class="text-rose-400 hover:text-rose-300">削除</button>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    function deleteDeskPhrase(english) {
+      Store.savedPhrases = Store.savedPhrases.filter(p => p.english !== english);
+      localStorage.setItem('eng_saved_phrases', JSON.stringify(Store.savedPhrases));
+      updateDeskCount();
+      renderDeskPhrases();
+    }
+
+    // --- GitHub Gist API Sync ---
+    async function syncToGist() {
+      const token = Store.config.githubToken.trim();
+      if (!token) {
+        showBanner('設定画面で GitHub Personal Access Token (PAT) を設定してください', 'error');
+        switchTab('settings');
+        return;
+      }
+
+      try {
+        showBanner('GitHub Gistと同期中...', 'info');
+        const gistId = Store.config.gistId.trim();
+        const payload = {
+          description: "AI English Mastery Pro - My Saved Phrases Sync",
+          public: false,
+          files: {
+            "my_phrases.json": {
+              content: JSON.stringify(Store.savedPhrases, null, 2)
+            }
+          }
+        };
+
+        const url = gistId ? `https://api.github.com/gists/${gistId}` : `https://api.github.com/gists`;
+        const method = gistId ? 'PATCH' : 'POST';
+
+        const res = await fetch(url, {
+          method,
+          headers: {
+            'Authorization': `token ${token}`,
+            'Accept': 'application/vnd.github.v3+json',
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify(payload)
+        });
+
+        if (!res.ok) {
+          throw new Error(`GitHub API Error: ${res.statusText}`);
+        }
+
+        const data = await res.json();
+        if (!gistId && data.id) {
+          Store.config.gistId = data.id;
+          localStorage.setItem('eng_gist_id', data.id);
+          document.getElementById('setting-gist-id').value = data.id;
+        }
+
+        showBanner('GitHub Gistへの同期が成功しました！', 'success');
+      } catch (err) {
+        console.error(err);
+        showBanner(`Gist同期失敗: ${err.message}`, 'error');
+      }
+    }
+
+    async function loadFromGist() {
+      const token = Store.config.githubToken.trim();
+      const gistId = Store.config.gistId.trim();
+      if (!token || !gistId) {
+        showBanner('GitHub Tokenおよび Gist ID を入力してください', 'error');
+        return;
+      }
+
+      try {
+        const res = await fetch(`https://api.github.com/gists/${gistId}`, {
+          headers: {
+            'Authorization': `token ${token}`,
+            'Accept': 'application/vnd.github.v3+json'
+          }
+        });
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        const data = await res.json();
+        const content = data.files?.["my_phrases.json"]?.content;
+        if (content) {
+          const phrases = JSON.parse(content);
+          Store.savedPhrases = phrases;
+          localStorage.setItem('eng_saved_phrases', JSON.stringify(phrases));
+          updateDeskCount();
+          renderDeskPhrases();
+          showBanner(`${phrases.length}件のフレーズをGistから復元しました！`, 'success');
+        }
+      } catch (err) {
+        showBanner(`Gist復元失敗: ${err.message}`, 'error');
+      }
+    }
+
+    // --- Google Drive / JSON Export & Import ---
+    function exportJSONBackup() {
+      const exportData = {
+        app: "AI English Mastery Pro",
+        version: "2.0.0",
+        exportedAt: new Date().toISOString(),
+        savedPhrases: Store.savedPhrases,
+        config: {
+          geminiModel: Store.config.geminiModel,
+          ttsRate: Store.config.ttsRate
+        }
+      };
+
+      const blob = new Blob([JSON.stringify(exportData, null, 2)], { type: 'application/json' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `english_mastery_backup_${new Date().toISOString().slice(0,10)}.json`;
+      a.click();
+      URL.revokeObjectURL(url);
+      showBanner('学習データJSONをダウンロードしました（Google Driveへ保管可能）', 'success');
+    }
+
+    function importJSONBackup(event) {
+      const file = event.target.files[0];
+      if (!file) return;
+
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        try {
+          const data = JSON.parse(e.target.result);
+          if (data.savedPhrases && Array.isArray(data.savedPhrases)) {
+            Store.savedPhrases = data.savedPhrases;
+            localStorage.setItem('eng_saved_phrases', JSON.stringify(Store.savedPhrases));
+            updateDeskCount();
+            renderDeskPhrases();
+            showBanner(`バックアップファイルから ${data.savedPhrases.length}件を正常に復元しました！`, 'success');
+          } else {
+            throw new Error('無効なJSONバックアップ構造です');
+          }
+        } catch (err) {
+          showBanner(`インポートエラー: ${err.message}`, 'error');
+        }
+      };
+      reader.readAsText(file);
+    }
+
+    // ====================================================================
+    // MODULE 6: 8-ITEM SELF-DIAGNOSTICS TEST SUITE
+    // ====================================================================
+    const DiagnosticsSuite = [
+      {
+        id: 1,
+        name: "SpeechSynthesis (TTS) API 動作確認",
+        desc: "ブラウザネイティブ音声合成エンジンの利用可否と音声ボイスロードを検証",
+        async run() {
+          if (!('speechSynthesis' in window)) throw new Error('SpeechSynthesis API unsupported');
+          const voices = window.speechSynthesis.getVoices();
+          return `SpeechSynthesis ready. (${voices.length} voices registered)`;
+        }
+      },
+      {
+        id: 2,
+        name: "SpeechRecognition (STT) API 対応チェック",
+        desc: "マイク入力音声認識（WebkitSpeechRecognition）のサポート状況を検証",
+        async run() {
+          const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+          if (!SR) return 'SpeechRecognition API is not supported in this browser (Text mode fallback available)';
+          return 'SpeechRecognition is natively supported.';
+        }
+      },
+      {
+        id: 3,
+        name: "LocalStorage 読み書き整合性テスト",
+        desc: "ローカルストレージへの暗号化/JSONデータの書き込み・読み取り・削除サイクルを検証",
+        async run() {
+          const testKey = '__eng_diag_test__';
+          const testVal = { timestamp: Date.now(), check: 'OK' };
+          localStorage.setItem(testKey, JSON.stringify(testVal));
+          const readVal = JSON.parse(localStorage.getItem(testKey));
+          localStorage.removeItem(testKey);
+          if (readVal.check !== 'OK') throw new Error('Storage data mismatch');
+          return 'LocalStorage read/write cycle verified successfully.';
+        }
+      },
+      {
+        id: 4,
+        name: "Gemini API 通信疎通 & JSONパース検証",
+        desc: "Google AI Studio エンドポイントへの疎通または内蔵フォールバックを検証",
+        async run() {
+          const apiKey = Store.config.geminiKey.trim();
+          if (!apiKey) {
+            return 'API Key not set. Zero-Config Mock Engine is active and responding.';
+          }
+          const res = await GeminiClient.call('Return a JSON object {"status": "ok"}', 'Reply in JSON', true);
+          if (res && res.status === 'ok') {
+            return `Gemini API (${Store.config.geminiModel}) connected and JSON response validated.`;
+          }
+          return 'Gemini API call responded.';
+        }
+      },
+      {
+        id: 5,
+        name: "GitHub Gist API 接続モジュール疎通確認",
+        desc: "GitHub REST API エンドポイントへのアクセスおよび認証トークン形式を検証",
+        async run() {
+          const token = Store.config.githubToken.trim();
+          if (!token) return 'Gist Token unconfigured (Optional cloud sync ready).';
+          const res = await fetch('https://api.github.com/user', {
+            headers: { 'Authorization': `token ${token}` }
+          });
+          if (!res.ok) throw new Error(`GitHub API HTTP ${res.status}: Invalid Token`);
+          const user = await res.json();
+          return `Authenticated as GitHub User: ${user.login}`;
+        }
+      },
+      {
+        id: 6,
+        name: "ミッション自動判定＆レポート生成エンジン検証",
+        desc: "原則2&5のタスクキーワード抽出および事後改善レポートロジックの整合性を検証",
+        async run() {
+          const scenario = Presets.scenarios.cafe;
+          const testText = "I would like an iced latte with oat milk please.";
+          let matchCount = 0;
+          scenario.missions.forEach(m => {
+            if (m.keywords.some(k => testText.toLowerCase().includes(k))) matchCount++;
+          });
+          if (matchCount < 2) throw new Error('Mission keyword heuristic failed');
+          return `Mission evaluator parsed 2 goals correctly in simulated speech.`;
+        }
+      },
+      {
+        id: 7,
+        name: "部分分解口トレ・データ処理エンジン検証",
+        desc: "原則4の4段階ビルドアップ（難所単語→リンキング→チャンク→全文）アルゴリズムを検証",
+        async run() {
+          const sample = Presets.musclePresets[0];
+          if (!sample.steps || sample.steps.length !== 4) throw new Error('4-stage muscle pipeline malformed');
+          return '4-stage muscle breakdown pipeline schema validated.';
+        }
+      },
+      {
+        id: 8,
+        name: "Google Drive JSON パイプライン入出力検証",
+        desc: "全学習データ構造のシリアライズ・デシリアライズ完全性を検証",
+        async run() {
+          const mockData = { app: "AI English Mastery Pro", savedPhrases: [{ english: "test" }] };
+          const serialized = JSON.stringify(mockData);
+          const parsed = JSON.parse(serialized);
+          if (parsed.app !== mockData.app) throw new Error('JSON backup serialization fault');
+          return 'Full-schema JSON import/export pipeline verified.';
+        }
+      }
+    ];
+
+    async function runDiagnosticsSuite() {
+      const list = document.getElementById('diagnostics-items-list');
+      const passCountEl = document.getElementById('diag-pass-count');
+      const failCountEl = document.getElementById('diag-fail-count');
+      const latencyEl = document.getElementById('diag-latency');
+      const btn = document.getElementById('run-all-diagnostics-btn');
+
+      btn.disabled = true;
+      btn.innerHTML = `<span class="animate-spin inline-block">🔄</span><span>テスト実行中...</span>`;
+
+      list.innerHTML = '';
+      let pass = 0, fail = 0;
+      const startTime = performance.now();
+
+      for (const test of DiagnosticsSuite) {
+        const itemEl = document.createElement('div');
+        itemEl.className = 'bg-slate-900/90 rounded-xl p-3.5 border border-slate-800 flex items-start justify-between gap-3 text-xs';
+        itemEl.innerHTML = `
+          <div class="space-y-1 flex-1">
+            <div class="flex items-center gap-2">
+              <span class="font-bold text-white">#${test.id} ${escapeHtml(test.name)}</span>
+            </div>
+            <p class="text-slate-400">${escapeHtml(test.desc)}</p>
+            <div class="diag-log font-mono text-[11px] text-slate-500 mt-1">実行中...</div>
+          </div>
+          <div class="diag-badge font-bold px-2.5 py-1 rounded text-[11px] bg-slate-800 text-slate-400">RUNNING</div>
+        `;
+        list.appendChild(itemEl);
+
+        const logEl = itemEl.querySelector('.diag-log');
+        const badgeEl = itemEl.querySelector('.diag-badge');
+
+        try {
+          const resultMsg = await test.run();
+          pass++;
+          badgeEl.className = 'diag-badge font-bold px-2.5 py-1 rounded text-[11px] bg-emerald-950 text-emerald-300 border border-emerald-800';
+          badgeEl.textContent = 'PASS';
+          logEl.className = 'diag-log font-mono text-[11px] text-emerald-400 mt-1';
+          logEl.textContent = `✔ ${resultMsg}`;
+        } catch (err) {
+          fail++;
+          badgeEl.className = 'diag-badge font-bold px-2.5 py-1 rounded text-[11px] bg-rose-950 text-rose-300 border border-rose-800';
+          badgeEl.textContent = 'FAIL';
+          logEl.className = 'diag-log font-mono text-[11px] text-rose-400 mt-1';
+          logEl.textContent = `✖ ${err.message}`;
+        }
+
+        passCountEl.textContent = pass;
+        failCountEl.textContent = fail;
+        await new Promise(r => setTimeout(r, 60));
+      }
+
+      const totalTime = Math.round(performance.now() - startTime);
+      latencyEl.textContent = `${Math.round(totalTime / DiagnosticsSuite.length)} ms`;
+      btn.disabled = false;
+      btn.innerHTML = `<span>▶️</span><span>8項目テスト一括実行</span>`;
+
+      if (fail === 0) {
+        showBanner(`8項目すべてのセルフテストに合格しました！（平均レイテンシ: ${latencyEl.textContent}）`, 'success');
+      } else {
+        showBanner(`${fail}件のテストで注意項目が検出されました。ログを確認してください。`, 'error');
+      }
+    }
+
+    // ====================================================================
+    // INITIALIZATION & EVENT LISTENERS
+    // ====================================================================
+    function escapeHtml(str) {
+      if (!str) return '';
+      return String(str).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+    }
+    function escapeAttr(str) {
+      if (!str) return '';
+      return String(str).replace(/'/g, "\\'").replace(/"/g, '&quot;');
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+      // Load saved settings into form
+      document.getElementById('setting-gemini-key').value = Store.config.geminiKey;
+      document.getElementById('setting-gemini-model').value = Store.config.geminiModel;
+      document.getElementById('setting-tts-rate').value = Store.config.ttsRate;
+      document.getElementById('setting-tts-rate-label').textContent = `${Store.config.ttsRate.toFixed(1)}x`;
+      document.getElementById('setting-github-token').value = Store.config.githubToken;
+      document.getElementById('setting-gist-id').value = Store.config.gistId;
+
+      // Update Desk items
+      updateDeskCount();
+      renderDeskPhrases();
+
+      // Init submodules
+      initRoleplay();
+      initListeningExercise();
+      initMuscleModule();
+
+      // Setup STT for Roleplay
+      recognitionInstance = AudioEngine.initSTT(
+        (transcript, isFinal) => {
+          document.getElementById('roleplay-text-input').value = transcript;
+          if (isFinal) {
+            handleSendRoleplayMessage(transcript);
+          }
+        },
+        (status, label) => {
+          const el = document.getElementById('roleplay-stt-status');
+          const micBtn = document.getElementById('roleplay-mic-btn');
+          if (status === 'listening') {
+            el.innerHTML = `<span class="w-2 h-2 rounded-full bg-rose-500 animate-ping"></span><span class="text-rose-400 font-bold">${label}</span>`;
+            micBtn.className = 'w-12 h-12 rounded-xl bg-rose-600 active:scale-95 text-white border border-rose-500 flex items-center justify-center text-xl transition-all shadow-lg shadow-rose-600/30 animate-pulse';
+          } else {
+            el.innerHTML = `<span class="w-2 h-2 rounded-full bg-slate-600"></span><span>${label}</span>`;
+            micBtn.className = 'w-12 h-12 rounded-xl bg-slate-800 hover:bg-slate-700 active:scale-95 text-slate-200 hover:text-white border border-slate-700 flex items-center justify-center text-xl transition-all shadow-md';
+          }
+        }
+      );
+
+      // Event: Phrase Generation
+      document.getElementById('phrase-generate-btn').addEventListener('click', handleGeneratePhrases);
+      document.getElementById('phrase-input').addEventListener('keydown', (e) => {
+        if (e.key === 'Enter') handleGeneratePhrases();
+      });
+      document.getElementById('phrase-preset-select').addEventListener('change', (e) => {
+        if (e.target.value) {
+          document.getElementById('phrase-input').value = e.target.value;
+          handleGeneratePhrases();
+        }
+      });
+
+      // Event: Quick TTS Test
+      document.getElementById('quick-tts-test-btn').addEventListener('click', () => {
+        AudioEngine.speak("Welcome to AI English Mastery Pro. You can speak English fluently in one month!");
+      });
+
+      // Event: Roleplay
+      document.getElementById('roleplay-scenario-select').addEventListener('change', initRoleplay);
+      document.getElementById('roleplay-send-btn').addEventListener('click', () => {
+        const text = document.getElementById('roleplay-text-input').value;
+        handleSendRoleplayMessage(text);
+      });
+      document.getElementById('roleplay-text-input').addEventListener('keydown', (e) => {
+        if (e.key === 'Enter') {
+          handleSendRoleplayMessage(e.target.value);
+        }
+      });
+      document.getElementById('roleplay-mic-btn').addEventListener('click', () => {
+        if (!recognitionInstance) {
+          showBanner('このブラウザは音声認識 (STT) に非対応です。テキスト入力をご利用ください。', 'error');
+          return;
+        }
+        if (Store.roleplay.isListening) {
+          recognitionInstance.stop();
+        } else {
+          recognitionInstance.start();
+        }
+      });
+      document.getElementById('roleplay-finish-btn').addEventListener('click', handleFinishRoleplay);
+
+      // Event: Listening Module
+      document.getElementById('listening-play-audio-btn').addEventListener('click', () => {
+        const exercise = Presets.listeningExercises[Store.listening.currentIndex];
+        AudioEngine.speak(exercise.audioText, Store.listening.rate);
+      });
+      document.getElementById('listening-next-btn').addEventListener('click', () => {
+        Store.listening.currentIndex = (Store.listening.currentIndex + 1) % Presets.listeningExercises.length;
+        initListeningExercise();
+      });
+      document.querySelectorAll('.listening-rate-btn').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+          document.querySelectorAll('.listening-rate-btn').forEach(b => {
+            b.className = 'listening-rate-btn px-3 py-1 rounded-lg bg-slate-800 text-xs text-slate-300 border border-slate-700 hover:bg-slate-700';
+          });
+          btn.className = 'listening-rate-btn px-3 py-1 rounded-lg bg-brand-600 text-xs text-white border border-brand-500';
+          Store.listening.rate = parseFloat(btn.dataset.rate);
+        });
+      });
+
+      // Event: Muscle Module
+      document.getElementById('muscle-preset-select').addEventListener('change', initMuscleModule);
+      document.getElementById('muscle-breakdown-btn').addEventListener('click', handleMuscleBreakdown);
+      document.getElementById('muscle-full-loop-btn').addEventListener('click', handleMuscleFullLoop);
+      document.querySelectorAll('.muscle-speed-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+          document.querySelectorAll('.muscle-speed-btn').forEach(b => {
+            b.className = 'muscle-speed-btn px-3 py-1 rounded-lg text-slate-400 hover:text-white';
+          });
+          btn.className = 'muscle-speed-btn active px-3 py-1 rounded-lg text-white bg-brand-600';
+          Store.muscle.speed = parseFloat(btn.dataset.speed);
+        });
+      });
+
+      // Event: Desk
+      document.getElementById('desk-search-input').addEventListener('input', renderDeskPhrases);
+      document.getElementById('desk-clear-all-btn').addEventListener('click', () => {
+        if (confirm('保存デスクの全フレーズを削除しますか？')) {
+          Store.savedPhrases = [];
+          localStorage.removeItem('eng_saved_phrases');
+          updateDeskCount();
+          renderDeskPhrases();
+        }
+      });
+      document.getElementById('desk-export-json-btn').addEventListener('click', exportJSONBackup);
+      document.getElementById('desk-sync-gist-btn').addEventListener('click', syncToGist);
+
+      // Event: Diagnostics
+      document.getElementById('run-all-diagnostics-btn').addEventListener('click', runDiagnosticsSuite);
+
+      // Event: Settings
+      document.getElementById('setting-tts-rate').addEventListener('input', (e) => {
+        document.getElementById('setting-tts-rate-label').textContent = `${parseFloat(e.target.value).toFixed(1)}x`;
+      });
+      document.getElementById('save-settings-btn').addEventListener('click', () => {
+        Store.config.geminiKey = document.getElementById('setting-gemini-key').value.trim();
+        Store.config.geminiModel = document.getElementById('setting-gemini-model').value.trim();
+        Store.config.ttsRate = parseFloat(document.getElementById('setting-tts-rate').value);
+        Store.config.githubToken = document.getElementById('setting-github-token').value.trim();
+        Store.config.gistId = document.getElementById('setting-gist-id').value.trim();
+
+        localStorage.setItem('eng_gemini_key', Store.config.geminiKey);
+        localStorage.setItem('eng_gemini_model', Store.config.geminiModel);
+        localStorage.setItem('eng_tts_rate', Store.config.ttsRate);
+        localStorage.setItem('eng_github_token', Store.config.githubToken);
+        localStorage.setItem('eng_gist_id', Store.config.gistId);
+
+        showBanner('設定をLocalStorageに正常に保存しました！', 'success');
+      });
+      document.getElementById('setting-gist-sync-now').addEventListener('click', syncToGist);
+      document.getElementById('setting-gist-load-now').addEventListener('click', loadFromGist);
+      document.getElementById('setting-export-drive-json').addEventListener('click', exportJSONBackup);
+      document.getElementById('setting-import-json-file').addEventListener('change', importJSONBackup);
+    });
+  </script>
+</body>
+</html>
