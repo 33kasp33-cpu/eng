@@ -698,20 +698,69 @@
           </p>
         </div>
 
-        <!-- 1. Gemini API Config -->
-        <div class="bg-slate-900/90 rounded-2xl p-5 border border-slate-800 space-y-4">
+        <!-- 1. Gemini API Config & Easy Wizard -->
+        <div class="bg-slate-900/90 rounded-2xl p-5 sm:p-6 border border-slate-800 space-y-5">
           <div class="flex items-center justify-between">
-            <h3 class="text-sm font-bold text-brand-400 flex items-center gap-2">
-              <span>🤖</span> Gemini API 設定
+            <h3 class="text-sm sm:text-base font-bold text-brand-400 flex items-center gap-2">
+              <span>🤖</span> Gemini API 設定（無料枠 500回/日）
             </h3>
-            <span class="text-[11px] bg-slate-800 text-slate-300 px-2 py-0.5 rounded border border-slate-700">Google AI Studio</span>
+            <span class="text-[11px] bg-emerald-950 text-emerald-300 px-2.5 py-0.5 rounded-full border border-emerald-800/60 font-semibold">無料プラン対応</span>
           </div>
 
+          <!-- Easy 1-Minute API Key Wizard Card -->
+          <div class="bg-slate-950/80 rounded-xl p-4 border border-brand-500/30 space-y-3">
+            <div class="flex items-start justify-between gap-2">
+              <div>
+                <h4 class="text-xs sm:text-sm font-bold text-white flex items-center gap-1.5">
+                  <span>🪄</span> 1分で完了！無料APIキーの取得手順
+                </h4>
+                <p class="text-[11px] text-slate-400 mt-0.5">
+                  Googleアカウントをお持ちなら、完全無料（クレジットカード登録不要）で今すぐ発行できます。
+                </p>
+              </div>
+              <a href="https://aistudio.google.com/app/apikey" target="_blank" rel="noopener noreferrer" class="bg-gradient-to-r from-brand-600 to-indigo-600 hover:from-brand-500 hover:to-indigo-500 text-white font-bold text-xs px-3.5 py-2 rounded-xl flex items-center gap-1.5 shadow-md shadow-brand-500/20 active:scale-95 transition-all whitespace-nowrap">
+                <span>🚀</span> AI Studio を開く ➔
+              </a>
+            </div>
+
+            <!-- 3 Simple Visual Steps -->
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-2 pt-1 text-xs">
+              <div class="bg-slate-900 p-2.5 rounded-lg border border-slate-800 space-y-1">
+                <span class="w-5 h-5 rounded-full bg-brand-900 text-brand-300 font-bold flex items-center justify-center text-[10px]">1</span>
+                <p class="font-bold text-slate-200">Googleでログイン</p>
+                <p class="text-[11px] text-slate-400">上のボタンから Google AI Studio にアクセスし、いつものGoogleアカウントでサインイン。</p>
+              </div>
+              <div class="bg-slate-900 p-2.5 rounded-lg border border-slate-800 space-y-1">
+                <span class="w-5 h-5 rounded-full bg-brand-900 text-brand-300 font-bold flex items-center justify-center text-[10px]">2</span>
+                <p class="font-bold text-slate-200">「Create API key」を押す</p>
+                <p class="text-[11px] text-slate-400">画面上の青い「Create API key」ボタンを押し、プロジェクトを選択してキーを発行。</p>
+              </div>
+              <div class="bg-slate-900 p-2.5 rounded-lg border border-slate-800 space-y-1">
+                <span class="w-5 h-5 rounded-full bg-brand-900 text-brand-300 font-bold flex items-center justify-center text-[10px]">3</span>
+                <p class="font-bold text-slate-200">キーをコピーして貼付</p>
+                <p class="text-[11px] text-slate-400">発行されたキー（AIzaSy...）をコピーし、下の「クリップボードから貼付」を押すだけ！</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- API Key Input Box with Auto-Paste -->
           <div class="space-y-3">
             <div>
-              <label class="block text-xs font-medium text-slate-300 mb-1">API Key:</label>
-              <input type="password" id="setting-gemini-key" placeholder="AIzaSy..." class="w-full bg-slate-950 border border-slate-700 rounded-xl px-4 py-2.5 text-xs sm:text-sm text-white font-mono placeholder-slate-600 focus:outline-none focus:border-brand-500">
-              <p class="text-[11px] text-slate-500 mt-1">※ キーはブラウザのLocalStorageにのみ安全に保持されます（外部送信されません）。空欄時はデモモードで動作します。</p>
+              <div class="flex items-center justify-between mb-1">
+                <label class="block text-xs font-medium text-slate-300">API Key:</label>
+                <button type="button" onclick="handleClipboardPasteApiKey()" class="text-xs bg-slate-800 hover:bg-slate-700 text-brand-300 hover:text-white px-2.5 py-1 rounded-lg border border-slate-700 transition-all flex items-center gap-1">
+                  <span>📋</span> クリップボードから貼付 & 保存
+                </button>
+              </div>
+              <div class="relative">
+                <input type="password" id="setting-gemini-key" placeholder="AIzaSy..." class="w-full bg-slate-950 border border-slate-700 rounded-xl px-4 py-2.5 text-xs sm:text-sm text-white font-mono placeholder-slate-600 focus:outline-none focus:border-brand-500 pr-10">
+                <button type="button" onclick="toggleApiKeyVisibility()" class="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-white text-xs">
+                  👁️
+                </button>
+              </div>
+              <p class="text-[11px] text-slate-500 mt-1">
+                ※ キーはブラウザ内部（LocalStorage）にのみ安全に保持されます（外部サーバーに保存されることはありません）。
+              </p>
             </div>
 
             <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
@@ -720,8 +769,8 @@
                 <select id="setting-gemini-model" class="w-full bg-slate-950 border border-slate-700 rounded-xl px-3 py-2.5 text-xs sm:text-sm text-slate-200 focus:outline-none focus:border-brand-500 font-mono">
                   <option value="gemini-3.5-flash-lite" selected>gemini-3.5-flash-lite (推奨・無料枠 500 RPD / 最速)</option>
                   <option value="gemini-3.1-flash-lite">gemini-3.1-flash-lite (無料枠 500 RPD)</option>
-                  <option value="gemini-3.5-flash">gemini-3.5-flash (標準 20 RPD / 高精度)</option>
-                  <option value="gemini-3.7-flash">gemini-3.7-flash (最新 20 RPD)</option>
+                  <option value="gemini-3.5-flash">gemini-3.5-flash (高精度・無料枠 20 RPD)</option>
+                  <option value="gemini-3.7-flash">gemini-3.7-flash (最新・20 RPD)</option>
                   <option value="gemini-3-flash">gemini-3-flash (20 RPD)</option>
                   <option value="gemini-2.5-flash">gemini-2.5-flash (20 RPD)</option>
                 </select>
@@ -2969,9 +3018,49 @@ Schema:
       if (!str) return '';
       return String(str).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
     }
-    function escapeAttr(str) {
-      if (!str) return '';
-      return String(str).replace(/'/g, "\\'").replace(/"/g, '&quot;');
+    async function handleClipboardPasteApiKey() {
+      try {
+        let text = '';
+        if (navigator.clipboard && navigator.clipboard.readText) {
+          try {
+            text = await navigator.clipboard.readText();
+          } catch (e) {
+            // Clipboard permission denied or unsupported
+          }
+        }
+        if (!text || !text.trim()) {
+          text = prompt('コピーした Gemini API キー (AIzaSy...) を貼り付けてください:');
+        }
+        if (text && text.trim()) {
+          const cleanKey = text.trim();
+          document.getElementById('setting-gemini-key').value = cleanKey;
+          Store.config.geminiKey = cleanKey;
+          localStorage.setItem('eng_gemini_key', cleanKey);
+          showBanner('APIキーを登録・保存しました！接続テスト中...', 'info');
+
+          // Quick connectivity test
+          try {
+            const testRes = await GeminiClient.call('Reply with OK', 'Reply with OK', false);
+            if (testRes) {
+              showBanner('🎉 Gemini API 疎通成功！無料枠（500回/日）で全AI機能が利用可能です。', 'success');
+            } else {
+              showBanner('APIキーを正常に保存しました！', 'success');
+            }
+          } catch (err) {
+            showBanner(`APIキーを保存しました（通信テスト: ${err.message}）`, 'info');
+          }
+        }
+      } catch (err) {
+        console.error(err);
+        showBanner('入力枠にキーを直接貼り付けて「設定を保存」を押してください。', 'info');
+      }
+    }
+
+    function toggleApiKeyVisibility() {
+      const input = document.getElementById('setting-gemini-key');
+      if (input) {
+        input.type = input.type === 'password' ? 'text' : 'password';
+      }
     }
 
     document.addEventListener('DOMContentLoaded', () => {
