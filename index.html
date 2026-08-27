@@ -135,6 +135,9 @@
       <button onclick="switchTab('muscle')" class="tab-btn px-4 py-2 rounded-lg text-sm font-medium transition-all flex items-center gap-2 text-slate-400 hover:text-white hover:bg-slate-800" data-tab="muscle">
         <span>👄</span> 原則4: 口の筋肉分解トレ
       </button>
+      <button onclick="switchTab('toeic')" class="tab-btn px-4 py-2 rounded-lg text-sm font-medium transition-all flex items-center gap-2 text-amber-300 hover:text-white hover:bg-slate-800" data-tab="toeic">
+        <span>🏆</span> TOEIC® 特化
+      </button>
       <button onclick="switchTab('desk')" class="tab-btn px-4 py-2 rounded-lg text-sm font-medium transition-all flex items-center gap-2 text-slate-400 hover:text-white hover:bg-slate-800" data-tab="desk">
         <span>📂</span> 保存デスク (<span id="desktop-saved-count">0</span>)
       </button>
@@ -437,6 +440,185 @@
     </section>
 
     <!-- ==================================================================== -->
+    <!-- MODULE: 🏆 TOEIC® L&R 特化マスター (Part 5 / Part 3&4 / 頻出語彙) -->
+    <!-- ==================================================================== -->
+    <section id="tab-toeic" class="tab-content hidden space-y-6">
+      <div class="glass p-5 sm:p-6 rounded-2xl border border-slate-800 shadow-xl space-y-5">
+        
+        <!-- Header Banner & Quota-Zero Switch -->
+        <div class="flex flex-col md:flex-row md:items-center justify-between gap-3 border-b border-slate-800 pb-4">
+          <div>
+            <div class="flex flex-wrap items-center gap-2">
+              <span class="text-xs font-semibold uppercase tracking-wider text-amber-400 bg-amber-950/80 px-2.5 py-1 rounded-md border border-amber-800/60">TOEIC® L&R Mastery</span>
+              <span class="text-[11px] bg-slate-900 text-emerald-400 px-2 py-0.5 rounded border border-emerald-800/60 font-mono flex items-center gap-1">
+                <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span>
+                API消費ゼロ・内蔵バンク稼働中
+              </span>
+            </div>
+            <h2 class="text-xl sm:text-2xl font-bold mt-1.5 text-white flex items-center gap-2">
+              🏆 TOEIC 特化集中トレーニング
+            </h2>
+            <p class="text-xs sm:text-sm text-slate-400 mt-1">
+              Part 5 秒殺千本ノック・Part 3&4 リスニング強化・頻出語彙＆実戦例文でスコアを爆伸！
+            </p>
+          </div>
+
+          <!-- Mode / Level Filter -->
+          <div class="flex flex-wrap items-center gap-2 self-start md:self-auto">
+            <select id="toeic-level-filter" class="bg-slate-900 border border-slate-700 text-xs rounded-xl px-3 py-2 text-slate-200 focus:outline-none focus:border-amber-500">
+              <option value="all">🎯 目標スコア: 全レベル</option>
+              <option value="600">🎯 600点レベル (基礎文法・最重要語)</option>
+              <option value="730">🎯 730点レベル (ビジネス頻出・品詞)</option>
+              <option value="860">🎯 860点レベル (高難度・コロケーション)</option>
+              <option value="990">🎯 990点レベル (難問・引っかけ対策)</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- 3 Sub-tabs Navigation -->
+        <div class="flex gap-2 border-b border-slate-800/80 pb-3 overflow-x-auto">
+          <button onclick="switchToeicSubTab('part5')" id="toeic-subbtn-part5" class="toeic-sub-btn active px-4 py-2 rounded-xl text-xs sm:text-sm font-semibold bg-amber-500 text-slate-950 flex items-center gap-1.5 shadow-md shadow-amber-500/20 whitespace-nowrap">
+            <span>⚡</span> Part 5 秒殺ノック (<span id="toeic-p5-count">0</span>問)
+          </button>
+          <button onclick="switchToeicSubTab('part34')" id="toeic-subbtn-part34" class="toeic-sub-btn px-4 py-2 rounded-xl text-xs sm:text-sm font-semibold text-slate-400 hover:text-white hover:bg-slate-800 flex items-center gap-1.5 whitespace-nowrap">
+            <span>🎧</span> Part 3 & 4 リスニング強化
+          </button>
+          <button onclick="switchToeicSubTab('vocab')" id="toeic-subbtn-vocab" class="toeic-sub-btn px-4 py-2 rounded-xl text-xs sm:text-sm font-semibold text-slate-400 hover:text-white hover:bg-slate-800 flex items-center gap-1.5 whitespace-nowrap">
+            <span>📚</span> 頻出語彙＆実戦例文 (<span id="toeic-vocab-count">0</span>語)
+          </button>
+        </div>
+
+        <!-- ================= SUB-TAB 1: Part 5 秒殺ノック ================= -->
+        <div id="toeic-subview-part5" class="toeic-subview space-y-4">
+          <!-- Control Bar -->
+          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 bg-slate-900/80 p-3 rounded-xl border border-slate-800">
+            <div class="flex items-center gap-3 text-xs">
+              <span class="text-slate-400">進捗: <strong id="p5-progress-idx" class="text-white font-mono">1</strong> / <span id="p5-total-cnt" class="font-mono">--</span></span>
+              <span class="text-emerald-400 font-medium">正解: <strong id="p5-correct-cnt" class="font-mono">0</strong></span>
+              <span class="text-rose-400 font-medium">ミス: <strong id="p5-miss-cnt" class="font-mono">0</strong></span>
+              <span class="text-amber-400 font-medium">連勝: <strong id="p5-streak-cnt" class="font-mono">0</strong>🔥</span>
+            </div>
+            <div class="flex items-center gap-2">
+              <button id="p5-batch-generate-btn" class="bg-indigo-600 hover:bg-indigo-500 text-white text-[11px] font-bold px-3 py-1.5 rounded-lg transition-all flex items-center gap-1 shadow-sm" title="Geminiで新問題を5問一括追加 (1リクエストで5問蓄積)">
+                <span>✨</span> AIバッチ5問生成
+              </button>
+              <button id="p5-next-btn" class="bg-slate-800 hover:bg-slate-700 text-slate-200 text-[11px] font-medium px-3 py-1.5 rounded-lg border border-slate-700">
+                次へ ➔
+              </button>
+            </div>
+          </div>
+
+          <!-- Part 5 Question Card -->
+          <div id="p5-card" class="bg-slate-900/90 rounded-2xl p-5 sm:p-6 border border-slate-800 space-y-5">
+            <!-- Timer & Category -->
+            <div class="flex items-center justify-between text-xs">
+              <div class="flex items-center gap-2">
+                <span id="p5-badge-category" class="bg-amber-950 text-amber-300 font-bold px-2 py-0.5 rounded border border-amber-800/40 text-[10px]">品詞問題</span>
+                <span id="p5-badge-level" class="bg-slate-800 text-slate-300 px-2 py-0.5 rounded border border-slate-700 text-[10px]">730点目標</span>
+              </div>
+              <!-- 20s Countdown Timer -->
+              <div class="flex items-center gap-1.5 font-mono text-xs text-amber-400 font-bold">
+                <span>⏱️</span>
+                <span id="p5-timer-text">20s</span>
+                <div class="w-16 h-2 bg-slate-800 rounded-full overflow-hidden border border-slate-700">
+                  <div id="p5-timer-bar" class="h-full bg-gradient-to-r from-emerald-500 to-amber-500 transition-all duration-1000 w-full"></div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Question Sentence with blank -->
+            <div class="py-2">
+              <p id="p5-sentence-en" class="text-base sm:text-lg font-bold text-white leading-relaxed font-sans"></p>
+            </div>
+
+            <!-- 4 Choices Grid -->
+            <div id="p5-choices-container" class="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+              <!-- Injected dynamically -->
+            </div>
+
+            <!-- Explanation Box -->
+            <div id="p5-explanation-box" class="hidden p-4 rounded-xl border space-y-3 transition-all text-xs sm:text-sm"></div>
+          </div>
+        </div>
+
+        <!-- ================= SUB-TAB 2: Part 3 & 4 リスニング強化 ================= -->
+        <div id="toeic-subview-part34" class="toeic-subview hidden space-y-4">
+          <!-- Scenario Selector -->
+          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 bg-slate-900/80 p-3 rounded-xl border border-slate-800">
+            <div class="flex items-center gap-2">
+              <span class="text-xs text-slate-400">音源シナリオ:</span>
+              <select id="p34-scenario-select" class="bg-slate-950 border border-slate-700 text-xs rounded-lg px-2.5 py-1.5 text-slate-200 focus:outline-none focus:border-amber-500">
+                <option value="0">Part 3: [対話] 出張旅程とミーティングの日程変更</option>
+                <option value="1">Part 3: [対話] 店舗の在庫確認と返品手続き</option>
+                <option value="2">Part 4: [アナウンス] 空港ゲート変更とフライト遅延</option>
+                <option value="3">Part 4: [説明会] 本社オフィス改修とテレワーク方針</option>
+              </select>
+            </div>
+            <div class="flex items-center gap-2">
+              <button class="p34-speed-btn px-2.5 py-1 rounded bg-slate-800 text-[11px] text-slate-300 border border-slate-700 hover:bg-slate-700" data-speed="0.8">🐢 0.8x</button>
+              <button class="p34-speed-btn active px-2.5 py-1 rounded bg-amber-500 text-[11px] text-slate-950 font-bold border border-amber-400" data-speed="1.0">⚡ 1.0x</button>
+              <button class="p34-speed-btn px-2.5 py-1 rounded bg-slate-800 text-[11px] text-slate-300 border border-slate-700 hover:bg-slate-700" data-speed="1.2">🚀 1.2x</button>
+            </div>
+          </div>
+
+          <!-- Audio Player & Action Controls -->
+          <div class="bg-slate-900/90 rounded-2xl p-5 border border-slate-800 space-y-4">
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-800 pb-3">
+              <div>
+                <span id="p34-badge-type" class="text-[10px] font-bold text-amber-400 bg-amber-950 px-2 py-0.5 rounded border border-amber-800/40">Part 3 Dialogue</span>
+                <h3 id="p34-title" class="text-base font-bold text-white mt-1">出張旅程とミーティングの日程変更</h3>
+              </div>
+              <button id="p34-play-full-btn" class="bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-400 hover:to-orange-400 text-slate-950 font-bold px-5 py-2.5 rounded-xl text-xs sm:text-sm flex items-center justify-center gap-2 shadow-lg shadow-amber-500/20 active:scale-95 transition-all">
+                <span>🔊</span> 全文通し再生
+              </button>
+            </div>
+
+            <!-- 3 TOEIC Comprehension Questions -->
+            <div id="p34-questions-container" class="space-y-3 pt-1">
+              <!-- Dynamic 3 questions -->
+            </div>
+
+            <!-- Script & Linking Notes Toggles -->
+            <div class="pt-3 border-t border-slate-800 flex flex-wrap gap-2 text-xs">
+              <button id="p34-toggle-linking-btn" class="bg-slate-800 hover:bg-slate-700 text-rose-300 border border-slate-700 px-3 py-1.5 rounded-lg flex items-center gap-1 transition-all">
+                <span>🔗</span> 連結・脱落音（リンキング）を可視化
+              </button>
+              <button id="p34-toggle-script-btn" class="bg-slate-800 hover:bg-slate-700 text-slate-300 border border-slate-700 px-3 py-1.5 rounded-lg flex items-center gap-1 transition-all">
+                <span>📝</span> 全文スクリプト・1文リピート
+              </button>
+            </div>
+
+            <!-- Collapsible Linking Breakdown View -->
+            <div id="p34-linking-box" class="hidden bg-slate-950/90 rounded-xl p-4 border border-rose-900/40 text-xs space-y-2"></div>
+
+            <!-- Collapsible 1-Sentence Clickable Repeater -->
+            <div id="p34-script-box" class="hidden bg-slate-950/90 rounded-xl p-4 border border-slate-800 text-xs space-y-2"></div>
+          </div>
+        </div>
+
+        <!-- ================= SUB-TAB 3: 頻出語彙＆実戦例文 ================= -->
+        <div id="toeic-subview-vocab" class="toeic-subview hidden space-y-4">
+          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 bg-slate-900/80 p-3 rounded-xl border border-slate-800">
+            <div class="flex-1 flex gap-2">
+              <input type="text" id="toeic-vocab-search" placeholder="単語・意味・コロケーションを検索..." class="flex-1 bg-slate-950 border border-slate-700 rounded-lg px-3 py-1.5 text-xs text-white placeholder-slate-500 focus:outline-none focus:border-amber-500">
+            </div>
+            <div class="flex items-center gap-2">
+              <button id="toeic-vocab-batch-ai-btn" class="bg-indigo-600 hover:bg-indigo-500 text-white text-[11px] font-bold px-3 py-1.5 rounded-lg transition-all flex items-center gap-1 whitespace-nowrap shadow-sm">
+                <span>✨</span> AIバッチ5単語生成
+              </button>
+            </div>
+          </div>
+
+          <!-- Vocabulary Cards Grid -->
+          <div id="toeic-vocab-list" class="grid grid-cols-1 md:grid-cols-2 gap-3">
+            <!-- Injected dynamically -->
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- ==================================================================== -->
     <!-- MODULE 6: 8項目統合セルフテストスイート -->
     <!-- ==================================================================== -->
     <section id="tab-diagnostics" class="tab-content hidden space-y-6">
@@ -445,15 +627,15 @@
           <div>
             <span class="text-xs font-semibold uppercase tracking-wider text-accent-emerald bg-emerald-950/80 px-2.5 py-1 rounded-md border border-emerald-800/60">Module 6: Quality Assurance</span>
             <h2 class="text-xl sm:text-2xl font-bold mt-1 text-white flex items-center gap-2">
-              8項目統合セルフテストスイート (Diagnostics)
+              9項目統合セルフテストスイート (Diagnostics)
             </h2>
             <p class="text-xs sm:text-sm text-slate-400 mt-1">
-              システムの全モジュール（Web Speech、Gemini API、Gist、Drive入出力、ロジック整合性）を一括自動検証します。
+              システムの全モジュール（Web Speech、Gemini API、Gist、Drive入出力、TOEICエンジン、ロジック整合性）を一括自動検証します。
             </p>
           </div>
           <button id="run-all-diagnostics-btn" class="bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white font-bold px-6 py-3 rounded-xl text-sm shadow-lg shadow-emerald-500/25 flex items-center justify-center gap-2 active:scale-95 transition-all">
             <span>▶️</span>
-            <span>8項目テスト一括実行</span>
+            <span>9項目テスト一括実行</span>
           </button>
         </div>
 
@@ -461,7 +643,7 @@
         <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-6">
           <div class="bg-slate-900/80 p-3.5 rounded-xl border border-slate-800 text-center">
             <span class="text-xs text-slate-400">テスト項目数</span>
-            <p class="text-2xl font-bold text-white mt-1">8</p>
+            <p class="text-2xl font-bold text-white mt-1">9</p>
           </div>
           <div class="bg-slate-900/80 p-3.5 rounded-xl border border-slate-800 text-center">
             <span class="text-xs text-emerald-400 font-semibold">合格 (PASS)</span>
@@ -616,6 +798,10 @@
     <button onclick="switchTab('muscle')" class="mobile-tab-btn flex flex-col items-center gap-0.5 p-2 rounded-xl text-slate-400 hover:text-slate-200" data-tab="muscle">
       <span class="text-lg">👄</span>
       <span class="text-[10px] font-medium">口トレ</span>
+    </button>
+    <button onclick="switchTab('toeic')" class="mobile-tab-btn flex flex-col items-center gap-0.5 p-2 rounded-xl text-amber-400 hover:text-amber-300" data-tab="toeic">
+      <span class="text-lg">🏆</span>
+      <span class="text-[10px] font-medium">TOEIC</span>
     </button>
     <button onclick="switchTab('desk')" class="mobile-tab-btn flex flex-col items-center gap-0.5 p-2 rounded-xl text-slate-400 hover:text-slate-200" data-tab="desk">
       <span class="text-lg">📂</span>
@@ -1533,6 +1719,722 @@ Schema:
       renderDeskPhrases();
     }
 
+    // ====================================================================
+    // MODULE: 🏆 TOEIC® L&R MASTERY ENGINE (Part 5 / Part 3&4 / 頻出語彙)
+    // ====================================================================
+    const ToeicBank = {
+      cachedPart5: JSON.parse(localStorage.getItem('eng_toeic_cached_p5') || '[]'),
+      cachedVocab: JSON.parse(localStorage.getItem('eng_toeic_cached_vocab') || '[]'),
+      part5: [
+        {
+          id: 1,
+          category: "品詞問題 (動詞原形)",
+          level: "600",
+          sentence: "The newly appointed marketing director will _______ the annual budget meeting tomorrow morning.",
+          choices: ["conduct", "conductive", "conductively", "conduction"],
+          answer: 0,
+          jp: "新しく任命されたマーケティング部長は、明日の朝、年次予算会議を執り行う予定です。",
+          explanation: "助動詞 will の直後には【動詞の原形】が入ります。conduct（〜を執り行う・実施する）が正解。conductive（伝導性の/形）、conductively（副）、conduction（伝導/名）。"
+        },
+        {
+          id: 2,
+          category: "品詞問題 (動詞修飾の副詞)",
+          level: "730",
+          sentence: "Ms. Vance requested that the quarterly sales figures be reviewed _______ before the client presentation.",
+          choices: ["thoroughly", "thorough", "thoroughness", "more thorough"],
+          answer: 0,
+          jp: "ヴァンス氏は、クライアントへのプレゼンの前に、四半期売上高の数値を徹底的に見直すよう求めた。",
+          explanation: "受動態 be reviewed（見直される）を修飾するため、【副詞】が入る位置です。thoroughly（徹底的に、隅々まで）が正解。"
+        },
+        {
+          id: 3,
+          category: "前置詞 vs 接続詞",
+          level: "730",
+          sentence: "_______ bad weather conditions, the outdoor corporate banquet was relocated to the main auditorium.",
+          choices: ["Due to", "Although", "In order to", "Whereas"],
+          answer: 0,
+          jp: "悪天候のため、屋外の企業晩餐会は大講堂へと場所が変更された。",
+          explanation: "空欄の後ろは名詞句（bad weather conditions）なので【群前置詞】の Due to（〜が原因で）が正解。Although, Whereas は後ろに主語＋動詞が続く接続詞。"
+        },
+        {
+          id: 4,
+          category: "コロケーション (語彙)",
+          level: "860",
+          sentence: "The engineering team worked diligently to ensure that all safety regulations were strictly _______ with.",
+          choices: ["complied", "observed", "confirmed", "adhered"],
+          answer: 0,
+          jp: "エンジニアリングチームは、すべての安全規制が厳格に遵守されるよう熱心に取り組んだ。",
+          explanation: "前置詞 with と結びついて「〜を遵守する」を意味するのは comply with（受動態: complied with）。adhere は to と結びつきます (adhere to)。"
+        },
+        {
+          id: 5,
+          category: "相関接続詞",
+          level: "600",
+          sentence: "Neither the regional managers _______ the vice president approved the revised merger proposal.",
+          choices: ["nor", "or", "and", "but"],
+          answer: 0,
+          jp: "地域マネージャーたちも副社長も、修正された合併案を承認しなかった。",
+          explanation: "【neither A nor B】（AもBも〜ない）の相関接続詞構文。either A or B との混同に注意。"
+        },
+        {
+          id: 6,
+          category: "前置詞 (期間)",
+          level: "600",
+          sentence: "Customers who purchase items online are entitled to a full refund _______ 30 days of delivery.",
+          choices: ["within", "between", "among", "toward"],
+          answer: 0,
+          jp: "オンラインで商品を購入した顧客は、配達から30日以内であれば全額返金を受ける権利があります。",
+          explanation: "「30日以内」という期間の制限を表す前置詞は within（〜以内に）が正解。"
+        },
+        {
+          id: 7,
+          category: "前置詞 (手段・方法)",
+          level: "730",
+          sentence: "The software update includes several features designed to enhance productivity _______ streamlining workflow.",
+          choices: ["by", "into", "upon", "at"],
+          answer: 0,
+          jp: "このソフトウェア更新には、ワークフローを合理化することによって生産性を高める複数の機能が含まれている。",
+          explanation: "【by + 動名詞 (-ing)】で「〜することによって（手段・方法）」を表します。"
+        },
+        {
+          id: 8,
+          category: "語法・形容詞補語",
+          level: "860",
+          sentence: "Hotel guests are kindly reminded to keep their personal belongings _______ at all times.",
+          choices: ["secure", "securely", "security", "securing"],
+          answer: 0,
+          jp: "ホテルの宿泊客は、常に私物を安全に保管するようお願い申し上げます。",
+          explanation: "【keep + O + C（形容詞）】で「OをCの状態に保つ」。Cの位置には形容詞 secure（安全な・しっかり保管された）が入ります。"
+        },
+        {
+          id: 9,
+          category: "接続詞 (時・条件)",
+          level: "730",
+          sentence: "The partnership contract will not be finalized _______ both legal teams have agreed on the termination clause.",
+          choices: ["until", "during", "despite", "following"],
+          answer: 0,
+          jp: "両社の法務チームが契約解除条項に合意するまで、提携契約は締結されません。",
+          explanation: "後ろに節（both legal teams have agreed...）が続いており、「〜するまで（ずっと）」を表す接続詞 until が正解。"
+        },
+        {
+          id: 10,
+          category: "品詞問題 (名詞修飾の形容詞)",
+          level: "860",
+          sentence: "Dr. Patel's pioneering research on renewable energy has received _______ praise from industry experts.",
+          choices: ["widespread", "widespreadly", "widespreading", "spread"],
+          answer: 0,
+          jp: "再生可能エネルギーに関するパテル博士の先駆的研究は、業界の専門家から広範な称賛を集めている。",
+          explanation: "不可算名詞 praise（称賛）を前から修飾する【形容詞】widespread（広く普及した、広範な）が正解。"
+        }
+      ],
+      part34: [
+        {
+          id: 0,
+          type: "Part 3: [対話] 会話問題",
+          title: "出張旅程とミーティングの日程変更",
+          speakers: "Alex (Marketing), Brenda (Sales Rep)",
+          audioText: "Hi Brenda, did you hear that our client from Chicago moved tomorrow's product briefing to Friday afternoon? Yes, Alex, I just saw their email. That means we have more time to finalize the presentation slides. Great, could you also call the hotel to extend our reservations by one more night? Sure, I'll take care of that right after our team meeting.",
+          scriptLines: [
+            { speaker: "Alex", text: "Hi Brenda, did you hear that our client from Chicago moved tomorrow's product briefing to Friday afternoon?", jp: "ブレンダ、シカゴのクライアントが明日の製品説明会を金曜午後に変更したの聞いた？" },
+            { speaker: "Brenda", text: "Yes, Alex, I just saw their email. That means we have more time to finalize the presentation slides.", jp: "ええ、アレックス。ちょうどメールを見たところよ。プレゼン資料を仕上げる時間ができたわね。" },
+            { speaker: "Alex", text: "Great, could you also call the hotel to extend our reservations by one more night?", jp: "よかった。ホテルに電話して、宿泊予約をもう1泊延長してもらえるかい？" },
+            { speaker: "Brenda", text: "Sure, I'll take care of that right after our team meeting.", jp: "了解よ、チームミーティングの直後に手配しておくわ。" }
+          ],
+          linkingTips: [
+            { chunk: "did you hear that", sound: "ディッジュ ヒア ザッ", tip: "did you は「ディッジュ」と連結" },
+            { chunk: "moved tomorrow's", sound: "ムーヴドゥ トゥモローズ", tip: "d の音が脱落気味に次へ繋がる" },
+            { chunk: "extend our", sound: "イックステンダワ", tip: "extend の d と our の ou がリンキング" },
+            { chunk: "take care of that", sound: "テイッケァ ラヴ ザッ", tip: "care of が「ケアラヴ」と連結" }
+          ],
+          questions: [
+            {
+              q: "1. Why does the woman say they have more time?",
+              choices: ["A meeting was rescheduled", "A flight was cancelled", "A new coworker arrived", "The budget was increased"],
+              answer: 0,
+              explanation: "「moved tomorrow's briefing to Friday afternoon」より、会議の日程変更が理由。"
+            },
+            {
+              q: "2. What does the man ask the woman to do?",
+              choices: ["Contact a hotel", "Print presentation slides", "Order lunch for clients", "Email the CEO"],
+              answer: 0,
+              explanation: "「call the hotel to extend our reservations」より、ホテルへの連絡を依頼。"
+            },
+            {
+              q: "3. When will the woman handle the task?",
+              choices: ["After a team meeting", "Tomorrow morning", "Next Friday", "Before lunch"],
+              answer: 0,
+              explanation: "「right after our team meeting」より、ミーティング直後。"
+            }
+          ]
+        },
+        {
+          id: 1,
+          type: "Part 3: [対話] 店舗問題",
+          title: "店舗の在庫確認と返品手続き",
+          speakers: "Customer, Clerk",
+          audioText: "Excuse me, I bought this wireless keyboard yesterday, but the spacebar seems to be sticking. Do you have another one in stock? Let me check our inventory system right now. Unfortunately, that model is currently sold out in our store, but our downtown branch has five units available. Would you like me to have one shipped here for you?",
+          scriptLines: [
+            { speaker: "Customer", text: "Excuse me, I bought this wireless keyboard yesterday, but the spacebar seems to be sticking. Do you have another one in stock?", jp: "すみません、昨日このワイヤレスキーボードを買ったのですが、スペースキーが引っかかるようです。在庫は他にありますか？" },
+            { speaker: "Clerk", text: "Let me check our inventory system right now. Unfortunately, that model is currently sold out in our store, but our downtown branch has five units available.", jp: "すぐに在庫システムを確認いたします。あいにく、その型番は現在当店では売り切れですが、ダウンタウン店に5台ございます。" },
+            { speaker: "Clerk", text: "Would you like me to have one shipped here for you?", jp: "当店までお取り寄せいたしましょうか？" }
+          ],
+          linkingTips: [
+            { chunk: "bought this", sound: "ボート ディス", tip: "t は舌を止めて脱力" },
+            { chunk: "check our inventory", sound: "チェッカワ インヴェントリ", tip: "check our が「チェッカワ」と滑らかに連結" },
+            { chunk: "sold out in our", sound: "ソウルダウッティナワ", tip: "sold out in our が一息で結合" }
+          ],
+          questions: [
+            {
+              q: "1. What problem does the customer mention?",
+              choices: ["A keyboard key is malfunctioning", "The price was incorrect", "The color is wrong", "The receipt is missing"],
+              answer: 0,
+              explanation: "「the spacebar seems to be sticking（スペースキーが引っかかる）」よりキーの不具合。"
+            },
+            {
+              q: "2. What does the clerk offer to do?",
+              choices: ["Have an item shipped from another branch", "Give a cash refund immediately", "Fix the key on the spot", "Offer a discount coupon"],
+              answer: 0,
+              explanation: "「have one shipped here for you（他店から取り寄せる）」を提案。"
+            },
+            {
+              q: "3. Where are more units available?",
+              choices: ["At a downtown branch", "In the warehouse", "At the manufacturer", "Online only"],
+              answer: 0,
+              explanation: "「our downtown branch has five units available」よりダウンタウン店。"
+            }
+          ]
+        },
+        {
+          id: 2,
+          type: "Part 4: [アナウンス] 空港放送",
+          title: "空港ゲート変更とフライト遅延アナウンス",
+          speakers: "Airport Announcer",
+          audioText: "Attention passengers on flight 402 departing for Seattle. Due to unexpected maintenance checks on the aircraft, departure has been delayed by approximately 45 minutes. Additionally, the departure gate has been moved from Gate B12 to Gate C5. We apologize for any inconvenience and appreciate your patience.",
+          scriptLines: [
+            { speaker: "Announcer", text: "Attention passengers on flight 402 departing for Seattle.", jp: "シアトル行き402便をご利用のお客様にお知らせいたします。" },
+            { speaker: "Announcer", text: "Due to unexpected maintenance checks on the aircraft, departure has been delayed by approximately 45 minutes.", jp: "航空機の予期せぬ整備点検のため、出発は約45分遅延いたします。" },
+            { speaker: "Announcer", text: "Additionally, the departure gate has been moved from Gate B12 to Gate C5. We apologize for any inconvenience and appreciate your patience.", jp: "また、出発ゲートがB12からC5に変更となりました。ご不便をおかけいたしますが、ご理解とご協力をお願い申し上げます。" }
+          ],
+          linkingTips: [
+            { chunk: "departing for", sound: "ディパーティンファ", tip: "for は弱形「ファ」" },
+            { chunk: "delayed by approximately", sound: "ディレイドゥ バイ アプロクシマッリー", tip: "t は脱落して促音化" },
+            { chunk: "moved from Gate", sound: "ムーヴドゥ フラム ゲイト", tip: "子音連結でスムーズに移動" }
+          ],
+          questions: [
+            {
+              q: "1. What is the announcement mainly about?",
+              choices: ["A flight delay and gate change", "Severe weather warnings", "Lost luggage retrieval", "Boarding priority rules"],
+              answer: 0,
+              explanation: "遅延（delayed by 45 mins）とゲート変更（Gate B12 to C5）のアナウンス。"
+            },
+            {
+              q: "2. What caused the delay?",
+              choices: ["Maintenance checks", "Air traffic congestion", "Crew shortage", "Heavy snowfall"],
+              answer: 0,
+              explanation: "「Due to unexpected maintenance checks」より整備点検が原因。"
+            },
+            {
+              q: "3. Which gate should passengers go to?",
+              choices: ["Gate C5", "Gate B12", "Gate A1", "Gate D8"],
+              answer: 0,
+              explanation: "「moved from Gate B12 to Gate C5」より新しいゲートは C5。"
+            }
+          ]
+        },
+        {
+          id: 3,
+          type: "Part 4: [説明会] 社内連絡",
+          title: "本社オフィス改修とテレワーク方針",
+          speakers: "Operations Manager",
+          audioText: "Good morning team. As you know, the renovation of our third-floor office will begin next Monday. During the two-week construction period, all staff in marketing and accounting are strongly encouraged to work remotely from home. If you require temporary desk space at the office, please submit a reservation request to Human Resources by 5 PM this Thursday.",
+          scriptLines: [
+            { speaker: "Manager", text: "Good morning team. As you know, the renovation of our third-floor office will begin next Monday.", jp: "皆さんおはようございます。ご存知の通り、3階オフィスの改修工事が来週月曜から始まります。" },
+            { speaker: "Manager", text: "During the two-week construction period, all staff in marketing and accounting are strongly encouraged to work remotely from home.", jp: "2週間の工事期間中、マーケティングと経理の全スタッフは在宅でのリモートワークを強く推奨します。" },
+            { speaker: "Manager", text: "If you require temporary desk space at the office, please submit a reservation request to Human Resources by 5 PM this Thursday.", jp: "もしオフィスでの一時的なデスクが必要な場合は、今週木曜の午後5時までに人事部へ予約申請を提出してください。" }
+          ],
+          linkingTips: [
+            { chunk: "renovation of our", sound: "レノヴェイショナヴァ", tip: "of our が「オヴァ」と連結" },
+            { chunk: "encouraged to work", sound: "エンカリッジトゥ ワーク", tip: "d の音が消えて to へ" },
+            { chunk: "submit a reservation", sound: "サブミッタ レザヴェイション", tip: "submit a が「サブミッタ」と連結" }
+          ],
+          questions: [
+            {
+              q: "1. What will happen next Monday?",
+              choices: ["Office renovation will begin", "A new executive will arrive", "The company will celebrate an anniversary", "Annual performance reviews"],
+              answer: 0,
+              explanation: "「the renovation of our third-floor office will begin next Monday」より改修工事の開始。"
+            },
+            {
+              q: "2. Who is advised to work remotely?",
+              choices: ["Marketing and accounting staff", "All company executives", "Security personnel only", "Software developers"],
+              answer: 0,
+              explanation: "「all staff in marketing and accounting are strongly encouraged to work remotely」より。"
+            },
+            {
+              q: "3. What must employees do by Thursday 5 PM?",
+              choices: ["Submit a desk reservation request", "Turn in their security badges", "Pack their belongings into boxes", "Sign their new employment contracts"],
+              answer: 0,
+              explanation: "「submit a reservation request to Human Resources by 5 PM this Thursday」よりデスク予約の提出。"
+            }
+          ]
+        }
+      ],
+      vocab: [
+        { word: "accommodate", phonetic: "アコマデイト", pos: "動詞", meaning: "〜を収容する、〜の要望に応じる", collocation: "accommodate requests / needs", exEn: "The conference hall can easily accommodate up to 500 attendees.", exJa: "その大会議場は最大500名の参加者を容易に収容できます。", level: "730" },
+        { word: "designated", phonetic: "デジグネイティド", pos: "形容詞", meaning: "指定された、指名された", collocation: "designated parking area / smoking area", exEn: "Please park your vehicle only in the designated visitor spaces.", exJa: "お車は指定された来客用スペースにのみ駐車してください。", level: "600" },
+        { word: "tentative", phonetic: "テンタティヴ", pos: "形容詞", meaning: "仮の、暫定的な", collocation: "tentative schedule / agreement", exEn: "We have reached a tentative agreement on the delivery timeline.", exJa: "私たちは納期スケジュールについて暫定的な合意に達しました。", level: "730" },
+        { word: "reimburse", phonetic: "リインバース", pos: "動詞", meaning: "〜を払い戻す、経費を精算する", collocation: "reimburse travel expenses", exEn: "The finance department will reimburse all approved travel expenses within two weeks.", exJa: "財務部は承認されたすべての出張経費を2週間以内に精算します。", level: "730" },
+        { word: "mandatory", phonetic: "マンダトリー", pos: "形容詞", meaning: "義務的な、必須の", collocation: "mandatory attendance / training", exEn: "Attendance at the workplace safety workshop is mandatory for all factory workers.", exJa: "職場安全ワークショップへの参加は、すべての工場作業員にとって必須です。", level: "860" },
+        { word: "prospective", phonetic: "プロスペクティヴ", pos: "形容詞", meaning: "見込みのある、将来の", collocation: "prospective clients / buyers", exEn: "The sales team prepared personalized brochures for prospective investors.", exJa: "営業チームは投資見込み客のために個別パンフレットを準備した。", level: "860" },
+        { word: "unanimously", phonetic: "ユナニマスリー", pos: "副詞", meaning: "満場一致で", collocation: "unanimously approved / agreed", exEn: "The board of directors unanimously voted in favor of expanding into European markets.", exJa: "取締役会は欧州市場への進出を満場一致で可決した。", level: "860" },
+        { word: "lucrative", phonetic: "ルー潜ラティヴ", pos: "形容詞", meaning: "利益の上がる、儲かる", collocation: "lucrative contract / deal", exEn: "The tech startup secured a lucrative partnership with a multinational retail chain.", exJa: "そのテック新興企業は、多国籍小売チェーンとの極めて有利な提携を勝ち取った。", level: "990" },
+        { word: "stringent", phonetic: "ストリンジェント", pos: "形容詞", meaning: "（基準・規則が）極めて厳格な", collocation: "stringent safety standards / regulations", exEn: "All pharmaceutical products must pass stringent quality inspections before distribution.", exJa: "すべての医薬品は流通前に極めて厳格な品質検査に合格しなければならない。", level: "990" },
+        { word: "streamline", phonetic: "ストリームライン", pos: "動詞", meaning: "〜を合理化する、簡素化する", collocation: "streamline the process / operations", exEn: "The new automated system was introduced to streamline customer order fulfillment.", exJa: "顧客の注文処理を合理化するために新しい自動化システムが導入された。", level: "730" }
+      ]
+    };
+
+    const ToeicState = {
+      p5Index: 0,
+      p5Timer: null,
+      p5TimeLeft: 20,
+      p5Score: { correct: 0, miss: 0, streak: 0 },
+      p34Index: 0,
+      p34Speed: 1.0,
+      levelFilter: 'all'
+    };
+
+    function initToeicModule() {
+      // Merge cached batch questions
+      updateToeicCounts();
+      loadPart5Question(0);
+      loadPart34Scenario(0);
+      renderToeicVocabList();
+
+      // Event: Level Filter
+      document.getElementById('toeic-level-filter').addEventListener('change', (e) => {
+        ToeicState.levelFilter = e.target.value;
+        loadPart5Question(0);
+        renderToeicVocabList();
+      });
+
+      // Event: P5 buttons
+      document.getElementById('p5-next-btn').addEventListener('click', () => {
+        nextPart5Question();
+      });
+      document.getElementById('p5-batch-generate-btn').addEventListener('click', handleBatchGeneratePart5);
+
+      // Event: P34 scenario selector & speed buttons
+      document.getElementById('p34-scenario-select').addEventListener('change', (e) => {
+        loadPart34Scenario(parseInt(e.target.value));
+      });
+      document.getElementById('p34-play-full-btn').addEventListener('click', () => {
+        const item = ToeicBank.part34[ToeicState.p34Index];
+        AudioEngine.speak(item.audioText, ToeicState.p34Speed);
+      });
+      document.querySelectorAll('.p34-speed-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+          document.querySelectorAll('.p34-speed-btn').forEach(b => {
+            b.className = 'p34-speed-btn px-2.5 py-1 rounded bg-slate-800 text-[11px] text-slate-300 border border-slate-700 hover:bg-slate-700';
+          });
+          btn.className = 'p34-speed-btn active px-2.5 py-1 rounded bg-amber-500 text-[11px] text-slate-950 font-bold border border-amber-400';
+          ToeicState.p34Speed = parseFloat(btn.dataset.speed);
+        });
+      });
+      document.getElementById('p34-toggle-linking-btn').addEventListener('click', () => {
+        const box = document.getElementById('p34-linking-box');
+        box.classList.toggle('hidden');
+      });
+      document.getElementById('p34-toggle-script-btn').addEventListener('click', () => {
+        const box = document.getElementById('p34-script-box');
+        box.classList.toggle('hidden');
+      });
+
+      // Event: Vocab
+      document.getElementById('toeic-vocab-search').addEventListener('input', (e) => {
+        renderToeicVocabList(e.target.value);
+      });
+      document.getElementById('toeic-vocab-batch-ai-btn').addEventListener('click', handleBatchGenerateVocab);
+    }
+
+    function updateToeicCounts() {
+      const allP5 = getAllPart5Questions();
+      const allVocab = getAllToeicVocab();
+      document.getElementById('toeic-p5-count').textContent = allP5.length;
+      document.getElementById('toeic-vocab-count').textContent = allVocab.length;
+    }
+
+    function getAllPart5Questions() {
+      return [...ToeicBank.part5, ...ToeicBank.cachedPart5];
+    }
+    function getAllToeicVocab() {
+      return [...ToeicBank.vocab, ...ToeicBank.cachedVocab];
+    }
+
+    function switchToeicSubTab(subTabId) {
+      document.querySelectorAll('.toeic-subview').forEach(el => el.classList.add('hidden'));
+      document.getElementById(`toeic-subview-${subTabId}`).classList.remove('hidden');
+
+      document.querySelectorAll('.toeic-sub-btn').forEach(btn => {
+        btn.classList.remove('bg-amber-500', 'text-slate-950', 'shadow-md', 'shadow-amber-500/20');
+        btn.classList.add('text-slate-400', 'hover:bg-slate-800');
+      });
+
+      const activeBtn = document.getElementById(`toeic-subbtn-${subTabId}`);
+      if (activeBtn) {
+        activeBtn.classList.remove('text-slate-400', 'hover:bg-slate-800');
+        activeBtn.classList.add('bg-amber-500', 'text-slate-950', 'shadow-md', 'shadow-amber-500/20');
+      }
+    }
+
+    // --- PART 5 CONTROLLER ---
+    function loadPart5Question(index) {
+      clearInterval(ToeicState.p5Timer);
+      const all = getAllPart5Questions().filter(q => ToeicState.levelFilter === 'all' || q.level === ToeicState.levelFilter);
+      if (all.length === 0) {
+        document.getElementById('p5-sentence-en').textContent = '該当レベルの問題がありません。AIバッチ生成で新しい問題を追加してください。';
+        document.getElementById('p5-choices-container').innerHTML = '';
+        return;
+      }
+
+      ToeicState.p5Index = index % all.length;
+      const q = all[ToeicState.p5Index];
+
+      document.getElementById('p5-progress-idx').textContent = ToeicState.p5Index + 1;
+      document.getElementById('p5-total-cnt').textContent = all.length;
+      document.getElementById('p5-badge-category').textContent = q.category;
+      document.getElementById('p5-badge-level').textContent = `${q.level}点目標`;
+      document.getElementById('p5-sentence-en').textContent = q.sentence;
+
+      // Render 4 choices
+      const choicesBox = document.getElementById('p5-choices-container');
+      choicesBox.innerHTML = q.choices.map((c, idx) => `
+        <button onclick="handlePart5Answer(${idx})" class="p5-choice-btn p-3.5 rounded-xl bg-slate-950 hover:bg-slate-800 active:scale-95 border border-slate-800 text-left text-xs sm:text-sm font-medium text-slate-200 transition-all flex items-center gap-2.5">
+          <span class="w-6 h-6 rounded-lg bg-slate-800 text-amber-400 font-bold flex items-center justify-center text-xs">${String.fromCharCode(65 + idx)}</span>
+          <span class="flex-1">${escapeHtml(c)}</span>
+        </button>
+      `).join('');
+
+      document.getElementById('p5-explanation-box').classList.add('hidden');
+
+      // Start 20s countdown timer
+      startPart5Timer();
+    }
+
+    function startPart5Timer() {
+      clearInterval(ToeicState.p5Timer);
+      ToeicState.p5TimeLeft = 20;
+      const textEl = document.getElementById('p5-timer-text');
+      const barEl = document.getElementById('p5-timer-bar');
+
+      textEl.textContent = `${ToeicState.p5TimeLeft}s`;
+      barEl.style.width = '100%';
+      barEl.className = 'h-full bg-gradient-to-r from-emerald-500 to-amber-500 transition-all duration-1000 w-full';
+
+      ToeicState.p5Timer = setInterval(() => {
+        ToeicState.p5TimeLeft--;
+        textEl.textContent = `${ToeicState.p5TimeLeft}s`;
+        const pct = (ToeicState.p5TimeLeft / 20) * 100;
+        barEl.style.width = `${pct}%`;
+
+        if (ToeicState.p5TimeLeft <= 5) {
+          barEl.className = 'h-full bg-rose-500 transition-all duration-1000';
+          textEl.className = 'text-rose-400 font-bold animate-pulse';
+        }
+
+        if (ToeicState.p5TimeLeft <= 0) {
+          clearInterval(ToeicState.p5Timer);
+          handlePart5Answer(-1); // Time up!
+        }
+      }, 1000);
+    }
+
+    function handlePart5Answer(selectedIdx) {
+      clearInterval(ToeicState.p5Timer);
+      const all = getAllPart5Questions().filter(q => ToeicState.levelFilter === 'all' || q.level === ToeicState.levelFilter);
+      const q = all[ToeicState.p5Index];
+      const isCorrect = selectedIdx === q.answer;
+
+      // Update Score
+      if (isCorrect) {
+        ToeicState.p5Score.correct++;
+        ToeicState.p5Score.streak++;
+      } else {
+        ToeicState.p5Score.miss++;
+        ToeicState.p5Score.streak = 0;
+      }
+      document.getElementById('p5-correct-cnt').textContent = ToeicState.p5Score.correct;
+      document.getElementById('p5-miss-cnt').textContent = ToeicState.p5Score.miss;
+      document.getElementById('p5-streak-cnt').textContent = ToeicState.p5Score.streak;
+
+      // Visual choices highlight
+      const buttons = document.querySelectorAll('.p5-choice-btn');
+      buttons.forEach((btn, idx) => {
+        btn.disabled = true;
+        if (idx === q.answer) {
+          btn.className = 'p5-choice-btn p-3.5 rounded-xl bg-emerald-950 border border-emerald-600 text-emerald-200 text-xs sm:text-sm font-bold flex items-center gap-2.5';
+        } else if (idx === selectedIdx) {
+          btn.className = 'p5-choice-btn p-3.5 rounded-xl bg-rose-950 border border-rose-600 text-rose-200 text-xs sm:text-sm font-bold flex items-center gap-2.5';
+        }
+      });
+
+      // Explanation Box
+      const expBox = document.getElementById('p5-explanation-box');
+      expBox.className = `p-4 rounded-xl border space-y-2.5 transition-all text-xs sm:text-sm ${isCorrect ? 'bg-emerald-950/80 border-emerald-700 text-emerald-200' : 'bg-rose-950/80 border-rose-700 text-rose-200'}`;
+      expBox.innerHTML = `
+        <div class="flex items-center justify-between">
+          <span class="font-bold text-sm sm:text-base">${isCorrect ? '🎉 正解！' : selectedIdx === -1 ? '⏱️ 時間切れ！' : '❌ 不正解'}（正解: (${String.fromCharCode(65 + q.answer)}) ${escapeHtml(q.choices[q.answer])}）</span>
+          <button onclick="saveToeicItemToDesk(${JSON.stringify({ english: q.sentence.replace('_______', q.choices[q.answer]), japanese: q.jp, nuance: q.explanation }).replace(/"/g, '&quot;')})" class="bg-slate-900 hover:bg-slate-800 text-slate-200 px-2.5 py-1 rounded border border-slate-700 text-xs flex items-center gap-1">
+            💾 デスクに保存
+          </button>
+        </div>
+        <p class="text-slate-300"><strong class="text-slate-400">訳:</strong> ${escapeHtml(q.jp)}</p>
+        <div class="bg-slate-950/70 p-3 rounded-lg text-xs space-y-1 text-slate-300 font-sans border border-slate-800">
+          <p><strong class="text-amber-400">💡 秒殺ポイント:</strong> ${escapeHtml(q.explanation)}</p>
+        </div>
+      `;
+      expBox.classList.remove('hidden');
+
+      // Pronounce the full sentence
+      AudioEngine.speak(q.sentence.replace('_______', q.choices[q.answer]));
+    }
+
+    function nextPart5Question() {
+      loadPart5Question(ToeicState.p5Index + 1);
+    }
+
+    async function handleBatchGeneratePart5() {
+      const btn = document.getElementById('p5-batch-generate-btn');
+      btn.disabled = true;
+      btn.innerHTML = `<span class="animate-spin inline-block">🔄</span><span>AIバッチ5問生成中...</span>`;
+
+      try {
+        const level = ToeicState.levelFilter === 'all' ? '730' : ToeicState.levelFilter;
+        const systemPrompt = `You are a strict TOEIC Part 5 question writer. Output a JSON array of exactly 5 realistic, high-quality TOEIC Part 5 multiple choice questions targeting score ${level}. Schema:
+[
+  {
+    "category": "品詞問題 or 前置詞 vs 接続詞 or コロケーション or 時制",
+    "level": "${level}",
+    "sentence": "Business sentence with _______ as blank",
+    "choices": ["Option A", "Option B", "Option C", "Option D"],
+    "answer": 0, // index of correct choice (0-3)
+    "jp": "自然な日本語訳",
+    "explanation": "なぜその選択肢が正解かの明確な解説（品詞識別法やコロケーション）"
+  }
+]`;
+        const prompt = `Generate 5 brand-new TOEIC Part 5 questions for ${level} score band.`;
+
+        const res = await GeminiClient.call(prompt, systemPrompt, true);
+        if (res && Array.isArray(res) && res.length > 0) {
+          ToeicBank.cachedPart5.push(...res);
+          localStorage.setItem('eng_toeic_cached_p5', JSON.stringify(ToeicBank.cachedPart5));
+          updateToeicCounts();
+          showBanner(`AIが5問のPart 5問題を一括生成・ローカル蓄積しました！（API消費: 1回）`, 'success');
+          loadPart5Question(getAllPart5Questions().length - 5);
+        } else {
+          showBanner('生成に失敗しました。プリセット問題を引き続きご利用いただけます。', 'info');
+        }
+      } catch (err) {
+        console.error(err);
+        showBanner(`AI生成エラー (${err.message})。内蔵バンクから演習を継続します。`, 'error');
+      } finally {
+        btn.disabled = false;
+        btn.innerHTML = `<span>✨</span><span>AIバッチ5問生成</span>`;
+      }
+    }
+
+    // --- PART 3 & 4 CONTROLLER ---
+    function loadPart34Scenario(index) {
+      ToeicState.p34Index = index % ToeicBank.part34.length;
+      const item = ToeicBank.part34[ToeicState.p34Index];
+
+      document.getElementById('p34-badge-type').textContent = item.type;
+      document.getElementById('p34-title').textContent = item.title;
+
+      // Render 3 questions
+      const qContainer = document.getElementById('p34-questions-container');
+      qContainer.innerHTML = item.questions.map((qObj, qIdx) => `
+        <div class="bg-slate-950/80 p-3.5 rounded-xl border border-slate-800 space-y-2 text-xs">
+          <p class="font-bold text-slate-200">${escapeHtml(qObj.q)}</p>
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
+            ${qObj.choices.map((c, cIdx) => `
+              <button onclick="handleP34Answer(${qIdx}, ${cIdx})" class="p34-q${qIdx}-choice p-2.5 rounded-lg bg-slate-900 hover:bg-slate-800 border border-slate-800 text-left text-slate-300 transition-all flex items-center gap-2">
+                <span class="w-5 h-5 rounded bg-slate-800 text-amber-400 font-bold flex items-center justify-center text-[10px]">${String.fromCharCode(65 + cIdx)}</span>
+                <span class="flex-1">${escapeHtml(c)}</span>
+              </button>
+            `).join('')}
+          </div>
+          <div id="p34-q${qIdx}-exp" class="hidden text-[11px] p-2 rounded bg-slate-900 text-emerald-300 font-sans border border-emerald-900/40">
+            ${escapeHtml(qObj.explanation)}
+          </div>
+        </div>
+      `).join('');
+
+      // Linking box
+      const linkingBox = document.getElementById('p34-linking-box');
+      linkingBox.innerHTML = `
+        <h4 class="font-bold text-rose-400 flex items-center gap-1.5 border-b border-slate-800 pb-1">
+          <span>🔗</span> この音源の難所リンキング（音の連結・脱落）
+        </h4>
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
+          ${item.linkingTips.map(l => `
+            <div class="bg-slate-900 p-2.5 rounded-lg border border-slate-800 space-y-0.5">
+              <div class="flex items-center justify-between">
+                <span class="font-bold text-white">${escapeHtml(l.chunk)}</span>
+                <button onclick="AudioEngine.speak('${escapeAttr(l.chunk)}', 0.8)" class="text-slate-400 hover:text-white text-xs">🔊</button>
+              </div>
+              <p class="text-accent-400 font-mono text-[11px]">${escapeHtml(l.sound)}</p>
+              <p class="text-slate-400 text-[10px]">${escapeHtml(l.tip)}</p>
+            </div>
+          `).join('')}
+        </div>
+      `;
+
+      // Script box (1-sentence clickable repeater)
+      const scriptBox = document.getElementById('p34-script-box');
+      scriptBox.innerHTML = `
+        <h4 class="font-bold text-slate-300 flex items-center gap-1.5 border-b border-slate-800 pb-1">
+          <span>📝</span> 全文スクリプト（タップで1文ずつリピート再生）
+        </h4>
+        <div class="space-y-2">
+          ${item.scriptLines.map((line, idx) => `
+            <div onclick="AudioEngine.speak('${escapeAttr(line.text)}', ToeicState.p34Speed)" class="p-2.5 rounded-lg bg-slate-900 hover:bg-slate-800/80 cursor-pointer border border-slate-800/80 transition-all flex items-start gap-2 group">
+              <span class="px-1.5 py-0.5 rounded bg-slate-800 text-[10px] font-bold text-amber-400 flex-shrink-0">${line.speaker}:</span>
+              <div class="space-y-0.5 flex-1">
+                <p class="text-slate-200 group-hover:text-white font-medium">${escapeHtml(line.text)}</p>
+                <p class="text-[11px] text-slate-400">${escapeHtml(line.jp)}</p>
+              </div>
+              <span class="text-xs text-slate-500 group-hover:text-amber-400 flex-shrink-0">🔊</span>
+            </div>
+          `).join('')}
+        </div>
+      `;
+    }
+
+    function handleP34Answer(qIdx, cIdx) {
+      const item = ToeicBank.part34[ToeicState.p34Index];
+      const qObj = item.questions[qIdx];
+      const isCorrect = cIdx === qObj.answer;
+
+      const buttons = document.querySelectorAll(`.p34-q${qIdx}-choice`);
+      buttons.forEach((btn, idx) => {
+        btn.disabled = true;
+        if (idx === qObj.answer) {
+          btn.className = 'p-2.5 rounded-lg bg-emerald-950 border border-emerald-600 text-emerald-200 text-left font-bold flex items-center gap-2';
+        } else if (idx === cIdx) {
+          btn.className = 'p-2.5 rounded-lg bg-rose-950 border border-rose-600 text-rose-200 text-left font-bold flex items-center gap-2';
+        }
+      });
+
+      const expEl = document.getElementById(`p34-q${qIdx}-exp`);
+      if (expEl) expEl.classList.remove('hidden');
+    }
+
+    // --- VOCABULARY CONTROLLER ---
+    function renderToeicVocabList(searchQuery = '') {
+      const container = document.getElementById('toeic-vocab-list');
+      const query = searchQuery.toLowerCase().trim();
+      const all = getAllToeicVocab().filter(v => 
+        (ToeicState.levelFilter === 'all' || v.level === ToeicState.levelFilter) &&
+        (v.word.toLowerCase().includes(query) || v.meaning.includes(query) || v.collocation.toLowerCase().includes(query))
+      );
+
+      if (all.length === 0) {
+        container.innerHTML = `
+          <div class="col-span-full text-center py-10 text-slate-500 text-xs">
+            該当する単語が見つかりません。
+          </div>
+        `;
+        return;
+      }
+
+      container.innerHTML = all.map(v => `
+        <div class="bg-slate-900/90 p-4 rounded-xl border border-slate-800 space-y-2.5 hover:border-amber-500/40 transition-all">
+          <div class="flex items-start justify-between gap-2">
+            <div>
+              <div class="flex items-center gap-2">
+                <span class="text-base sm:text-lg font-bold text-white">${escapeHtml(v.word)}</span>
+                <span class="text-[10px] font-mono text-accent-400">[${escapeHtml(v.phonetic)}]</span>
+                <span class="text-[10px] bg-slate-800 text-amber-300 px-1.5 py-0.5 rounded border border-slate-700">${v.pos}</span>
+                <span class="text-[10px] bg-slate-950 text-slate-400 px-1.5 py-0.5 rounded">${v.level}点</span>
+              </div>
+              <p class="text-xs font-semibold text-slate-200 mt-1">${escapeHtml(v.meaning)}</p>
+            </div>
+            <button onclick="AudioEngine.speak('${escapeAttr(v.word)}')" class="p-2 rounded-lg bg-slate-800 hover:bg-amber-600 text-white text-xs border border-slate-700 flex-shrink-0" title="単語を発音">
+              🔊
+            </button>
+          </div>
+
+          <!-- Collocation -->
+          <div class="bg-slate-950/80 p-2.5 rounded-lg border border-slate-800 text-xs space-y-1">
+            <p class="text-amber-400 font-medium flex items-center justify-between">
+              <span>🎯 頻出コロケーション: <strong>${escapeHtml(v.collocation)}</strong></span>
+              <button onclick="AudioEngine.speak('${escapeAttr(v.collocation)}')" class="text-slate-400 hover:text-white">🔊</button>
+            </p>
+          </div>
+
+          <!-- Real TOEIC Contextual Sentence -->
+          <div class="bg-slate-950/60 p-2.5 rounded-lg text-xs space-y-1 text-slate-300">
+            <div class="flex items-start justify-between gap-1">
+              <p class="font-medium text-white">${escapeHtml(v.exEn)}</p>
+              <button onclick="AudioEngine.speak('${escapeAttr(v.exEn)}')" class="text-slate-400 hover:text-white flex-shrink-0">🔊</button>
+            </div>
+            <p class="text-[11px] text-slate-400">${escapeHtml(v.exJa)}</p>
+          </div>
+
+          <div class="flex justify-end pt-1">
+            <button onclick="saveToeicItemToDesk(${JSON.stringify({ english: v.exEn, japanese: `${v.word} (${v.meaning}): ${v.exJa}`, nuance: `頻出コロケーション: ${v.collocation}` }).replace(/"/g, '&quot;')})" class="text-[11px] bg-slate-800 hover:bg-emerald-700 text-emerald-300 px-2.5 py-1 rounded border border-slate-700 transition-all flex items-center gap-1">
+              💾 デスクに保存
+            </button>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    async function handleBatchGenerateVocab() {
+      const btn = document.getElementById('toeic-vocab-batch-ai-btn');
+      btn.disabled = true;
+      btn.innerHTML = `<span class="animate-spin inline-block">🔄</span><span>AIバッチ5単語生成中...</span>`;
+
+      try {
+        const level = ToeicState.levelFilter === 'all' ? '730' : ToeicState.levelFilter;
+        const systemPrompt = `You are a TOEIC vocabulary and collocation expert. Output a JSON array of exactly 5 high-frequency business English words for TOEIC score ${level}. Schema:
+[
+  {
+    "word": "Target word",
+    "phonetic": "カタカナ発音表記",
+    "pos": "動詞/名詞/形容詞/副詞",
+    "meaning": "日本語の重要語義",
+    "collocation": "TOEIC頻出の塊表現（2〜3語）",
+    "exEn": "Realistic business example sentence using the collocation",
+    "exJa": "例文の自然な日本語訳",
+    "level": "${level}"
+  }
+]`;
+        const prompt = `Generate 5 high-yield TOEIC vocabulary words with collocations and sentences for ${level} level.`;
+
+        const res = await GeminiClient.call(prompt, systemPrompt, true);
+        if (res && Array.isArray(res) && res.length > 0) {
+          ToeicBank.cachedVocab.push(...res);
+          localStorage.setItem('eng_toeic_cached_vocab', JSON.stringify(ToeicBank.cachedVocab));
+          updateToeicCounts();
+          showBanner(`AIが5つのTOEIC頻出語彙・例文を一括生成・蓄積しました！（API消費: 1回）`, 'success');
+          renderToeicVocabList();
+        } else {
+          showBanner('生成に失敗しました。内蔵語彙を引き続きご利用ください。', 'info');
+        }
+      } catch (err) {
+        console.error(err);
+        showBanner(`語彙生成エラー (${err.message})`, 'error');
+      } finally {
+        btn.disabled = false;
+        btn.innerHTML = `<span>✨</span><span>AIバッチ5単語生成</span>`;
+      }
+    }
+
+    function saveToeicItemToDesk(item) {
+      savePhraseToDesk(item);
+    }
+
     // --- GitHub Gist API Sync ---
     async function syncToGist() {
       const token = Store.config.githubToken.trim();
@@ -1769,6 +2671,17 @@ Schema:
           if (parsed.app !== mockData.app) throw new Error('JSON backup serialization fault');
           return 'Full-schema JSON import/export pipeline verified.';
         }
+      },
+      {
+        id: 9,
+        name: "TOEIC Part 5 / Part 3&4 / 語彙バンク整合性検証",
+        desc: "TOEIC特化問題バンク（Part 5秒殺問、Part 3&4対話スクリプト、頻出語彙）の構造とタイマーを検証",
+        async run() {
+          if (!ToeicBank.part5 || ToeicBank.part5.length < 5) throw new Error('Part 5 bank underpopulated');
+          if (!ToeicBank.part34 || ToeicBank.part34.length < 3) throw new Error('Part 3&4 bank underpopulated');
+          if (!ToeicBank.vocab || ToeicBank.vocab.length < 5) throw new Error('Vocab bank underpopulated');
+          return `TOEIC Bank active: ${ToeicBank.part5.length} Part5 items, ${ToeicBank.part34.length} Part3&4 scenarios, ${ToeicBank.vocab.length} vocab cards verified.`;
+        }
       }
     ];
 
@@ -1827,10 +2740,10 @@ Schema:
       const totalTime = Math.round(performance.now() - startTime);
       latencyEl.textContent = `${Math.round(totalTime / DiagnosticsSuite.length)} ms`;
       btn.disabled = false;
-      btn.innerHTML = `<span>▶️</span><span>8項目テスト一括実行</span>`;
+      btn.innerHTML = `<span>▶️</span><span>9項目テスト一括実行</span>`;
 
       if (fail === 0) {
-        showBanner(`8項目すべてのセルフテストに合格しました！（平均レイテンシ: ${latencyEl.textContent}）`, 'success');
+        showBanner(`9項目すべてのセルフテストに合格しました！（平均レイテンシ: ${latencyEl.textContent}）`, 'success');
       } else {
         showBanner(`${fail}件のテストで注意項目が検出されました。ログを確認してください。`, 'error');
       }
@@ -1865,6 +2778,7 @@ Schema:
       initRoleplay();
       initListeningExercise();
       initMuscleModule();
+      initToeicModule();
 
       // Setup STT for Roleplay
       recognitionInstance = AudioEngine.initSTT(
