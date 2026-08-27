@@ -111,6 +111,11 @@
           <span>🔊</span>
           <span class="hidden sm:inline">音声確認</span>
         </button>
+        <!-- Global Stop Audio Button -->
+        <button onclick="AudioEngine.stop()" title="音声を停止" class="p-2 rounded-lg bg-rose-950/80 hover:bg-rose-900 text-rose-300 hover:text-white border border-rose-800/80 text-xs flex items-center gap-1 transition-all active:scale-95">
+          <span>⏹️</span>
+          <span class="hidden sm:inline">音声停止</span>
+        </button>
         <!-- Settings Nav Button -->
         <button onclick="switchTab('settings')" title="設定" class="p-2 rounded-lg bg-slate-800/80 hover:bg-slate-700 text-slate-300 hover:text-white border border-slate-700 flex items-center gap-1 text-xs">
           <span>⚙️</span>
@@ -543,18 +548,21 @@
 
         <!-- ================= SUB-TAB 2: Part 3 & 4 リスニング強化 ================= -->
         <div id="toeic-subview-part34" class="toeic-subview hidden space-y-4">
-          <!-- Scenario Selector -->
-          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 bg-slate-900/80 p-3 rounded-xl border border-slate-800">
-            <div class="flex items-center gap-2">
+          <!-- Scenario Selector & Generator Controls -->
+          <div class="flex flex-col md:flex-row md:items-center justify-between gap-2.5 bg-slate-900/80 p-3 rounded-xl border border-slate-800">
+            <div class="flex flex-wrap items-center gap-2">
               <span class="text-xs text-slate-400">音源シナリオ:</span>
-              <select id="p34-scenario-select" class="bg-slate-950 border border-slate-700 text-xs rounded-lg px-2.5 py-1.5 text-slate-200 focus:outline-none focus:border-amber-500">
+              <select id="p34-scenario-select" class="bg-slate-950 border border-slate-700 text-xs rounded-lg px-2.5 py-1.5 text-slate-200 focus:outline-none focus:border-amber-500 max-w-full sm:max-w-xs">
                 <option value="0">Part 3: [対話] 出張旅程とミーティングの日程変更</option>
                 <option value="1">Part 3: [対話] 店舗の在庫確認と返品手続き</option>
                 <option value="2">Part 4: [アナウンス] 空港ゲート変更とフライト遅延</option>
                 <option value="3">Part 4: [説明会] 本社オフィス改修とテレワーク方針</option>
               </select>
+              <button id="p34-batch-generate-btn" class="bg-indigo-600 hover:bg-indigo-500 text-white text-[11px] font-bold px-3 py-1.5 rounded-lg transition-all flex items-center gap-1 shadow-sm whitespace-nowrap">
+                <span>✨</span> AI新シナリオ生成 (Part 3/4)
+              </button>
             </div>
-            <div class="flex items-center gap-2">
+            <div class="flex items-center gap-2 self-start md:self-auto">
               <button class="p34-speed-btn px-2.5 py-1 rounded bg-slate-800 text-[11px] text-slate-300 border border-slate-700 hover:bg-slate-700" data-speed="0.8">🐢 0.8x</button>
               <button class="p34-speed-btn active px-2.5 py-1 rounded bg-amber-500 text-[11px] text-slate-950 font-bold border border-amber-400" data-speed="1.0">⚡ 1.0x</button>
               <button class="p34-speed-btn px-2.5 py-1 rounded bg-slate-800 text-[11px] text-slate-300 border border-slate-700 hover:bg-slate-700" data-speed="1.2">🚀 1.2x</button>
@@ -568,9 +576,14 @@
                 <span id="p34-badge-type" class="text-[10px] font-bold text-amber-400 bg-amber-950 px-2 py-0.5 rounded border border-amber-800/40">Part 3 Dialogue</span>
                 <h3 id="p34-title" class="text-base font-bold text-white mt-1">出張旅程とミーティングの日程変更</h3>
               </div>
-              <button id="p34-play-full-btn" class="bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-400 hover:to-orange-400 text-slate-950 font-bold px-5 py-2.5 rounded-xl text-xs sm:text-sm flex items-center justify-center gap-2 shadow-lg shadow-amber-500/20 active:scale-95 transition-all">
-                <span>🔊</span> 全文通し再生
-              </button>
+              <div class="flex items-center gap-2">
+                <button id="p34-play-full-btn" class="bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-400 hover:to-orange-400 text-slate-950 font-bold px-4 sm:px-5 py-2.5 rounded-xl text-xs sm:text-sm flex items-center justify-center gap-2 shadow-lg shadow-amber-500/20 active:scale-95 transition-all">
+                  <span>🔊</span> 全文通し再生
+                </button>
+                <button id="p34-stop-btn" onclick="AudioEngine.stop()" class="bg-slate-800 hover:bg-rose-900 text-rose-300 hover:text-white border border-slate-700 hover:border-rose-700 font-medium px-3 sm:px-4 py-2.5 rounded-xl text-xs sm:text-sm flex items-center justify-center gap-1.5 transition-all active:scale-95" title="音声を停止">
+                  <span>⏹️</span> 停止
+                </button>
+              </div>
             </div>
 
             <!-- 3 TOEIC Comprehension Questions -->
@@ -1018,7 +1031,9 @@
     // AUDIO ENGINE (Web Speech Synthesis & Recognition)
     // ====================================================================
     const AudioEngine = {
-      speak(text, rate = null) {
+      isPlaying: false,
+
+      speak(text, rate = null, onEndCallback = null) {
         if (!('speechSynthesis' in window)) {
           showBanner('お使いのブラウザは音声合成に対応していません', 'error');
           return;
@@ -1033,7 +1048,42 @@
         const enVoice = voices.find(v => (v.name.includes('Google') || v.name.includes('Natural') || v.name.includes('Samantha') || v.name.includes('Daniel')) && v.lang.startsWith('en')) || voices.find(v => v.lang.startsWith('en'));
         if (enVoice) utterance.voice = enVoice;
 
+        this.isPlaying = true;
+
+        utterance.onend = () => {
+          this.isPlaying = false;
+          if (onEndCallback) onEndCallback();
+          const p34Btn = document.getElementById('p34-play-full-btn');
+          if (p34Btn) {
+            p34Btn.innerHTML = `<span>🔊</span> 全文通し再生`;
+            p34Btn.className = 'bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-400 hover:to-orange-400 text-slate-950 font-bold px-4 sm:px-5 py-2.5 rounded-xl text-xs sm:text-sm flex items-center justify-center gap-2 shadow-lg shadow-amber-500/20 active:scale-95 transition-all';
+          }
+        };
+
+        utterance.onerror = () => {
+          this.isPlaying = false;
+          if (onEndCallback) onEndCallback();
+          const p34Btn = document.getElementById('p34-play-full-btn');
+          if (p34Btn) {
+            p34Btn.innerHTML = `<span>🔊</span> 全文通し再生`;
+            p34Btn.className = 'bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-400 hover:to-orange-400 text-slate-950 font-bold px-4 sm:px-5 py-2.5 rounded-xl text-xs sm:text-sm flex items-center justify-center gap-2 shadow-lg shadow-amber-500/20 active:scale-95 transition-all';
+          }
+        };
+
         window.speechSynthesis.speak(utterance);
+      },
+
+      stop() {
+        if ('speechSynthesis' in window) {
+          window.speechSynthesis.cancel();
+        }
+        this.isPlaying = false;
+        const p34Btn = document.getElementById('p34-play-full-btn');
+        if (p34Btn) {
+          p34Btn.innerHTML = `<span>🔊</span> 全文通し再生`;
+          p34Btn.className = 'bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-400 hover:to-orange-400 text-slate-950 font-bold px-4 sm:px-5 py-2.5 rounded-xl text-xs sm:text-sm flex items-center justify-center gap-2 shadow-lg shadow-amber-500/20 active:scale-95 transition-all';
+        }
+        showBanner('音声を停止しました', 'info');
       },
 
       initSTT(onResult, onStatusChange) {
@@ -1724,6 +1774,7 @@ Schema:
     // ====================================================================
     const ToeicBank = {
       cachedPart5: JSON.parse(localStorage.getItem('eng_toeic_cached_p5') || '[]'),
+      cachedPart34: JSON.parse(localStorage.getItem('eng_toeic_cached_p34') || '[]'),
       cachedVocab: JSON.parse(localStorage.getItem('eng_toeic_cached_vocab') || '[]'),
       part5: [
         {
@@ -2023,13 +2074,26 @@ Schema:
       });
       document.getElementById('p5-batch-generate-btn').addEventListener('click', handleBatchGeneratePart5);
 
-      // Event: P34 scenario selector & speed buttons
+      // Event: P34 scenario selector, AI generator & speed buttons
+      updateToeicScenarioSelect();
       document.getElementById('p34-scenario-select').addEventListener('change', (e) => {
         loadPart34Scenario(parseInt(e.target.value));
       });
+      document.getElementById('p34-batch-generate-btn').addEventListener('click', handleBatchGeneratePart34);
       document.getElementById('p34-play-full-btn').addEventListener('click', () => {
-        const item = ToeicBank.part34[ToeicState.p34Index];
-        AudioEngine.speak(item.audioText, ToeicState.p34Speed);
+        if (AudioEngine.isPlaying) {
+          AudioEngine.stop();
+        } else {
+          const all = getAllPart34Scenarios();
+          const item = all[ToeicState.p34Index];
+          const btn = document.getElementById('p34-play-full-btn');
+          btn.innerHTML = `<span>⏹️</span> 再生停止`;
+          btn.className = 'bg-rose-600 hover:bg-rose-500 text-white font-bold px-4 sm:px-5 py-2.5 rounded-xl text-xs sm:text-sm flex items-center justify-center gap-2 shadow-lg shadow-rose-600/30 active:scale-95 transition-all animate-pulse';
+          AudioEngine.speak(item.audioText, ToeicState.p34Speed, () => {
+            btn.innerHTML = `<span>🔊</span> 全文通し再生`;
+            btn.className = 'bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-400 hover:to-orange-400 text-slate-950 font-bold px-4 sm:px-5 py-2.5 rounded-xl text-xs sm:text-sm flex items-center justify-center gap-2 shadow-lg shadow-amber-500/20 active:scale-95 transition-all';
+          });
+        }
       });
       document.querySelectorAll('.p34-speed-btn').forEach(btn => {
         btn.addEventListener('click', () => {
@@ -2066,8 +2130,21 @@ Schema:
     function getAllPart5Questions() {
       return [...ToeicBank.part5, ...ToeicBank.cachedPart5];
     }
+    function getAllPart34Scenarios() {
+      return [...ToeicBank.part34, ...ToeicBank.cachedPart34];
+    }
     function getAllToeicVocab() {
       return [...ToeicBank.vocab, ...ToeicBank.cachedVocab];
+    }
+
+    function updateToeicScenarioSelect() {
+      const select = document.getElementById('p34-scenario-select');
+      if (!select) return;
+      const all = getAllPart34Scenarios();
+      select.innerHTML = all.map((item, idx) => `
+        <option value="${idx}">${idx + 1}. ${escapeHtml(item.type)}: ${escapeHtml(item.title)}</option>
+      `).join('');
+      select.value = ToeicState.p34Index;
     }
 
     function switchToeicSubTab(subTabId) {
@@ -2244,8 +2321,9 @@ Schema:
 
     // --- PART 3 & 4 CONTROLLER ---
     function loadPart34Scenario(index) {
-      ToeicState.p34Index = index % ToeicBank.part34.length;
-      const item = ToeicBank.part34[ToeicState.p34Index];
+      const all = getAllPart34Scenarios();
+      ToeicState.p34Index = index % all.length;
+      const item = all[ToeicState.p34Index];
 
       document.getElementById('p34-badge-type').textContent = item.type;
       document.getElementById('p34-title').textContent = item.title;
@@ -2308,6 +2386,73 @@ Schema:
           `).join('')}
         </div>
       `;
+    }
+
+    async function handleBatchGeneratePart34() {
+      const btn = document.getElementById('p34-batch-generate-btn');
+      btn.disabled = true;
+      btn.innerHTML = `<span class="animate-spin inline-block">🔄</span><span>AI生成中...</span>`;
+
+      try {
+        const isPart3 = Math.random() > 0.5;
+        const typeStr = isPart3 ? "Part 3: [対話] ビジネス会話" : "Part 4: [アナウンス] 業務連絡・説明";
+        const level = ToeicState.levelFilter === 'all' ? '730' : ToeicState.levelFilter;
+
+        const systemPrompt = `You are an expert TOEIC Part 3/4 listening test writer. Output a JSON object with this exact schema:
+{
+  "type": "${typeStr}",
+  "title": "Short Japanese Title of the Scenario",
+  "speakers": "e.g. Man, Woman or Flight Attendant",
+  "audioText": "Full conversational or monologue text for native speech (about 45-60 words)",
+  "scriptLines": [
+    { "speaker": "Speaker Name", "text": "English sentence", "jp": "日本語訳" }
+  ],
+  "linkingTips": [
+    { "chunk": "Word linking chunk", "sound": "カタカナ発音表記", "tip": "音の連結・脱落の解説" }
+  ],
+  "questions": [
+    {
+      "q": "1. Comprehension question in English?",
+      "choices": ["Choice A", "Choice B", "Choice C", "Choice D"],
+      "answer": 0,
+      "explanation": "日本語による正解根拠の解説"
+    },
+    {
+      "q": "2. Comprehension question in English?",
+      "choices": ["Choice A", "Choice B", "Choice C", "Choice D"],
+      "answer": 1,
+      "explanation": "日本語による正解根拠の解説"
+    },
+    {
+      "q": "3. Comprehension question in English?",
+      "choices": ["Choice A", "Choice B", "Choice C", "Choice D"],
+      "answer": 2,
+      "explanation": "日本語による正解根拠の解説"
+    }
+  ]
+}`;
+
+        const prompt = `Generate a brand new realistic TOEIC ${typeStr} audio test scenario with 3 questions targeting score ${level}.`;
+
+        const res = await GeminiClient.call(prompt, systemPrompt, true);
+        if (res && res.audioText && res.questions && res.questions.length === 3) {
+          ToeicBank.cachedPart34.push(res);
+          localStorage.setItem('eng_toeic_cached_p34', JSON.stringify(ToeicBank.cachedPart34));
+          updateToeicScenarioSelect();
+          const newIdx = getAllPart34Scenarios().length - 1;
+          document.getElementById('p34-scenario-select').value = newIdx;
+          loadPart34Scenario(newIdx);
+          showBanner(`新シナリオ「${res.title}」をAI生成・追加しました！（API消費: 1回）`, 'success');
+        } else {
+          showBanner('生成に失敗しました。内蔵シナリオを引き続きご利用ください。', 'info');
+        }
+      } catch (err) {
+        console.error(err);
+        showBanner(`シナリオ生成エラー (${err.message})`, 'error');
+      } finally {
+        btn.disabled = false;
+        btn.innerHTML = `<span>✨</span><span>AI新シナリオ生成 (Part 3/4)</span>`;
+      }
     }
 
     function handleP34Answer(qIdx, cIdx) {
