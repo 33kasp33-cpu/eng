@@ -881,8 +881,49 @@
     /**
      * AI English Mastery Pro - Core Client Engine
      * Completely self-contained SPA with Gemini 3 Flash / Flash Lite REST API,
-     * Web Speech API (STT/TTS), GitHub Gist Sync, and 8-Test QA Suite.
+     * Web Speech API (STT/TTS), GitHub Gist Sync, and 9-Test QA Suite.
      */
+
+    // --- Global Safe JSON & Error Recovery ---
+    function safeJsonParse(raw, fallback = []) {
+      if (!raw) return fallback;
+      try {
+        if (typeof raw !== 'string') return raw;
+        const cleaned = raw.trim().replace(/^```(?:json)?\s*/i, '').replace(/\s*```$/i, '');
+        const parsed = JSON.parse(cleaned);
+        return parsed !== null && parsed !== undefined ? parsed : fallback;
+      } catch (e) {
+        console.warn('safeJsonParse fallback used for:', raw, e);
+        return fallback;
+      }
+    }
+
+    window.addEventListener('error', (event) => {
+      console.error('Global Error caught:', event.error || event.message);
+      const banner = document.getElementById('global-banner');
+      if (banner) {
+        banner.className = 'rounded-xl p-3.5 sm:p-4 text-xs sm:text-sm flex items-start justify-between gap-3 bg-rose-950/90 border border-rose-700 text-rose-200 transition-all';
+        banner.innerHTML = `
+          <div class="flex items-center gap-2">
+            <span>⚠️</span>
+            <span>エラーが発生しました (${escapeHtml(event.message || 'スクリプト実行時例外')})</span>
+          </div>
+          <button onclick="emergencyClearCache()" class="bg-rose-900 hover:bg-rose-800 text-white font-bold px-2.5 py-1 rounded text-xs">
+            🔄 キャッシュクリアして復帰
+          </button>
+        `;
+        banner.classList.remove('hidden');
+      }
+    });
+
+    function emergencyClearCache() {
+      if (confirm('ローカルキャッシュをリセットして初期状態に復帰しますか？')) {
+        localStorage.removeItem('eng_toeic_cached_p5');
+        localStorage.removeItem('eng_toeic_cached_p34');
+        localStorage.removeItem('eng_toeic_cached_vocab');
+        location.reload();
+      }
+    }
 
     // --- State Store ---
     let savedModel = localStorage.getItem('eng_gemini_model') || 'gemini-3.5-flash-lite';
@@ -899,7 +940,7 @@
         githubToken: localStorage.getItem('eng_github_token') || '',
         gistId: localStorage.getItem('eng_gist_id') || '',
       },
-      savedPhrases: JSON.parse(localStorage.getItem('eng_saved_phrases') || '[]'),
+      savedPhrases: safeJsonParse(localStorage.getItem('eng_saved_phrases'), []),
       roleplay: {
         scenario: 'cafe',
         messages: [],
@@ -1232,7 +1273,17 @@
 
         const data = await response.json();
         const text = data.candidates?.[0]?.content?.parts?.[0]?.text || '';
-        return jsonMode ? JSON.parse(text) : text;
+        if (jsonMode) {
+          const parsed = safeJsonParse(text, null);
+          if (parsed !== null) return parsed;
+          // Fallback: search for first [ ... ] or { ... }
+          const match = text.match(/(\[[\s\S]*\]|\{[\s\S]*\})/);
+          if (match) {
+            return safeJsonParse(match[1], null);
+          }
+          return null;
+        }
+        return text;
       }
     };
 
@@ -1827,9 +1878,9 @@ Schema:
     // MODULE: 🏆 TOEIC® L&R MASTERY ENGINE (Part 5 / Part 3&4 / 頻出語彙)
     // ====================================================================
     const ToeicBank = {
-      cachedPart5: JSON.parse(localStorage.getItem('eng_toeic_cached_p5') || '[]'),
-      cachedPart34: JSON.parse(localStorage.getItem('eng_toeic_cached_p34') || '[]'),
-      cachedVocab: JSON.parse(localStorage.getItem('eng_toeic_cached_vocab') || '[]'),
+      cachedPart5: safeJsonParse(localStorage.getItem('eng_toeic_cached_p5'), []),
+      cachedPart34: safeJsonParse(localStorage.getItem('eng_toeic_cached_p34'), []),
+      cachedVocab: safeJsonParse(localStorage.getItem('eng_toeic_cached_vocab'), []),
       part5: [
         {
           id: 1,
@@ -3017,6 +3068,10 @@ Schema:
     function escapeHtml(str) {
       if (!str) return '';
       return String(str).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+    }
+    function escapeAttr(str) {
+      if (!str) return '';
+      return String(str).replace(/'/g, "\\'").replace(/"/g, '&quot;');
     }
     async function handleClipboardPasteApiKey() {
       try {
