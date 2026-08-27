@@ -35,7 +35,7 @@
 ## 🤖 Gemini API 設定ガイド（無料枠 500回/日）
 1. [Google AI Studio](https://aistudio.google.com/) で無料の API Key を取得。
 2. アプリ右上の **「設定 / API」** から API Key を入力して保存。
-3. **推奨モデル**: `gemini-2.5-flash-lite`（無料枠で 1日 500リクエスト / 分間 15リクエスト利用可能）。
+3. **推奨モデル**: `gemini-3.5-flash-lite`（無料枠で 1日 500リクエスト / 分間 15リクエスト利用可能）。
 
 ---
 

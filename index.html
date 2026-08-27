@@ -518,10 +518,12 @@
               <div>
                 <label class="block text-xs font-medium text-slate-300 mb-1">使用モデル:</label>
                 <select id="setting-gemini-model" class="w-full bg-slate-950 border border-slate-700 rounded-xl px-3 py-2.5 text-xs sm:text-sm text-slate-200 focus:outline-none focus:border-brand-500 font-mono">
-                  <option value="gemini-2.5-flash-lite">gemini-2.5-flash-lite (無料枠 500 RPD / 最速)</option>
-                  <option value="gemini-2.5-flash">gemini-2.5-flash (標準 20 RPD / 高精度)</option>
-                  <option value="gemini-2.0-flash">gemini-2.0-flash (安定版)</option>
-                  <option value="gemini-1.5-flash">gemini-1.5-flash (レガシー互換)</option>
+                  <option value="gemini-3.5-flash-lite" selected>gemini-3.5-flash-lite (推奨・無料枠 500 RPD / 最速)</option>
+                  <option value="gemini-3.1-flash-lite">gemini-3.1-flash-lite (無料枠 500 RPD)</option>
+                  <option value="gemini-3.5-flash">gemini-3.5-flash (標準 20 RPD / 高精度)</option>
+                  <option value="gemini-3.7-flash">gemini-3.7-flash (最新 20 RPD)</option>
+                  <option value="gemini-3-flash">gemini-3-flash (20 RPD)</option>
+                  <option value="gemini-2.5-flash">gemini-2.5-flash (20 RPD)</option>
                 </select>
               </div>
               <div>
@@ -630,10 +632,16 @@
      */
 
     // --- State Store ---
+    let savedModel = localStorage.getItem('eng_gemini_model') || 'gemini-3.5-flash-lite';
+    if (savedModel === 'gemini-2.5-flash-lite' || savedModel === 'gemini-2.0-flash-lite') {
+      savedModel = 'gemini-3.5-flash-lite';
+      localStorage.setItem('eng_gemini_model', savedModel);
+    }
+
     const Store = {
       config: {
         geminiKey: localStorage.getItem('eng_gemini_key') || '',
-        geminiModel: localStorage.getItem('eng_gemini_model') || 'gemini-2.5-flash-lite',
+        geminiModel: savedModel,
         ttsRate: parseFloat(localStorage.getItem('eng_tts_rate') || '1.0'),
         githubToken: localStorage.getItem('eng_github_token') || '',
         gistId: localStorage.getItem('eng_gist_id') || '',
@@ -883,9 +891,9 @@
     // GEMINI REST API CLIENT
     // ====================================================================
     const GeminiClient = {
-      async call(prompt, systemInstruction = '', jsonMode = true) {
+      async call(prompt, systemInstruction = '', jsonMode = true, retryWithFallback = true) {
         const apiKey = Store.config.geminiKey.trim();
-        const model = Store.config.geminiModel.trim() || 'gemini-2.5-flash-lite';
+        let model = Store.config.geminiModel.trim() || 'gemini-3.5-flash-lite';
 
         if (!apiKey) {
           console.warn('Gemini API Key not set. Using intelligent mock fallback.');
@@ -917,7 +925,19 @@
 
         if (!response.ok) {
           const err = await response.json().catch(() => ({}));
-          throw new Error(err.error?.message || `HTTP ${response.status}: ${response.statusText}`);
+          const errMsg = err.error?.message || `HTTP ${response.status}: ${response.statusText}`;
+
+          // Auto-recovery: If old/deprecated model was requested, automatically heal to gemini-3.5-flash-lite and retry!
+          if (retryWithFallback && (errMsg.includes('no longer available') || errMsg.includes('not found') || response.status === 404)) {
+            console.warn(`Model ${model} unavailable. Auto-migrating to gemini-3.5-flash-lite...`);
+            Store.config.geminiModel = 'gemini-3.5-flash-lite';
+            localStorage.setItem('eng_gemini_model', 'gemini-3.5-flash-lite');
+            const modelSelect = document.getElementById('setting-gemini-model');
+            if (modelSelect) modelSelect.value = 'gemini-3.5-flash-lite';
+            return await this.call(prompt, systemInstruction, jsonMode, false);
+          }
+
+          throw new Error(errMsg);
         }
 
         const data = await response.json();
