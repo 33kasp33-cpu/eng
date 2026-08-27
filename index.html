@@ -516,17 +516,22 @@
           <!-- Part 5 Question Card -->
           <div id="p5-card" class="bg-slate-900/90 rounded-2xl p-5 sm:p-6 border border-slate-800 space-y-5">
             <!-- Timer & Category -->
-            <div class="flex items-center justify-between text-xs">
+            <div class="flex items-center justify-between text-xs flex-wrap gap-2">
               <div class="flex items-center gap-2">
                 <span id="p5-badge-category" class="bg-amber-950 text-amber-300 font-bold px-2 py-0.5 rounded border border-amber-800/40 text-[10px]">品詞問題</span>
                 <span id="p5-badge-level" class="bg-slate-800 text-slate-300 px-2 py-0.5 rounded border border-slate-700 text-[10px]">730点目標</span>
               </div>
-              <!-- 20s Countdown Timer -->
-              <div class="flex items-center gap-1.5 font-mono text-xs text-amber-400 font-bold">
-                <span>⏱️</span>
-                <span id="p5-timer-text">20s</span>
-                <div class="w-16 h-2 bg-slate-800 rounded-full overflow-hidden border border-slate-700">
-                  <div id="p5-timer-bar" class="h-full bg-gradient-to-r from-emerald-500 to-amber-500 transition-all duration-1000 w-full"></div>
+              <!-- 20s Countdown Timer with Start / Pause Button -->
+              <div class="flex items-center gap-2">
+                <button id="p5-timer-toggle-btn" onclick="togglePart5Timer()" class="px-3 py-1 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs shadow-sm flex items-center gap-1 transition-all active:scale-95">
+                  <span>▶️</span><span>スタート</span>
+                </button>
+                <div class="flex items-center gap-1.5 font-mono text-xs text-slate-400 font-bold">
+                  <span>⏱️</span>
+                  <span id="p5-timer-text">20s (待機中)</span>
+                  <div class="w-12 sm:w-16 h-2 bg-slate-800 rounded-full overflow-hidden border border-slate-700">
+                    <div id="p5-timer-bar" class="h-full bg-slate-600 transition-all duration-1000 w-full"></div>
+                  </div>
                 </div>
               </div>
             </div>
@@ -2048,6 +2053,7 @@ Schema:
       p5Index: 0,
       p5Timer: null,
       p5TimeLeft: 20,
+      p5TimerRunning: false,
       p5Score: { correct: 0, miss: 0, streak: 0 },
       p34Index: 0,
       p34Speed: 1.0,
@@ -2057,14 +2063,14 @@ Schema:
     function initToeicModule() {
       // Merge cached batch questions
       updateToeicCounts();
-      loadPart5Question(0);
+      loadPart5Question(0, false); // Explicitly do NOT auto-start on load
       loadPart34Scenario(0);
       renderToeicVocabList();
 
       // Event: Level Filter
       document.getElementById('toeic-level-filter').addEventListener('change', (e) => {
         ToeicState.levelFilter = e.target.value;
-        loadPart5Question(0);
+        loadPart5Question(0, false);
         renderToeicVocabList();
       });
 
@@ -2164,8 +2170,11 @@ Schema:
     }
 
     // --- PART 5 CONTROLLER ---
-    function loadPart5Question(index) {
+    function loadPart5Question(index, autoStart = false) {
       clearInterval(ToeicState.p5Timer);
+      ToeicState.p5TimerRunning = false;
+      ToeicState.p5TimeLeft = 20;
+
       const all = getAllPart5Questions().filter(q => ToeicState.levelFilter === 'all' || q.level === ToeicState.levelFilter);
       if (all.length === 0) {
         document.getElementById('p5-sentence-en').textContent = '該当レベルの問題がありません。AIバッチ生成で新しい問題を追加してください。';
@@ -2193,19 +2202,69 @@ Schema:
 
       document.getElementById('p5-explanation-box').classList.add('hidden');
 
-      // Start 20s countdown timer
-      startPart5Timer();
+      // Reset Timer Visuals (Standby state)
+      const textEl = document.getElementById('p5-timer-text');
+      const barEl = document.getElementById('p5-timer-bar');
+      const toggleBtn = document.getElementById('p5-timer-toggle-btn');
+
+      if (textEl) {
+        textEl.textContent = '20s (待機中)';
+        textEl.className = 'text-slate-400 font-bold';
+      }
+      if (barEl) {
+        barEl.style.width = '100%';
+        barEl.className = 'h-full bg-slate-600 transition-all duration-1000 w-full';
+      }
+      if (toggleBtn) {
+        toggleBtn.disabled = false;
+        toggleBtn.innerHTML = `<span>▶️</span><span>スタート</span>`;
+        toggleBtn.className = 'px-3 py-1 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs shadow-sm flex items-center gap-1 transition-all active:scale-95';
+      }
+
+      if (autoStart) {
+        startPart5Timer();
+      }
+    }
+
+    function togglePart5Timer() {
+      if (ToeicState.p5TimerRunning) {
+        // Pause timer
+        clearInterval(ToeicState.p5Timer);
+        ToeicState.p5TimerRunning = false;
+        const toggleBtn = document.getElementById('p5-timer-toggle-btn');
+        const textEl = document.getElementById('p5-timer-text');
+        if (toggleBtn) {
+          toggleBtn.innerHTML = `<span>▶️</span><span>再開</span>`;
+          toggleBtn.className = 'px-3 py-1 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs shadow-sm flex items-center gap-1 transition-all active:scale-95';
+        }
+        if (textEl) {
+          textEl.textContent = `${ToeicState.p5TimeLeft}s (一時停止)`;
+          textEl.className = 'text-amber-400 font-bold';
+        }
+      } else {
+        // Start or resume timer
+        startPart5Timer();
+      }
     }
 
     function startPart5Timer() {
       clearInterval(ToeicState.p5Timer);
-      ToeicState.p5TimeLeft = 20;
+      ToeicState.p5TimerRunning = true;
       const textEl = document.getElementById('p5-timer-text');
       const barEl = document.getElementById('p5-timer-bar');
+      const toggleBtn = document.getElementById('p5-timer-toggle-btn');
+
+      if (toggleBtn) {
+        toggleBtn.innerHTML = `<span>⏸️</span><span>一時停止</span>`;
+        toggleBtn.className = 'px-3 py-1 rounded-lg bg-amber-600 hover:bg-amber-500 text-white font-bold text-xs shadow-sm flex items-center gap-1 transition-all active:scale-95';
+      }
+
+      if (barEl) {
+        barEl.className = 'h-full bg-gradient-to-r from-emerald-500 to-amber-500 transition-all duration-1000 w-full';
+      }
 
       textEl.textContent = `${ToeicState.p5TimeLeft}s`;
-      barEl.style.width = '100%';
-      barEl.className = 'h-full bg-gradient-to-r from-emerald-500 to-amber-500 transition-all duration-1000 w-full';
+      textEl.className = 'text-amber-400 font-bold';
 
       ToeicState.p5Timer = setInterval(() => {
         ToeicState.p5TimeLeft--;
@@ -2220,6 +2279,7 @@ Schema:
 
         if (ToeicState.p5TimeLeft <= 0) {
           clearInterval(ToeicState.p5Timer);
+          ToeicState.p5TimerRunning = false;
           handlePart5Answer(-1); // Time up!
         }
       }, 1000);
@@ -2227,6 +2287,14 @@ Schema:
 
     function handlePart5Answer(selectedIdx) {
       clearInterval(ToeicState.p5Timer);
+      ToeicState.p5TimerRunning = false;
+
+      const toggleBtn = document.getElementById('p5-timer-toggle-btn');
+      if (toggleBtn) {
+        toggleBtn.innerHTML = `<span>⏹️</span><span>判定済</span>`;
+        toggleBtn.className = 'px-3 py-1 rounded-lg bg-slate-800 text-slate-500 text-xs flex items-center gap-1 cursor-default';
+      }
+
       const all = getAllPart5Questions().filter(q => ToeicState.levelFilter === 'all' || q.level === ToeicState.levelFilter);
       const q = all[ToeicState.p5Index];
       const isCorrect = selectedIdx === q.answer;
@@ -2276,7 +2344,7 @@ Schema:
     }
 
     function nextPart5Question() {
-      loadPart5Question(ToeicState.p5Index + 1);
+      loadPart5Question(ToeicState.p5Index + 1, false);
     }
 
     async function handleBatchGeneratePart5() {
