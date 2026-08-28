@@ -1,0 +1,962 @@
+<!DOCTYPE html>
+<html lang="ja" class="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>AI ルー語＆言い換えマスター | 銀フレ特化 4ステップ認知記憶システム</title>
+  
+  <!-- PWA & Mobile Meta Tags -->
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="theme-color" content="#0f172a">
+  <meta name="description" content="ルー語アンカリング・リアル耳コピ発音・TOEICパラフレーズ・4択想起テストで銀フレ英単語を1発定着">
+
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            brand: {
+              50: '#eef2ff',
+              100: '#e0e7ff',
+              400: '#818cf8',
+              500: '#6366f1',
+              600: '#4f46e5',
+              700: '#4338ca',
+              900: '#312e81',
+            },
+            accent: {
+              400: '#38bdf8',
+              500: '#0ea5e9',
+              emerald: '#10b981',
+              amber: '#f59e0b',
+              rose: '#f43f5e',
+              purple: '#a855f7',
+            }
+          }
+        }
+      }
+    }
+  </script>
+
+  <style>
+    ::-webkit-scrollbar { width: 6px; height: 6px; }
+    ::-webkit-scrollbar-track { background: rgba(15, 23, 42, 0.6); }
+    ::-webkit-scrollbar-thumb { background: rgba(51, 65, 85, 0.8); border-radius: 9999px; }
+    .glass {
+      background: rgba(15, 23, 42, 0.85);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+    }
+  </style>
+</head>
+<body class="bg-slate-950 text-slate-100 min-h-screen flex flex-col font-sans selection:bg-purple-500 selection:text-white pb-24 md:pb-8">
+
+  <!-- ================= TOP STICKY HEADER ================= -->
+  <header class="sticky top-0 z-40 glass border-b border-slate-800/80 px-4 py-3 sm:px-6">
+    <div class="max-w-7xl mx-auto flex items-center justify-between">
+      <div class="flex items-center gap-3">
+        <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-purple-600 via-indigo-600 to-pink-500 flex items-center justify-center shadow-lg shadow-purple-600/20 font-black text-xl text-white">
+          🎭
+        </div>
+        <div>
+          <h1 class="text-base sm:text-lg font-bold bg-gradient-to-r from-purple-200 via-pink-300 to-amber-300 bg-clip-text text-transparent leading-tight">
+            AI ルー語＆言い換えマスター
+          </h1>
+          <p class="text-xs text-slate-400 flex items-center gap-1.5 font-medium">
+            <span>銀フレ特化・4-Step認知記憶</span>
+            <span class="inline-block w-1.5 h-1.5 rounded-full bg-purple-400 animate-pulse"></span>
+            <span class="text-[10px] bg-slate-900 text-purple-300 px-1.5 py-0.5 rounded border border-purple-800/60 font-mono">リアル耳コピ発音</span>
+          </p>
+        </div>
+      </div>
+
+      <!-- Navigation Cross-links & Action Controls -->
+      <div class="flex items-center gap-2">
+        <a href="index.html" class="bg-slate-800/90 hover:bg-brand-600 text-slate-200 hover:text-white border border-slate-700 hover:border-brand-500 text-xs font-semibold px-2.5 sm:px-3 py-2 rounded-xl flex items-center gap-1 shadow-sm transition-all active:scale-95">
+          <span>⚡</span>
+          <span class="hidden sm:inline">普段学習</span>
+        </a>
+        <a href="toeic.html" class="bg-slate-800/90 hover:bg-amber-600 text-amber-300 hover:text-slate-950 border border-slate-700 hover:border-amber-500 text-xs font-semibold px-2.5 sm:px-3 py-2 rounded-xl flex items-center gap-1 shadow-sm transition-all active:scale-95">
+          <span>🏆</span>
+          <span class="hidden sm:inline">TOEIC特化</span>
+        </a>
+        <button onclick="AudioEngine.stop()" title="音声を停止" class="p-2 rounded-lg bg-rose-950/80 hover:bg-rose-900 text-rose-300 hover:text-white border border-rose-800/80 text-xs flex items-center gap-1 transition-all active:scale-95">
+          <span>⏹️</span>
+        </button>
+        <button onclick="openLouSettings()" title="設定" class="p-2 rounded-lg bg-slate-800/80 hover:bg-slate-700 text-slate-300 hover:text-white border border-slate-700 flex items-center gap-1 text-xs">
+          <span>⚙️</span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- ================= MAIN CONTAINER ================= -->
+  <main class="flex-1 max-w-5xl w-full mx-auto p-4 sm:p-6 md:p-8 space-y-6">
+
+    <!-- Global Alert Banner -->
+    <div id="global-banner" class="hidden rounded-xl p-3.5 sm:p-4 text-sm flex items-start gap-3 transition-all"></div>
+
+    <!-- Theme / Word Selector Card -->
+    <div class="glass p-5 sm:p-6 rounded-2xl border border-slate-800 shadow-xl space-y-4">
+      <div class="flex flex-col md:flex-row md:items-center justify-between gap-3 border-b border-slate-800 pb-3">
+        <div>
+          <span class="text-xs font-semibold uppercase tracking-wider text-purple-400 bg-purple-950/80 px-2.5 py-1 rounded-md border border-purple-800/60">Cognitive Anchoring</span>
+          <h2 class="text-xl sm:text-2xl font-bold mt-1 text-white flex items-center gap-2">
+            🎭 銀フレ単語 4-Step 認知記憶トレーニング
+          </h2>
+          <p class="text-xs sm:text-sm text-slate-400 mt-1">
+            ① ルー語情景アンカー ➔ ② リアル英語 ➔ ③ TOEIC言い換え ➔ ④ 想起テストで脳に焼き付ける！
+          </p>
+        </div>
+      </div>
+
+      <!-- Theme Selection & AI Custom Input -->
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-3 pt-1">
+        <div class="md:col-span-2 space-y-1.5">
+          <label class="block text-xs font-medium text-slate-300">銀フレ頻出シチュエーション（プリセット）:</label>
+          <select id="lou-preset-select" class="w-full bg-slate-950 border border-slate-700 rounded-xl px-3.5 py-2.5 text-xs sm:text-sm text-slate-200 focus:outline-none focus:border-purple-500 font-medium">
+            <option value="0">🔥 [緊急残業] 人数急増と会議延期 (accommodate / postpone / inspect / reimburse)</option>
+            <option value="1">✈️ [出張移動] 空港ゲート変更とホテル予約 (designated / mandatory / itinerary / reluctant)</option>
+            <option value="2">📊 [役員会議] 新規事業と採算性検討 (unanimous / feasible / tentative / subsequent)</option>
+            <option value="3">🤝 [商談交渉] 契約締結と価格変動 (comply / fluctuate / exceptional / indispensable)</option>
+          </select>
+        </div>
+
+        <div class="space-y-1.5 flex flex-col justify-end">
+          <button id="lou-batch-ai-btn" class="w-full bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-500 hover:to-indigo-500 text-white font-bold text-xs sm:text-sm px-4 py-2.5 rounded-xl transition-all shadow-lg shadow-purple-600/20 active:scale-95 flex items-center justify-center gap-2">
+            <span>✨</span> AIで新テーマを生成
+          </button>
+        </div>
+      </div>
+
+      <!-- Freeform custom input box -->
+      <div class="pt-2 flex flex-col sm:flex-row gap-2">
+        <input type="text" id="lou-custom-input" placeholder="覚えたい単語（カンマ区切り: 例: expedite, waive, confidential）または学習テーマ..." class="flex-1 bg-slate-950 border border-slate-700 rounded-xl px-4 py-2.5 text-xs sm:text-sm text-white placeholder-slate-500 focus:outline-none focus:border-purple-500">
+        <button id="lou-generate-custom-btn" class="bg-slate-800 hover:bg-slate-700 text-purple-300 hover:text-white border border-slate-700 text-xs font-semibold px-4 py-2.5 rounded-xl transition-all flex items-center justify-center gap-1.5 whitespace-nowrap">
+          <span>🚀</span> この単語で作成
+        </button>
+      </div>
+    </div>
+
+    <!-- ================= 4-STEP MASTER VIEW CARD ================= -->
+    <div id="lou-content-container" class="space-y-6">
+
+      <!-- Target Words & Real Phonetics Banner -->
+      <div class="bg-slate-900/90 rounded-2xl p-5 border border-slate-800 space-y-3">
+        <div class="flex items-center justify-between border-b border-slate-800 pb-2.5">
+          <h3 class="text-sm sm:text-base font-bold text-purple-400 flex items-center gap-2">
+            <span>🔤</span> 本日のターゲット語彙 & リアル耳コピ発音
+          </h3>
+          <span id="lou-theme-badge" class="text-[11px] bg-purple-950 text-purple-300 px-2.5 py-0.5 rounded-full border border-purple-800/60 font-semibold">残業トラブル</span>
+        </div>
+
+        <div id="lou-target-words-grid" class="grid grid-cols-1 md:grid-cols-2 gap-3 pt-1">
+          <!-- Injected dynamically -->
+        </div>
+      </div>
+
+      <!-- Step 1: ルー語アンカリング -->
+      <div class="bg-slate-900/90 rounded-2xl p-5 sm:p-6 border border-purple-900/40 shadow-xl space-y-4 relative overflow-hidden">
+        <div class="flex items-center justify-between border-b border-slate-800 pb-3">
+          <div class="flex items-center gap-2">
+            <span class="w-7 h-7 rounded-lg bg-purple-600 text-white font-black flex items-center justify-center text-xs">1</span>
+            <h3 class="text-base sm:text-lg font-bold text-white">
+              🎭 Step 1: ルー語アンカリング（感情・エピソード記憶）
+            </h3>
+          </div>
+          <span class="text-xs text-purple-300 bg-purple-950/80 px-2 py-0.5 rounded border border-purple-800/40">クスッと笑えて忘れない</span>
+        </div>
+
+        <div class="bg-slate-950/80 rounded-xl p-4 sm:p-5 border border-slate-800 space-y-3">
+          <p id="lou-step1-story" class="text-base sm:text-lg text-slate-100 font-sans leading-relaxed"></p>
+          <div class="pt-2 border-t border-slate-800/80 flex items-start gap-2 text-xs text-amber-300">
+            <span>💡</span>
+            <p id="lou-step1-hook" class="flex-1"></p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Step 2: リアル・イングリッシュ -->
+      <div class="bg-slate-900/90 rounded-2xl p-5 sm:p-6 border border-slate-800 space-y-4">
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-slate-800 pb-3">
+          <div class="flex items-center gap-2">
+            <span class="w-7 h-7 rounded-lg bg-indigo-600 text-white font-black flex items-center justify-center text-xs">2</span>
+            <h3 class="text-base sm:text-lg font-bold text-white">
+              📘 Step 2: リアル・イングリッシュ（自然なビジネス英文）
+            </h3>
+          </div>
+          <button id="lou-step2-play-btn" class="bg-indigo-600 hover:bg-indigo-500 text-white font-bold text-xs px-3.5 py-2 rounded-xl transition-all shadow-md shadow-indigo-600/20 active:scale-95 flex items-center gap-1.5 self-start sm:self-auto">
+            <span>🔊</span> 全文通し再生
+          </button>
+        </div>
+
+        <div class="bg-slate-950/80 rounded-xl p-4 sm:p-5 border border-slate-800 space-y-3">
+          <p id="lou-step2-sentence-en" class="text-base sm:text-lg font-bold text-white leading-relaxed font-sans"></p>
+          <p id="lou-step2-sentence-ja" class="text-xs sm:text-sm text-slate-300"></p>
+          <div class="bg-slate-900 p-3 rounded-lg border border-slate-800 text-xs space-y-1">
+            <p class="text-indigo-300 font-bold flex items-center gap-1.5">
+              <span>🎯 コロケーションの急所:</span>
+            </p>
+            <p id="lou-step2-collocation" class="text-slate-300"></p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Step 3: パラフレーズ・マトリクス -->
+      <div class="bg-slate-900/90 rounded-2xl p-5 sm:p-6 border border-slate-800 space-y-4">
+        <div class="flex items-center justify-between border-b border-slate-800 pb-3">
+          <div class="flex items-center gap-2">
+            <span class="w-7 h-7 rounded-lg bg-emerald-600 text-white font-black flex items-center justify-center text-xs">3</span>
+            <h3 class="text-base sm:text-lg font-bold text-white">
+              🔄 Step 3: TOEIC特効 パラフレーズ・マトリクス
+            </h3>
+          </div>
+          <span class="text-xs text-emerald-300 bg-emerald-950/80 px-2 py-0.5 rounded border border-emerald-800/40">Part 3/4/7 言い換え罠</span>
+        </div>
+
+        <div class="overflow-x-auto">
+          <table class="w-full text-left text-xs border-collapse">
+            <thead>
+              <tr class="border-b border-slate-800 text-slate-400">
+                <th class="py-2.5 px-3 font-semibold">重要単語</th>
+                <th class="py-2.5 px-3 font-semibold">TOEIC頻出の言い換え表現 (Paraphrase)</th>
+                <th class="py-2.5 px-3 font-semibold">出題・設問パターン</th>
+              </tr>
+            </thead>
+            <tbody id="lou-step3-table-body" class="divide-y divide-slate-800/60">
+              <!-- Injected dynamically -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Step 4: アクティブ・リコール 4択ミニテスト -->
+      <div class="bg-slate-900/90 rounded-2xl p-5 sm:p-6 border border-slate-800 space-y-4">
+        <div class="flex items-center justify-between border-b border-slate-800 pb-3">
+          <div class="flex items-center gap-2">
+            <span class="w-7 h-7 rounded-lg bg-amber-500 text-slate-950 font-black flex items-center justify-center text-xs">4</span>
+            <h3 class="text-base sm:text-lg font-bold text-white">
+              ⚡ Step 4: アクティブ・リコール（言い換え想起テスト）
+            </h3>
+          </div>
+          <span class="text-xs text-amber-300 bg-amber-950 px-2 py-0.5 rounded border border-amber-800/40">即戦力定着</span>
+        </div>
+
+        <div class="space-y-4">
+          <!-- Question sentence -->
+          <div class="bg-slate-950/80 p-4 rounded-xl border border-slate-800">
+            <p id="lou-step4-question" class="text-sm sm:text-base font-bold text-white leading-relaxed font-sans"></p>
+          </div>
+
+          <!-- 4 choices -->
+          <div id="lou-step4-choices" class="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+            <!-- Injected dynamically -->
+          </div>
+
+          <!-- Answer & Explanation box -->
+          <div id="lou-step4-explanation" class="hidden p-4 sm:p-5 rounded-xl border space-y-3 text-xs sm:text-sm transition-all"></div>
+        </div>
+      </div>
+
+      <!-- Action Footer: Save to Desk -->
+      <div class="flex justify-end gap-3 pt-2">
+        <button onclick="saveCurrentLouToDesk()" class="bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs sm:text-sm px-6 py-3 rounded-xl shadow-lg shadow-emerald-600/20 active:scale-95 transition-all flex items-center gap-2">
+          <span>💾</span> この英文・単語を保存デスクに一括追加
+        </button>
+      </div>
+
+    </div>
+
+  </main>
+
+  <!-- ================= SETTINGS MODAL ================= -->
+  <div id="lou-settings-modal" class="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm hidden flex items-center justify-center p-4">
+    <div class="bg-slate-900 border border-slate-800 rounded-2xl max-w-lg w-full p-5 sm:p-6 space-y-5 shadow-2xl">
+      <div class="flex items-center justify-between border-b border-slate-800 pb-3">
+        <h3 class="text-base font-bold text-white flex items-center gap-2">
+          <span>⚙️</span> Gemini API & 音声設定
+        </h3>
+        <button onclick="closeLouSettings()" class="text-slate-400 hover:text-white text-lg">✕</button>
+      </div>
+
+      <div class="space-y-4">
+        <div>
+          <div class="flex items-center justify-between mb-1">
+            <label class="block text-xs font-medium text-slate-300">Gemini API Key:</label>
+            <a href="https://aistudio.google.com/app/apikey" target="_blank" rel="noopener noreferrer" class="text-xs text-purple-400 hover:underline">
+              無料キー取得 ➔
+            </a>
+          </div>
+          <input type="password" id="lou-setting-gemini-key" placeholder="AIzaSy..." class="w-full bg-slate-950 border border-slate-700 rounded-xl px-3.5 py-2 text-xs sm:text-sm text-white font-mono placeholder-slate-600 focus:outline-none focus:border-purple-500">
+        </div>
+
+        <div>
+          <label class="block text-xs font-medium text-slate-300 mb-1">使用モデル:</label>
+          <select id="lou-setting-gemini-model" class="w-full bg-slate-950 border border-slate-700 rounded-xl px-3 py-2 text-xs sm:text-sm text-slate-200 focus:outline-none focus:border-purple-500 font-mono">
+            <option value="gemini-3.5-flash-lite" selected>gemini-3.5-flash-lite (推奨・無料枠 500 RPD / 最速)</option>
+            <option value="gemini-3.1-flash-lite">gemini-3.1-flash-lite (無料枠 500 RPD)</option>
+            <option value="gemini-3.5-flash">gemini-3.5-flash (高精度・無料枠 20 RPD)</option>
+          </select>
+        </div>
+
+        <div>
+          <label class="block text-xs font-medium text-slate-300 mb-1">音声読み上げ速度 (TTS):</label>
+          <div class="flex items-center gap-3 pt-1">
+            <input type="range" id="lou-setting-tts-rate" min="0.6" max="1.4" step="0.1" value="1.0" class="flex-1 accent-purple-500">
+            <span id="lou-setting-tts-rate-label" class="text-xs font-mono text-slate-300 w-10">1.0x</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="flex justify-end gap-2 pt-2 border-t border-slate-800">
+        <button onclick="closeLouSettings()" class="px-4 py-2 rounded-xl bg-slate-800 text-slate-300 text-xs font-semibold">
+          閉じる
+        </button>
+        <button onclick="saveLouSettings()" class="px-5 py-2 rounded-xl bg-purple-600 hover:bg-purple-500 text-white text-xs font-bold shadow-md shadow-purple-600/20">
+          💾 設定を保存
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ================= MOBILE BOTTOM NAVIGATION ================= -->
+  <nav class="md:hidden fixed bottom-0 left-0 right-0 z-50 glass border-t border-slate-800 px-2 py-1 flex justify-around items-center">
+    <a href="index.html" class="mobile-nav-btn flex flex-col items-center gap-0.5 p-2 rounded-xl text-slate-400 hover:text-slate-200">
+      <span class="text-lg">⚡</span>
+      <span class="text-[10px] font-medium">普段学習</span>
+    </a>
+    <a href="toeic.html" class="mobile-nav-btn flex flex-col items-center gap-0.5 p-2 rounded-xl text-amber-400 hover:text-amber-300">
+      <span class="text-lg">🏆</span>
+      <span class="text-[10px] font-medium">TOEIC</span>
+    </a>
+    <a href="lou.html" class="mobile-nav-btn flex flex-col items-center gap-0.5 p-2 rounded-xl text-purple-400 font-bold">
+      <span class="text-lg">🎭</span>
+      <span class="text-[10px] font-medium">ルー語</span>
+    </a>
+  </nav>
+
+  <!-- ================= JAVASCRIPT ENGINE ================= -->
+  <script>
+    /**
+     * AI Lou & Paraphrase Master - Core Engine
+     */
+
+    // --- Safe JSON & Helpers ---
+    function safeJsonParse(raw, fallback = []) {
+      if (!raw) return fallback;
+      try {
+        if (typeof raw !== 'string') return raw;
+        const cleaned = raw.trim().replace(/^```(?:json)?\s*/i, '').replace(/\s*```$/i, '');
+        const parsed = JSON.parse(cleaned);
+        return parsed !== null && parsed !== undefined ? parsed : fallback;
+      } catch (e) {
+        console.warn('safeJsonParse fallback:', e);
+        return fallback;
+      }
+    }
+
+    function escapeHtml(str) {
+      if (!str) return '';
+      return String(str).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+    }
+    function escapeAttr(str) {
+      if (!str) return '';
+      return String(str).replace(/'/g, "\\'").replace(/"/g, '&quot;');
+    }
+
+    // --- State Store ---
+    let savedModel = localStorage.getItem('eng_gemini_model') || 'gemini-3.5-flash-lite';
+    if (savedModel === 'gemini-2.5-flash-lite' || savedModel === 'gemini-2.0-flash-lite') {
+      savedModel = 'gemini-3.5-flash-lite';
+      localStorage.setItem('eng_gemini_model', savedModel);
+    }
+
+    const Store = {
+      config: {
+        geminiKey: localStorage.getItem('eng_gemini_key') || '',
+        geminiModel: savedModel,
+        ttsRate: parseFloat(localStorage.getItem('eng_tts_rate') || '1.0')
+      },
+      savedPhrases: safeJsonParse(localStorage.getItem('eng_saved_phrases'), [])
+    };
+
+    // --- Audio Engine ---
+    const AudioEngine = {
+      isPlaying: false,
+
+      speak(text, rate = null, onEndCallback = null) {
+        if (!('speechSynthesis' in window)) {
+          showBanner('お使いのブラウザは音声合成に対応していません', 'error');
+          return;
+        }
+        window.speechSynthesis.cancel();
+        const utterance = new SpeechSynthesisUtterance(text);
+        utterance.lang = 'en-US';
+        utterance.rate = rate || Store.config.ttsRate || 1.0;
+        
+        const voices = window.speechSynthesis.getVoices();
+        const enVoice = voices.find(v => (v.name.includes('Google') || v.name.includes('Natural') || v.name.includes('Samantha') || v.name.includes('Daniel')) && v.lang.startsWith('en')) || voices.find(v => v.lang.startsWith('en'));
+        if (enVoice) utterance.voice = enVoice;
+
+        this.isPlaying = true;
+
+        utterance.onend = () => {
+          this.isPlaying = false;
+          if (onEndCallback) onEndCallback();
+        };
+
+        utterance.onerror = () => {
+          this.isPlaying = false;
+          if (onEndCallback) onEndCallback();
+        };
+
+        window.speechSynthesis.speak(utterance);
+      },
+
+      stop() {
+        if ('speechSynthesis' in window) {
+          window.speechSynthesis.cancel();
+        }
+        this.isPlaying = false;
+        showBanner('音声を停止しました', 'info');
+      }
+    };
+
+    // --- Gemini REST API Client ---
+    const GeminiClient = {
+      async call(prompt, systemInstruction = '', jsonMode = true, retryWithFallback = true) {
+        const apiKey = Store.config.geminiKey.trim();
+        let model = Store.config.geminiModel.trim() || 'gemini-3.5-flash-lite';
+
+        if (!apiKey) {
+          console.warn('Gemini API Key not set.');
+          return null;
+        }
+
+        const url = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${apiKey}`;
+        const payload = {
+          contents: [{ parts: [{ text: prompt }] }],
+          generationConfig: { temperature: 0.7 }
+        };
+
+        if (systemInstruction) {
+          payload.systemInstruction = { parts: [{ text: systemInstruction }] };
+        }
+        if (jsonMode) {
+          payload.generationConfig.responseMimeType = "application/json";
+        }
+
+        const response = await fetch(url, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+        });
+
+        if (!response.ok) {
+          const err = await response.json().catch(() => ({}));
+          const errMsg = err.error?.message || `HTTP ${response.status}: ${response.statusText}`;
+
+          if (retryWithFallback && (errMsg.includes('no longer available') || errMsg.includes('not found') || response.status === 404)) {
+            Store.config.geminiModel = 'gemini-3.5-flash-lite';
+            localStorage.setItem('eng_gemini_model', 'gemini-3.5-flash-lite');
+            return await this.call(prompt, systemInstruction, jsonMode, false);
+          }
+          throw new Error(errMsg);
+        }
+
+        const data = await response.json();
+        const text = data.candidates?.[0]?.content?.parts?.[0]?.text || '';
+        if (jsonMode) {
+          const parsed = safeJsonParse(text, null);
+          if (parsed !== null) return parsed;
+          const match = text.match(/(\[[\s\S]*\]|\{[\s\S]*\})/);
+          if (match) return safeJsonParse(match[1], null);
+          return null;
+        }
+        return text;
+      }
+    };
+
+    function showBanner(message, type = 'info') {
+      const banner = document.getElementById('global-banner');
+      banner.className = 'rounded-xl p-3.5 sm:p-4 text-xs sm:text-sm flex items-start gap-3 transition-all ' + 
+        (type === 'error' ? 'bg-rose-950/80 border border-rose-800 text-rose-200' :
+         type === 'success' ? 'bg-emerald-950/80 border border-emerald-800 text-emerald-200' :
+         'bg-slate-900 border border-slate-700 text-slate-200');
+      
+      const icon = type === 'error' ? '⚠️' : type === 'success' ? '✅' : 'ℹ️';
+      banner.innerHTML = `<span class="text-base">${icon}</span><span class="flex-1">${escapeHtml(message)}</span>`;
+      banner.classList.remove('hidden');
+
+      setTimeout(() => {
+        banner.classList.add('hidden');
+      }, 5000);
+    }
+
+    // ====================================================================
+    // LOU PRESETS DATABASE (銀フレ特化・実戦リアル発音付き)
+    // ====================================================================
+    const LouPresets = [
+      {
+        theme: "緊急残業・突発トラブル対応",
+        targetWords: [
+          {
+            word: "accommodate",
+            phoneticSymbol: "/əˈkɑːmədeɪt/",
+            realSound: "（ア）**カー**マデイッ",
+            pronunciationTrick: "最初の「ア」は言わずに喉で息だけ。2音節目の【カー】に8割の力を込めて長く強く！語末の t は『ト』と言わずに息を止める。",
+            listeningTrap: "早口だと『カマデイ』としか聞こえず、先頭の a を探していると聞き逃す。",
+            meaning: "〜を収容する、要望に応じる",
+            coreNuance: "条件や人数に合わせて【すっぽり受け入れる】イメージ"
+          },
+          {
+            word: "postpone",
+            phoneticSymbol: "/poʊstˈpoʊn/",
+            realSound: "ポウストゥ**ポウン**",
+            pronunciationTrick: "ポではなく『ポウ』と二重母音。アクセントは後ろの【ポウン】！",
+            listeningTrap: "t の音が脱落して『ポスポウン』と聞こえる。",
+            meaning: "〜を延期する",
+            coreNuance: "スケジュールを【後ろへずらす（put off）】"
+          },
+          {
+            word: "inspect",
+            phoneticSymbol: "/ɪnˈspekt/",
+            realSound: "イン**スペッ**クッ",
+            pronunciationTrick: "スペに強烈なアクセント。語末の ct は息を飲み込むように止める。",
+            listeningTrap: "語尾の ct はほぼ破裂しない。",
+            meaning: "〜を詳しく検査・点検する",
+            coreNuance: "不備がないか【目を光らせて中を覗き込む】"
+          },
+          {
+            word: "reimburse",
+            phoneticSymbol: "/ˌriːɪmˈbɜːrs/",
+            realSound: "リイン**バース**",
+            pronunciationTrick: "バースの r で舌を奥に引いてしっかりこもらせる。",
+            listeningTrap: "re-im-burse と3拍でリズム良く刻まれる。",
+            meaning: "（経費などを）払い戻す、精算する",
+            coreNuance: "自腹で切ったお金を【懐（purse）に戻してもらう】"
+          }
+        ],
+        step1LouStory: {
+          story: "急にクライアントの参加人数が5人インクリース（increase）したけど、この会議室なら全員 **accommodate** <span class='text-purple-300 font-mono'>［（ア）カーマデイッ 🔊］</span> できるからノープロブレム！明日の朝イチの全体ブリーフィングは午後に **postpone** して、まずは今夜中に現場設備を **inspect** しておこう。かかった立替交通費は来週ちゃんと **reimburse** されるから安心していこうぜ！",
+          emotionalHook: "「急な人数追加を受け入れ」「会議を後ろ倒しにし」「現場を点検」「経費精算」という切羽詰まった残業劇で一発定着！"
+        },
+        step2RealEnglish: {
+          sentenceEn: "The main conference hall can easily accommodate all additional attendees, so we decided to postpone tomorrow's briefing and inspect the equipment first.",
+          sentenceJa: "大会議室は追加の参加者全員を容易に収容できるため、私たちは明日のブリーフィングを延期し、まず機材を点検することに決定しました。",
+          collocationTips: "accommodate attendees（参加者を収容する）、postpone the briefing（説明会を延期する）、inspect the equipment（機材を点検する）"
+        },
+        step3Paraphrases: [
+          {
+            word: "accommodate",
+            toeicParaphrase: "hold / fit / take in / meet (requests)",
+            partPattern: "Part 7で本文『accommodate 50 people』が設問で『fit 50 attendees』に化ける！"
+          },
+          {
+            word: "postpone",
+            toeicParaphrase: "put off / delay / reschedule for a later date",
+            partPattern: "Part 3/4の対話で『postpone the briefing』と言い、選択肢では『put off a meeting』が正解になる！"
+          },
+          {
+            word: "inspect",
+            toeicParaphrase: "examine / check / review / go over",
+            partPattern: "Part 7の告知文『inspect the facility』が設問で『examine the building』に言い換えられる！"
+          },
+          {
+            word: "reimburse",
+            toeicParaphrase: "pay back / compensate / refund",
+            partPattern: "Part 3で『submit receipts for reimbursement』が『get paid back for travel costs』に化ける！"
+          }
+        ],
+        step4Quiz: {
+          question: "Due to ongoing renovations, the auditorium was temporarily unable to _______ more than fifty guests.",
+          choices: ["accommodate", "accommodation", "accommodating", "accommodated"],
+          answer: 0,
+          explanation: "助動詞 was unable to の後ろには【動詞の原形】が入ります。文脈上「50名以上のゲストを収容する」という意味になる (A) accommodate が正解。",
+          paraphraseTrap: "本文の be unable to accommodate は、TOEIC Part 7の設問では『could not hold the visitors』と言い換えられます！"
+        }
+      },
+      {
+        theme: "出張移動・ホテル手配・日程変更",
+        targetWords: [
+          {
+            word: "designated",
+            phoneticSymbol: "/ˈdezɪɡneɪtɪd/",
+            realSound: "**デ**ズィグネイティッ",
+            pronunciationTrick: "最初の【デ】を一番強く！g は喉の奥で軽く鳴らし、語末は飲み込む。",
+            listeningTrap: "ネイティブは t を飛ばして『デズィグネイディッ』と発音。",
+            meaning: "指定された、指名された",
+            coreNuance: "サイン（sign）で【あらかじめ決められた】場所"
+          },
+          {
+            word: "mandatory",
+            phoneticSymbol: "/ˈmændətɔːri/",
+            realSound: "**マン**ダトリー",
+            pronunciationTrick: "最初の【マン】を口を横に引いて強く！tor は短く『トリー』。",
+            listeningTrap: "t が弱化して『マンダトリー』と滑らかに流れる。",
+            meaning: "義務的な、必須の",
+            coreNuance: "命令（command）によって【絶対やらなきゃいけない】"
+          },
+          {
+            word: "itinerary",
+            phoneticSymbol: "/aɪˈtɪnəreri/",
+            realSound: "アイ**ティ**ナレリィ",
+            pronunciationTrick: "最初のアイは軽く、2音節目の【ティ】にアクセント！",
+            listeningTrap: "t が母音に挟まれて『アイディナレリー』と濁音化して聞こえる。",
+            meaning: "旅程表、旅行計画",
+            coreNuance: "移動スケジュールが【分刻みで書かれた紙】"
+          },
+          {
+            word: "reluctant",
+            phoneticSymbol: "/rɪˈlʌktənt/",
+            realSound: "リ**ラ**クタントゥ",
+            pronunciationTrick: "リは弱く、2音節目の【ラ】で口を大きく開けてアクセント！",
+            listeningTrap: "最後の nt は息を詰まらせて終わる。",
+            meaning: "気が進まない、ためらっている",
+            coreNuance: "後ろ髪を引かれて【足が止まっている】感情"
+          }
+        ],
+        step1LouStory: {
+          story: "出張先のホテルに着いたら、駐車場は必ず **designated** <span class='text-purple-300 font-mono'>［デズィグネイティッ 🔊］</span> エリアにパークしてくれって言われたよ。明日のオリエンテーション出席は全員 **mandatory** だからサボれないし、まずは配られた **itinerary** をチェックしておこう。最初は参加に **reluctant** だったボブも、現地に着いたらノリノリでエンジョイしてるぜ！",
+          emotionalHook: "「指定駐車場」「必須参加」「旅程表確認」「乗り気じゃなかった同僚」という出張あるあるでエピソード記憶化！"
+        },
+        step2RealEnglish: {
+          sentenceEn: "Please park only in the designated spaces and review the conference itinerary, as attendance at tomorrow's orientation is strictly mandatory.",
+          sentenceJa: "明日のオリエンテーションへの出席は完全な義務となっておりますので、指定されたスペースにのみ駐車し、会議の旅程表をご確認ください。",
+          collocationTips: "designated spaces（指定された駐車枠）、review the itinerary（旅程表を見直す）、strictly mandatory（厳格に義務付けられた）"
+        },
+        step3Paraphrases: [
+          {
+            word: "designated",
+            toeicParaphrase: "assigned / reserved / specified",
+            partPattern: "Part 7で本文『designated parking』が設問で『assigned spots』に化ける！"
+          },
+          {
+            word: "mandatory",
+            toeicParaphrase: "required / compulsory / obligatory / must",
+            partPattern: "Part 4の社内放送『attendance is mandatory』が選択肢で『employees are required to attend』になる！"
+          },
+          {
+            word: "itinerary",
+            toeicParaphrase: "travel schedule / agenda / timetable",
+            partPattern: "Part 7のEメールで『revised itinerary』が設問で『updated travel schedule』に化ける！"
+          },
+          {
+            word: "reluctant",
+            toeicParaphrase: "unwilling / hesitant / skeptical",
+            partPattern: "Part 3で『management is reluctant』が選択肢で『hesitant to approve』として正解になる！"
+          }
+        ],
+        step4Quiz: {
+          question: "Attendance at the annual workplace safety workshop is _______ for all newly hired manufacturing staff.",
+          choices: ["mandatory", "mandate", "mandatorily", "mandating"],
+          answer: 0,
+          explanation: "be動詞 is の直後の補語位置には【形容詞】が入ります。文脈上「義務である、必須である」という意味になる (A) mandatory が正解。",
+          paraphraseTrap: "本文の is mandatory は、Part 7では『must participate』または『is required』と言い換えられます！"
+        }
+      }
+    ];
+
+    let currentLouData = LouPresets[0];
+
+    function initLouModule() {
+      renderLouData(currentLouData);
+
+      document.getElementById('lou-preset-select').addEventListener('change', (e) => {
+        const idx = parseInt(e.target.value);
+        if (LouPresets[idx]) {
+          currentLouData = LouPresets[idx];
+          renderLouData(currentLouData);
+        }
+      });
+
+      document.getElementById('lou-batch-ai-btn').addEventListener('click', handleGenerateAiTheme);
+      document.getElementById('lou-generate-custom-btn').addEventListener('click', handleGenerateCustomWords);
+
+      document.getElementById('lou-step2-play-btn').addEventListener('click', () => {
+        if (currentLouData?.step2RealEnglish?.sentenceEn) {
+          AudioEngine.speak(currentLouData.step2RealEnglish.sentenceEn);
+        }
+      });
+    }
+
+    function renderLouData(data) {
+      if (!data) return;
+      currentLouData = data;
+
+      // Theme Badge
+      document.getElementById('lou-theme-badge').textContent = data.theme || '銀フレ特化';
+
+      // Target Words Grid
+      const wordsGrid = document.getElementById('lou-target-words-grid');
+      wordsGrid.innerHTML = data.targetWords.map(w => `
+        <div class="bg-slate-950/80 p-3.5 rounded-xl border border-slate-800 hover:border-purple-500/40 transition-all space-y-2">
+          <div class="flex items-start justify-between gap-2">
+            <div>
+              <div class="flex items-center gap-2">
+                <span class="text-base font-bold text-white">${escapeHtml(w.word)}</span>
+                <span class="text-[11px] font-mono text-purple-300 font-bold bg-purple-950/80 px-2 py-0.5 rounded border border-purple-800/60">${escapeHtml(w.realSound || '')}</span>
+              </div>
+              <p class="text-xs font-semibold text-slate-200 mt-1">${escapeHtml(w.meaning)}</p>
+            </div>
+            <button onclick="AudioEngine.speak('${escapeAttr(w.word)}')" class="p-2 rounded-lg bg-slate-800 hover:bg-purple-600 text-white text-xs border border-slate-700 flex-shrink-0" title="ネイティブ発音を聞く">
+              🔊
+            </button>
+          </div>
+
+          <!-- Pronunciation Trick & Listening Trap -->
+          <div class="bg-slate-900/90 p-2.5 rounded-lg border border-slate-800/90 text-xs space-y-1">
+            <p class="text-amber-300 font-medium leading-relaxed">
+              <span>🗣️ <strong>発音の急所:</strong> ${escapeHtml(w.pronunciationTrick || '')}</span>
+            </p>
+            ${w.listeningTrap ? `
+              <p class="text-rose-300 text-[11px] leading-relaxed pt-0.5">
+                <span>👂 <strong>脱落罠:</strong> ${escapeHtml(w.listeningTrap)}</span>
+              </p>
+            ` : ''}
+          </div>
+        </div>
+      `).join('');
+
+      // Step 1
+      document.getElementById('lou-step1-story').innerHTML = formatLouStory(data.step1LouStory.story, data.targetWords);
+      document.getElementById('lou-step1-hook').textContent = data.step1LouStory.emotionalHook || '';
+
+      // Step 2
+      document.getElementById('lou-step2-sentence-en').textContent = data.step2RealEnglish.sentenceEn;
+      document.getElementById('lou-step2-sentence-ja').textContent = data.step2RealEnglish.sentenceJa;
+      document.getElementById('lou-step2-collocation').textContent = data.step2RealEnglish.collocationTips || '';
+
+      // Step 3 Paraphrases Table
+      const tbody = document.getElementById('lou-step3-table-body');
+      tbody.innerHTML = data.step3Paraphrases.map(p => `
+        <tr class="hover:bg-slate-900/50 transition-colors">
+          <td class="py-2.5 px-3 font-bold text-purple-300 whitespace-nowrap">${escapeHtml(p.word)}</td>
+          <td class="py-2.5 px-3 text-emerald-300 font-medium">${escapeHtml(p.toeicParaphrase)}</td>
+          <td class="py-2.5 px-3 text-slate-300 text-[11px]">${escapeHtml(p.partPattern)}</td>
+        </tr>
+      `).join('');
+
+      // Step 4 Quiz
+      const quiz = data.step4Quiz;
+      document.getElementById('lou-step4-question').textContent = quiz.question;
+      const choicesBox = document.getElementById('lou-step4-choices');
+      choicesBox.innerHTML = quiz.choices.map((c, idx) => `
+        <button onclick="handleLouQuizAnswer(${idx})" class="lou-choice-btn p-3.5 rounded-xl bg-slate-950 hover:bg-slate-800 active:scale-95 border border-slate-800 text-left text-xs sm:text-sm font-medium text-slate-200 transition-all flex items-center gap-2.5">
+          <span class="w-6 h-6 rounded-lg bg-slate-800 text-purple-300 font-bold flex items-center justify-center text-xs">${String.fromCharCode(65 + idx)}</span>
+          <span class="flex-1">${escapeHtml(c)}</span>
+        </button>
+      `).join('');
+
+      const expBox = document.getElementById('lou-step4-explanation');
+      expBox.classList.add('hidden');
+    }
+
+    function formatLouStory(rawStory, targetWords) {
+      let result = escapeHtml(rawStory);
+      // Highlight bolded words and add quick audio play
+      targetWords.forEach(w => {
+        const regex = new RegExp(`\\*\\*(${w.word})\\*\\*|(${w.word})`, 'gi');
+        result = result.replace(regex, `<strong class="text-purple-300 font-bold bg-purple-950/80 px-1.5 py-0.5 rounded border border-purple-800/60 cursor-pointer" onclick="AudioEngine.speak('${escapeAttr(w.word)}')">${w.word} 🔊</strong>`);
+      });
+      return result;
+    }
+
+    function handleLouQuizAnswer(selectedIdx) {
+      const quiz = currentLouData.step4Quiz;
+      const isCorrect = selectedIdx === quiz.answer;
+
+      const buttons = document.querySelectorAll('.lou-choice-btn');
+      buttons.forEach((btn, idx) => {
+        btn.disabled = true;
+        if (idx === quiz.answer) {
+          btn.className = 'lou-choice-btn p-3.5 rounded-xl bg-emerald-950 border border-emerald-600 text-emerald-200 text-xs sm:text-sm font-bold flex items-center gap-2.5';
+        } else if (idx === selectedIdx) {
+          btn.className = 'lou-choice-btn p-3.5 rounded-xl bg-rose-950 border border-rose-600 text-rose-200 text-xs sm:text-sm font-bold flex items-center gap-2.5';
+        }
+      });
+
+      const expBox = document.getElementById('lou-step4-explanation');
+      expBox.className = `p-4 sm:p-5 rounded-xl border space-y-2.5 transition-all text-xs sm:text-sm ${isCorrect ? 'bg-emerald-950/80 border-emerald-700 text-emerald-200' : 'bg-rose-950/80 border-rose-700 text-rose-200'}`;
+      expBox.innerHTML = `
+        <div class="flex items-center justify-between">
+          <span class="font-bold text-sm sm:text-base">${isCorrect ? '🎉 正解！' : '❌ 不正解'}（正解: (${String.fromCharCode(65 + quiz.answer)}) ${escapeHtml(quiz.choices[quiz.answer])}）</span>
+          <button onclick="AudioEngine.speak('${escapeAttr(quiz.question.replace('_______', quiz.choices[quiz.answer]))}')" class="text-xs bg-slate-900 hover:bg-slate-800 text-slate-200 px-2.5 py-1 rounded border border-slate-700">
+            🔊 正解文を聞く
+          </button>
+        </div>
+        <p class="text-slate-300 leading-relaxed">${escapeHtml(quiz.explanation)}</p>
+        <div class="bg-slate-950/70 p-3 rounded-lg text-xs space-y-1 text-slate-300 font-sans border border-slate-800">
+          <p><strong class="text-amber-300">💡 パラフレーズの罠:</strong> ${escapeHtml(quiz.paraphraseTrap)}</p>
+        </div>
+      `;
+      expBox.classList.remove('hidden');
+    }
+
+    // --- AI Generator ---
+    const LOU_SYSTEM_PROMPT = `You are a cognitive linguistics & TOEIC vocabulary coach.
+Generate a 4-step Lou-style mnemonic and paraphrase mastery set targeting TOEIC Silver Phrase (600-730 level).
+Strictly output JSON with this schema:
+{
+  "theme": "Catchy Japanese theme title",
+  "targetWords": [
+    {
+      "word": "accommodate",
+      "phoneticSymbol": "/əˈkɑːmədeɪt/",
+      "realSound": "（ア）**カー**マデイッ",
+      "pronunciationTrick": "Crucial pronunciation tip highlighting strong stress, schwa, or ending stop consonant in Japanese",
+      "listeningTrap": "How native fast speech drops or alters the sounds in Japanese",
+      "meaning": "日本語の主要意味",
+      "coreNuance": "コアナビゲーション"
+    }
+  ],
+  "step1LouStory": {
+    "story": "Natural funny empathetic Lou-style story with target words in **bold**",
+    "emotionalHook": "Why this story anchors the memory"
+  },
+  "step2RealEnglish": {
+    "sentenceEn": "Polished high-yield business English sentence",
+    "sentenceJa": "自然な日本語訳",
+    "collocationTips": "Important collocations"
+  },
+  "step3Paraphrases": [
+    {
+      "word": "Target word",
+      "toeicParaphrase": "TOEIC paraphrase equivalent",
+      "partPattern": "How it is tested in Part 3/4/7"
+    }
+  ],
+  "step4Quiz": {
+    "question": "TOEIC Part 5 fill-in-the-blank question with _______",
+    "choices": ["Choice A", "Choice B", "Choice C", "Choice D"],
+    "answer": 0,
+    "explanation": "Clear grammatical and semantic reason for correct choice",
+    "paraphraseTrap": "Explanation of paraphrase shift"
+  }
+}`;
+
+    async function handleGenerateAiTheme() {
+      const btn = document.getElementById('lou-batch-ai-btn');
+      btn.disabled = true;
+      btn.innerHTML = `<span class="animate-spin inline-block">🔄</span><span>AI生成中...</span>`;
+
+      try {
+        const randomThemes = ["終電間際のオフィス緊急対応", "国際線フライトのトラブルと神対応", "新商品プレゼンと役員への根回し", "海外クライアントとの価格交渉と契約", "飲み会幹事のハプニングと神采配"];
+        const chosen = randomThemes[Math.floor(Math.random() * randomThemes.length)];
+        const prompt = `Generate a high-yield TOEIC Silver Phrase (銀フレ 600-730 level) set on theme: ${chosen}. Include 3-4 target words with real-sound phonetics, Lou-style anchoring story, real English sentence, paraphrase matrix, and quiz.`;
+
+        const res = await GeminiClient.call(prompt, LOU_SYSTEM_PROMPT, true);
+        if (res && res.targetWords && res.step1LouStory && res.step2RealEnglish && res.step4Quiz) {
+          LouPresets.push(res);
+          const select = document.getElementById('lou-preset-select');
+          const newOpt = document.createElement('option');
+          newOpt.value = LouPresets.length - 1;
+          newOpt.textContent = `✨ [AI生成] ${res.theme} (${res.targetWords.map(w => w.word).join(' / ')})`;
+          select.appendChild(newOpt);
+          select.value = LouPresets.length - 1;
+          renderLouData(res);
+          showBanner(`新テーマ「${res.theme}」を生成しました！`, 'success');
+        } else {
+          showBanner('AI生成に失敗しました。内蔵プリセットをご利用ください。', 'info');
+        }
+      } catch (err) {
+        console.error(err);
+        showBanner(`AI生成エラー (${err.message})`, 'error');
+      } finally {
+        btn.disabled = false;
+        btn.innerHTML = `<span>✨</span><span>AIで新テーマを生成</span>`;
+      }
+    }
+
+    async function handleGenerateCustomWords() {
+      const input = document.getElementById('lou-custom-input');
+      const text = input.value.trim();
+      if (!text) {
+        showBanner('覚えたい単語（例: expedite, waive）またはテーマを入力してください', 'info');
+        return;
+      }
+
+      const btn = document.getElementById('lou-generate-custom-btn');
+      btn.disabled = true;
+      btn.innerHTML = `<span class="animate-spin inline-block">🔄</span><span>生成中...</span>`;
+
+      try {
+        const prompt = `Generate a 4-step Lou-style mnemonic and paraphrase set specifically for these words or theme: "${text}". Output in strict JSON.`;
+        const res = await GeminiClient.call(prompt, LOU_SYSTEM_PROMPT, true);
+        if (res && res.targetWords && res.step1LouStory) {
+          LouPresets.push(res);
+          const select = document.getElementById('lou-preset-select');
+          const newOpt = document.createElement('option');
+          newOpt.value = LouPresets.length - 1;
+          newOpt.textContent = `🎯 [カスタム] ${res.theme} (${res.targetWords.map(w => w.word).join(' / ')})`;
+          select.appendChild(newOpt);
+          select.value = LouPresets.length - 1;
+          renderLouData(res);
+          input.value = '';
+          showBanner(`「${res.theme}」の4-Stepセットを作成しました！`, 'success');
+        } else {
+          showBanner('生成に失敗しました。', 'info');
+        }
+      } catch (err) {
+        console.error(err);
+        showBanner(`生成エラー (${err.message})`, 'error');
+      } finally {
+        btn.disabled = false;
+        btn.innerHTML = `<span>🚀</span><span>この単語で作成</span>`;
+      }
+    }
+
+    function saveCurrentLouToDesk() {
+      if (!currentLouData) return;
+      const en = currentLouData.step2RealEnglish.sentenceEn;
+      const ja = currentLouData.step2RealEnglish.sentenceJa;
+      const wordsList = currentLouData.targetWords.map(w => `${w.word} (${w.meaning})`).join(', ');
+
+      Store.savedPhrases.unshift({
+        english: en,
+        japanese: `${wordsList} | ${ja}`,
+        katakana: currentLouData.targetWords.map(w => `${w.word}: ${w.realSound}`).join(' | '),
+        nuance: `コロケーション: ${currentLouData.step2RealEnglish.collocationTips || ''}`,
+        savedAt: new Date().toISOString()
+      });
+      localStorage.setItem('eng_saved_phrases', JSON.stringify(Store.savedPhrases));
+      showBanner('保存デスクに追加しました！', 'success');
+    }
+
+    // --- Settings Modal ---
+    function openLouSettings() {
+      document.getElementById('lou-setting-gemini-key').value = Store.config.geminiKey;
+      document.getElementById('lou-setting-gemini-model').value = Store.config.geminiModel;
+      document.getElementById('lou-setting-tts-rate').value = Store.config.ttsRate;
+      document.getElementById('lou-setting-tts-rate-label').textContent = `${Store.config.ttsRate.toFixed(1)}x`;
+      document.getElementById('lou-settings-modal').classList.remove('hidden');
+    }
+    function closeLouSettings() {
+      document.getElementById('lou-settings-modal').classList.add('hidden');
+    }
+    function saveLouSettings() {
+      Store.config.geminiKey = document.getElementById('lou-setting-gemini-key').value.trim();
+      Store.config.geminiModel = document.getElementById('lou-setting-gemini-model').value.trim();
+      Store.config.ttsRate = parseFloat(document.getElementById('lou-setting-tts-rate').value);
+
+      localStorage.setItem('eng_gemini_key', Store.config.geminiKey);
+      localStorage.setItem('eng_gemini_model', Store.config.geminiModel);
+      localStorage.setItem('eng_tts_rate', Store.config.ttsRate);
+
+      closeLouSettings();
+      showBanner('設定を保存しました！', 'success');
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+      initLouModule();
+      document.getElementById('lou-setting-tts-rate')?.addEventListener('input', (e) => {
+        document.getElementById('lou-setting-tts-rate-label').textContent = `${parseFloat(e.target.value).toFixed(1)}x`;
+      });
+    });
+  </script>
+</body>
+</html>
