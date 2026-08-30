@@ -136,16 +136,30 @@
       </div>
     </div>
 
-    <!-- FAIL OVERLAY (0.8s trigger explanation popup) -->
-    <div id="failOverlay" class="hidden absolute inset-0 bg-neutral-950/95 border border-red-900/60 rounded-xl flex flex-col items-center justify-center p-6 text-center z-20">
-      <div class="text-red-500 font-black text-2xl md:text-3xl tracking-wider mb-2" id="failTitle">
-        MISSED / TIMEOUT
+    <!-- FAIL OVERLAY (Manual OK Confirmation) -->
+    <div id="failOverlay" class="hidden absolute inset-0 bg-neutral-950/98 border-2 border-red-800 rounded-xl flex flex-col items-center justify-center p-6 text-center z-20 space-y-4">
+      <div>
+        <div class="text-red-500 font-black text-2xl md:text-3xl tracking-wider mb-1" id="failTitle">
+          MISSED / TIMEOUT
+        </div>
+        <div id="correctAnswerDisplay" class="text-xs md:text-sm text-emerald-400 font-bold font-mono">
+          <!-- Correct Answer injected here -->
+        </div>
       </div>
-      <div class="text-xs text-neutral-400 font-mono mb-4 uppercase">Trigger Rule</div>
-      <div id="failTrigger" class="text-sm md:text-lg font-bold text-amber-300 bg-black/80 px-4 py-3 rounded-lg border border-amber-900/40 max-w-lg leading-relaxed">
-        <!-- Trigger text injected here -->
+
+      <div class="w-full max-w-lg space-y-1.5">
+        <div class="text-[11px] text-neutral-400 font-mono uppercase tracking-wider">Trigger Rule（判定根拠）</div>
+        <div id="failTrigger" class="text-sm md:text-base font-bold text-amber-300 bg-neutral-900 px-4 py-3.5 rounded-lg border border-amber-800/50 leading-relaxed text-left">
+          <!-- Trigger text injected here -->
+        </div>
       </div>
-      <div class="text-[11px] text-neutral-500 font-mono mt-4">RESETTING TO STAGE 01 (0.8s)...</div>
+
+      <div class="pt-2">
+        <button onclick="confirmFailAndRestart()" class="px-8 py-3.5 bg-red-600 hover:bg-red-500 text-white font-black text-base md:text-lg rounded-lg shadow-lg shadow-red-950 active:scale-95 transition tracking-wider">
+          OK - RETRY [SPACE]
+        </button>
+        <div class="text-[11px] text-neutral-500 font-mono mt-2">Space / Enter または [OK] タップで Stage 01 へ</div>
+      </div>
     </div>
 
     <!-- CLEAR SCREEN (10 Streak Achieved) -->
@@ -623,6 +637,7 @@
       questionText: document.getElementById('questionText'),
       failTitle: document.getElementById('failTitle'),
       failTrigger: document.getElementById('failTrigger'),
+      correctAnswerDisplay: document.getElementById('correctAnswerDisplay'),
       clearTimeDisplay: document.getElementById('clearTimeDisplay'),
       newPbBadge: document.getElementById('newPbBadge'),
       pbDisplay: document.getElementById('pbDisplay'),
@@ -832,21 +847,25 @@
       isResetting = true;
       if (timerAnimFrame) cancelAnimationFrame(timerAnimFrame);
 
-      // Flash background
+      // Flash background red
       document.body.classList.add('flash-red');
       setTimeout(() => document.body.classList.remove('flash-red'), 800);
 
-      // Show trigger popup
+      // Show trigger popup & correct answer
+      const correctOptionLetter = ['A', 'B', 'C', 'D'][currentQuestion.answer];
+      const correctOptionText = currentQuestion.options[currentQuestion.answer];
+      
       elements.failTitle.textContent = title;
+      elements.correctAnswerDisplay.textContent = `正解: [${correctOptionLetter}] ${correctOptionText}`;
       elements.failTrigger.textContent = currentQuestion.trigger;
       elements.failOverlay.classList.remove('hidden');
+    }
 
-      // Strict 0.8s reset delay
-      setTimeout(() => {
-        elements.failOverlay.classList.add('hidden');
-        isResetting = false;
-        startGame(); // Reset to Stage 01 immediately
-      }, 800);
+    function confirmFailAndRestart() {
+      if (!isResetting) return;
+      elements.failOverlay.classList.add('hidden');
+      isResetting = false;
+      startGame(); // Reset to Stage 01 immediately on user confirmation
     }
 
     function handleVictory() {
@@ -875,9 +894,18 @@
 
         const key = e.key.toLowerCase();
 
+        // If fail overlay is active: Space or Enter confirms and restarts
+        if (isResetting) {
+          if (e.code === 'Space' || key === ' ' || key === 'enter') {
+            e.preventDefault();
+            confirmFailAndRestart();
+            return;
+          }
+        }
+
         // Mode switch [M]
         if (key === 'm') {
-          if (!isGameRunning) {
+          if (!isGameRunning && !isResetting) {
             if (currentMode === 'part5') setMode('part67');
             else if (currentMode === 'part67') setMode('all');
             else setMode('part5');
@@ -885,7 +913,7 @@
           return;
         }
 
-        // Spacebar to start / retry
+        // Spacebar to start / retry from start or clear screen
         if (e.code === 'Space' || key === ' ') {
           if (!isGameRunning && !isResetting) {
             e.preventDefault();
