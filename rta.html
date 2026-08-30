@@ -1,0 +1,919 @@
+<!DOCTYPE html>
+<html lang="ja" class="h-full bg-black">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>TOEIC 600 RTA | 記号処理・反射神経強制ギプス</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    * {
+      touch-action: manipulation;
+      user-select: none;
+      -webkit-user-select: none;
+    }
+    body {
+      background-color: #000000;
+      color: #ffffff;
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+    }
+    .flash-red {
+      animation: redFlash 0.8s cubic-bezier(0.1, 0.9, 0.2, 1);
+    }
+    @keyframes redFlash {
+      0% { background-color: rgba(220, 38, 38, 0.8); }
+      100% { background-color: #000000; }
+    }
+    .timer-bar {
+      transition: width 0.05s linear;
+    }
+  </style>
+</head>
+<body class="h-full flex flex-col justify-between p-4 md:p-8 max-w-4xl mx-auto select-none">
+
+  <!-- TOP HEADER: Minimal Mode Switcher & Personal Best -->
+  <header class="flex items-center justify-between border-b border-neutral-800 pb-3 text-xs tracking-wider">
+    <!-- Mode Tabs -->
+    <div class="flex gap-1 bg-neutral-950 p-1 rounded border border-neutral-800" id="modeSelector">
+      <button onclick="setMode('part5')" id="tab-part5" class="px-2.5 py-1 rounded font-bold transition-colors bg-neutral-800 text-emerald-400">
+        Part 5 品詞
+      </button>
+      <button onclick="setMode('part67')" id="tab-part67" class="px-2.5 py-1 rounded font-bold transition-colors text-neutral-400 hover:text-white">
+        Part 6/7 目的
+      </button>
+      <button onclick="setMode('all')" id="tab-all" class="px-2.5 py-1 rounded font-bold transition-colors text-neutral-400 hover:text-white">
+        ALL 混合
+      </button>
+    </div>
+
+    <!-- PB (Personal Best) & Keyboard Hint -->
+    <div class="flex items-center gap-4 text-neutral-400 font-mono">
+      <div class="hidden sm:block text-neutral-600 text-[10px]">[Key: 1-4 / A-D / M / Space]</div>
+      <div class="flex items-center gap-1.5">
+        <span class="text-neutral-500">PB:</span>
+        <span id="pbDisplay" class="text-amber-400 font-bold text-sm">--.--s</span>
+      </div>
+    </div>
+  </header>
+
+  <!-- MAIN GAME AREA -->
+  <main id="gameContainer" class="flex-1 flex flex-col justify-center my-4 relative">
+    
+    <!-- START / IDLE SCREEN -->
+    <div id="startScreen" class="flex flex-col items-center justify-center text-center space-y-6">
+      <div class="space-y-2">
+        <div class="inline-block px-2 py-0.5 text-[10px] tracking-widest uppercase bg-emerald-950 border border-emerald-800 text-emerald-400 font-bold rounded">
+          TOEIC 600 HACK RTA
+        </div>
+        <h1 class="text-2xl md:text-4xl font-extrabold tracking-tight text-white">
+          <span id="startModeTitle" class="text-emerald-400">Part 5 品詞パズル</span>
+        </h1>
+        <p class="text-xs md:text-sm text-neutral-400 max-w-md mx-auto leading-relaxed">
+          意味を読むな。接尾辞と配置だけで<span class="text-emerald-400 font-bold">1問3秒</span>で機械処理せよ。<br>
+          <span class="text-neutral-300 font-semibold">10問連続正解</span>でクリア。ミス・時間切れは即時 Stage 1 リセット。
+        </p>
+      </div>
+
+      <div class="pt-4">
+        <button onclick="startGame()" class="px-8 py-4 bg-emerald-500 hover:bg-emerald-400 text-black font-extrabold text-lg md:text-xl rounded-lg shadow-lg shadow-emerald-950 transition active:scale-95 tracking-wider">
+          START RTA [SPACE]
+        </button>
+      </div>
+    </div>
+
+    <!-- ACTIVE QUIZ SCREEN (Hidden by default) -->
+    <div id="quizScreen" class="hidden flex-col justify-between h-full max-h-[500px]">
+      <!-- Status Bar: Progress & Big Millisecond Timer -->
+      <div class="space-y-2">
+        <div class="flex justify-between items-end">
+          <div class="text-xs md:text-sm font-bold text-neutral-400">
+            STAGE <span id="stageDisplay" class="text-white text-base md:text-xl">01</span> / 10
+          </div>
+          <div class="flex items-baseline gap-1 font-mono">
+            <span id="timerDisplay" class="text-3xl md:text-5xl font-black text-emerald-400 tracking-tight">03.00</span>
+            <span class="text-xs text-neutral-500 font-normal">s</span>
+          </div>
+        </div>
+
+        <!-- Timer progress bar -->
+        <div class="w-full bg-neutral-900 h-2 rounded-full overflow-hidden border border-neutral-800">
+          <div id="timerBar" class="timer-bar h-full bg-emerald-400 w-full"></div>
+        </div>
+      </div>
+
+      <!-- Question Text -->
+      <div class="my-6 md:my-10 text-center px-2">
+        <div id="questionText" class="text-lg md:text-2xl font-bold leading-relaxed text-white tracking-wide">
+          <!-- Question text injected here -->
+        </div>
+      </div>
+
+      <!-- 4 Option Buttons -->
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-3" id="optionsGrid">
+        <button onclick="handleSelect(0)" class="option-btn flex items-center justify-between p-3.5 md:p-4 rounded-lg bg-neutral-900 hover:bg-neutral-800 active:bg-emerald-700 border border-neutral-800 text-left font-semibold text-sm md:text-base transition-colors group">
+          <span class="flex items-center gap-2">
+            <span class="px-2 py-0.5 rounded bg-neutral-800 group-hover:bg-neutral-700 text-xs font-mono text-neutral-400 group-hover:text-white">A / 1</span>
+            <span class="option-text text-neutral-100">Option A</span>
+          </span>
+        </button>
+        <button onclick="handleSelect(1)" class="option-btn flex items-center justify-between p-3.5 md:p-4 rounded-lg bg-neutral-900 hover:bg-neutral-800 active:bg-emerald-700 border border-neutral-800 text-left font-semibold text-sm md:text-base transition-colors group">
+          <span class="flex items-center gap-2">
+            <span class="px-2 py-0.5 rounded bg-neutral-800 group-hover:bg-neutral-700 text-xs font-mono text-neutral-400 group-hover:text-white">B / 2</span>
+            <span class="option-text text-neutral-100">Option B</span>
+          </span>
+        </button>
+        <button onclick="handleSelect(2)" class="option-btn flex items-center justify-between p-3.5 md:p-4 rounded-lg bg-neutral-900 hover:bg-neutral-800 active:bg-emerald-700 border border-neutral-800 text-left font-semibold text-sm md:text-base transition-colors group">
+          <span class="flex items-center gap-2">
+            <span class="px-2 py-0.5 rounded bg-neutral-800 group-hover:bg-neutral-700 text-xs font-mono text-neutral-400 group-hover:text-white">C / 3</span>
+            <span class="option-text text-neutral-100">Option C</span>
+          </span>
+        </button>
+        <button onclick="handleSelect(3)" class="option-btn flex items-center justify-between p-3.5 md:p-4 rounded-lg bg-neutral-900 hover:bg-neutral-800 active:bg-emerald-700 border border-neutral-800 text-left font-semibold text-sm md:text-base transition-colors group">
+          <span class="flex items-center gap-2">
+            <span class="px-2 py-0.5 rounded bg-neutral-800 group-hover:bg-neutral-700 text-xs font-mono text-neutral-400 group-hover:text-white">D / 4</span>
+            <span class="option-text text-neutral-100">Option D</span>
+          </span>
+        </button>
+      </div>
+    </div>
+
+    <!-- FAIL OVERLAY (0.8s trigger explanation popup) -->
+    <div id="failOverlay" class="hidden absolute inset-0 bg-neutral-950/95 border border-red-900/60 rounded-xl flex flex-col items-center justify-center p-6 text-center z-20">
+      <div class="text-red-500 font-black text-2xl md:text-3xl tracking-wider mb-2" id="failTitle">
+        MISSED / TIMEOUT
+      </div>
+      <div class="text-xs text-neutral-400 font-mono mb-4 uppercase">Trigger Rule</div>
+      <div id="failTrigger" class="text-sm md:text-lg font-bold text-amber-300 bg-black/80 px-4 py-3 rounded-lg border border-amber-900/40 max-w-lg leading-relaxed">
+        <!-- Trigger text injected here -->
+      </div>
+      <div class="text-[11px] text-neutral-500 font-mono mt-4">RESETTING TO STAGE 01 (0.8s)...</div>
+    </div>
+
+    <!-- CLEAR SCREEN (10 Streak Achieved) -->
+    <div id="clearScreen" class="hidden flex-col items-center justify-center text-center space-y-6">
+      <div class="space-y-2">
+        <div class="inline-block px-3 py-1 text-xs tracking-widest uppercase bg-amber-950 border border-amber-800 text-amber-300 font-bold rounded">
+          MISSION COMPLETE
+        </div>
+        <h2 class="text-3xl md:text-5xl font-black text-white">10 STREAK CLEARED!</h2>
+      </div>
+
+      <div class="bg-neutral-950 border border-neutral-800 rounded-xl p-6 w-full max-w-sm space-y-4">
+        <div>
+          <div class="text-xs text-neutral-400 font-mono">TOTAL CLEAR TIME</div>
+          <div id="clearTimeDisplay" class="text-4xl md:text-5xl font-black text-emerald-400 font-mono">18.42s</div>
+        </div>
+        <div id="newPbBadge" class="hidden text-xs bg-amber-400 text-black font-extrabold py-1 px-3 rounded-full inline-block">
+          ★ NEW PERSONAL BEST ★
+        </div>
+      </div>
+
+      <div>
+        <button onclick="startGame()" class="px-8 py-4 bg-white hover:bg-neutral-200 text-black font-black text-lg rounded-lg shadow-lg transition active:scale-95 tracking-wider">
+          AGAIN [SPACE]
+        </button>
+      </div>
+    </div>
+
+  </main>
+
+  <!-- FOOTER STATUS & MINIMAL CONTROLS -->
+  <footer class="border-t border-neutral-900 pt-3 flex justify-between items-center text-[11px] text-neutral-600 font-mono">
+    <div>ZERO-LATENCY RTA ENGINE</div>
+    <div id="totalQuestionsLoaded" class="text-neutral-500">Loaded: 0 questions</div>
+  </footer>
+
+  <script>
+    /* ==========================================================================
+       QUESTION DATABASE (Part 5 & Part 6/7 Symbol Processing Data)
+       ========================================================================== */
+    const QUESTION_BANK = {
+      part5: [
+        // 1. -tion / -sion -> 名詞
+        {
+          q: "The board members reached a final _____ after a three-hour meeting.",
+          options: ["decide", "decision", "decisive", "decisively"],
+          answer: 1,
+          trigger: "冠詞 a + 形容詞 final の後 → 名詞 [-sion]"
+        },
+        {
+          q: "For more _____, please visit our official website.",
+          options: ["inform", "information", "informative", "informatively"],
+          answer: 1,
+          trigger: "more の直後で名詞の位置 → 名詞 [-tion]"
+        },
+        {
+          q: "The company submitted an _____ for the municipal construction project.",
+          options: ["apply", "applicant", "application", "applicable"],
+          answer: 2,
+          trigger: "冠詞 an の後ろ（目的語）→ 名詞 [-tion]"
+        },
+
+        // 2. -ment -> 名詞
+        {
+          q: "Both parties finally signed the contractual _____ yesterday.",
+          options: ["agree", "agreement", "agreeable", "agreeably"],
+          answer: 1,
+          trigger: "形容詞 contractual の後ろ → 名詞 [-ment]"
+        },
+        {
+          q: "The ongoing _____ of urban infrastructure requires heavy investment.",
+          options: ["develop", "development", "developer", "developing"],
+          answer: 1,
+          trigger: "冠詞 The + 形容詞 ongoing の後 + 前置詞 of の前 → 名詞 [-ment]"
+        },
+        {
+          q: "The technician checked the safety _____ before operating the machine.",
+          options: ["equip", "equipment", "equipped", "equipping"],
+          answer: 1,
+          trigger: "名詞修飾 / 目的語の位置 → 不可算名詞 [-ment]"
+        },
+
+        // 3. -ance / -ence -> 名詞
+        {
+          q: "Her outstanding _____ was recognized at the annual banquet.",
+          options: ["perform", "performance", "performer", "performed"],
+          answer: 1,
+          trigger: "所有格 Her + 形容詞 outstanding の後ろ → 名詞 [-ance]"
+        },
+        {
+          q: "Please keep quiet during the keynote speaker's _____.",
+          options: ["present", "presentation", "presence", "presently"],
+          answer: 2,
+          trigger: "所有格 speaker's の後ろ（出席・存在）→ 名詞 [-ence]"
+        },
+        {
+          q: "There is a significant _____ in quality between the two models.",
+          options: ["differ", "different", "difference", "differently"],
+          answer: 2,
+          trigger: "冠詞 a + 形容詞 significant の後ろ → 名詞 [-ence]"
+        },
+
+        // 4. -ity / -ness -> 名詞
+        {
+          q: "The manager appreciated the _____ of the new scheduling system.",
+          options: ["efficient", "efficiency", "efficiently", "efficiencies"],
+          answer: 1,
+          trigger: "冠詞 the + 前置詞 of の間 → 名詞 [-ty]"
+        },
+        {
+          q: "Room _____ can be checked in real time on our portal.",
+          options: ["available", "availability", "availably", "avail"],
+          answer: 1,
+          trigger: "主語の位置（複合名詞 Room + _____）→ 名詞 [-ity]"
+        },
+        {
+          q: "The campaign successfully raised environmental _____ among citizens.",
+          options: ["aware", "awareness", "awarely", "awarenesses"],
+          answer: 1,
+          trigger: "動詞 raised + 形容詞 environmental の後（目的語）→ 名詞 [-ness]"
+        },
+
+        // 5. -able / -ible -> 形容詞
+        {
+          q: "The company needs a _____ supplier for raw materials.",
+          options: ["rely", "reliance", "reliable", "reliably"],
+          answer: 2,
+          trigger: "冠詞 a + _____ + 名詞 supplier → 空欄は形容詞 [-able]"
+        },
+        {
+          q: "The files are now _____ to all authorized employees.",
+          options: ["access", "accessible", "accessibility", "accessibly"],
+          answer: 1,
+          trigger: "be動詞 are + _____ + 前置詞 to → 補語の形容詞 [-ible]"
+        },
+        {
+          q: "Our delivery service is remarkably _____ and cost-effective.",
+          options: ["flex", "flexibility", "flexible", "flexibly"],
+          answer: 2,
+          trigger: "be動詞 is + 副詞 remarkably の後 → 補語の形容詞 [-ible]"
+        },
+
+        // 6. -ive -> 形容詞
+        {
+          q: "The marketing team launched a highly _____ advertising campaign.",
+          options: ["effect", "effective", "effectively", "effectiveness"],
+          answer: 1,
+          trigger: "副詞 highly + _____ + 名詞 advertising → 空欄は形容詞 [-ive]"
+        },
+        {
+          q: "The enterprise offers _____ prices to attract budget-conscious buyers.",
+          options: ["compete", "competition", "competitive", "competitively"],
+          answer: 2,
+          trigger: "動詞 offers + _____ + 名詞 prices → 空欄は形容詞 [-ive]"
+        },
+        {
+          q: "He is an exceptionally _____ manager with vast experience.",
+          options: ["produce", "product", "productive", "productively"],
+          answer: 2,
+          trigger: "冠詞 an + 副詞 exceptionally + _____ + 名詞 manager → 形容詞 [-ive]"
+        },
+
+        // 7. -al / -ful / -ous -> 形容詞
+        {
+          q: "Mr. Davis showed exceptional _____ conduct during the negotiation.",
+          options: ["profession", "professional", "professionally", "professionalism"],
+          answer: 1,
+          trigger: "形容詞 exceptional + _____ + 名詞 conduct → 形容詞 [-al]"
+        },
+        {
+          q: "The product launch proved to be remarkably _____ in Asian markets.",
+          options: ["succeed", "success", "successful", "successfully"],
+          answer: 2,
+          trigger: "be動詞 proved to be + 副詞 の後ろ（補語）→ 形容詞 [-ful]"
+        },
+        {
+          q: "The merger will create _____ opportunities for young executives.",
+          options: ["number", "numerous", "numerously", "numerical"],
+          answer: 1,
+          trigger: "動詞 create + _____ + 名詞 opportunities → 形容詞 [-ous]"
+        },
+
+        // 8. -ly -> 副詞
+        {
+          q: "The shipment was delivered _____ without any damage.",
+          options: ["safe", "safely", "safety", "safeties"],
+          answer: 1,
+          trigger: "受動態 was delivered の後（文末修飾）→ 副詞 [-ly]"
+        },
+        {
+          q: "Profits grew _____ following the release of the smartphone model.",
+          options: ["significant", "significantly", "significance", "signify"],
+          answer: 1,
+          trigger: "完全自動詞 grew の後ろ（動詞修飾）→ 副詞 [-ly]"
+        },
+        {
+          q: "The committee will _____ review the proposal before the vote.",
+          options: ["careful", "carefully", "carefulness", "caring"],
+          answer: 1,
+          trigger: "助動詞 will + 本動詞 review の間 → 副詞 [-ly]"
+        },
+
+        // 9. [冠詞 a/an/the] _____ [前置詞 of/in/for] -> 名詞
+        {
+          q: "The _____ of new safety regulations will take effect next month.",
+          options: ["implement", "implementation", "implementing", "implemented"],
+          answer: 1,
+          trigger: "[冠詞 The] _____ [前置詞 of] → 空欄は名詞 [-tion]"
+        },
+        {
+          q: "A wide _____ of colors is available upon request.",
+          options: ["select", "selection", "selective", "selectively"],
+          answer: 1,
+          trigger: "[冠詞 A + 形容詞 wide] _____ [前置詞 of] → 空欄は名詞 [-tion]"
+        },
+
+        // 10. [所有格 my/their/company's] _____ [名詞] -> 形容詞
+        {
+          q: "The firm revised its _____ strategy to boost international sales.",
+          options: ["finance", "financial", "financially", "financier"],
+          answer: 1,
+          trigger: "[所有格 its] _____ [名詞 strategy] → 空欄は形容詞 [-al]"
+        },
+        {
+          q: "We appreciate your _____ assistance during the server migration.",
+          options: ["continue", "continuous", "continuously", "continuity"],
+          answer: 1,
+          trigger: "[所有格 your] _____ [名詞 assistance] → 空欄は形容詞 [-ous]"
+        },
+
+        // 11. [所有格] _____ [前置詞/ピリオド] -> 名詞
+        {
+          q: "The CEO praised the entire team for their _____ in the project.",
+          options: ["dedicated", "dedication", "dedicate", "dedicating"],
+          answer: 1,
+          trigger: "[所有格 their] _____ [前置詞 in] → 空欄は名詞 [-tion]"
+        },
+        {
+          q: "Customers expressed satisfaction with the brand's _____.",
+          options: ["reliable", "reliability", "reliably", "relied"],
+          answer: 1,
+          trigger: "[所有格 brand's] _____ [ピリオド] → 空欄は名詞 [-ity]"
+        },
+
+        // 12. [be動詞 is/are/was] _____ [ピリオド/前置詞] -> 形容詞
+        {
+          q: "The customer service representative was extremely _____ on the phone.",
+          options: ["help", "helpful", "helpfully", "helpfulness"],
+          answer: 1,
+          trigger: "[be動詞 was + 副詞 extremely] _____ [前置詞 on] → 形容詞 [-ful]"
+        },
+        {
+          q: "The downtown office building is completely _____ by subway.",
+          options: ["access", "accessible", "accessibility", "accessibly"],
+          answer: 1,
+          trigger: "[be動詞 is + 副詞 completely] _____ [前置詞 by] → 形容詞 [-ible]"
+        },
+
+        // 13. [助動詞 will/can/must] _____ [本動詞] -> 副詞
+        {
+          q: "The updated software will _____ speed up the calculation process.",
+          options: ["dramatic", "dramatically", "drama", "dramatize"],
+          answer: 1,
+          trigger: "[助動詞 will] _____ [本動詞 speed] の間 → 空欄は副詞 [-ly]"
+        },
+        {
+          q: "Security staff must _____ inspect all visitor badges at the entrance.",
+          options: ["thorough", "thoroughly", "thoroughness", "thoroughfare"],
+          answer: 1,
+          trigger: "[助動詞 must] _____ [本動詞 inspect] の間 → 空欄は副詞 [-ly]"
+        },
+
+        // 14. [have/has] _____ [過去分詞 p.p.] -> 副詞
+        {
+          q: "The company has _____ expanded its distribution network abroad.",
+          options: ["recent", "recently", "recency", "recents"],
+          answer: 1,
+          trigger: "[完了形 has] _____ [過去分詞 expanded] の間 → 空欄は副詞 [-ly]"
+        },
+        {
+          q: "Sales figures have _____ increased since the new marketing campaign.",
+          options: ["steady", "steadily", "steadiness", "steadied"],
+          answer: 1,
+          trigger: "[完了形 have] _____ [過去分詞 increased] の間 → 空欄は副詞 [-ly]"
+        },
+
+        // 15. [完全文], _____ または _____ , [完全文] -> 副詞
+        {
+          q: "_____, the flight was delayed due to severe weather conditions.",
+          options: ["Unfortunate", "Unfortunately", "Unfortunateness", "Misfortune"],
+          answer: 1,
+          trigger: "_____ , [完全文] → 文頭を修飾する副詞 [-ly]"
+        },
+        {
+          q: "The renovation work was completed ahead of schedule, _____.",
+          options: ["surprising", "surprisingly", "surprise", "surprised"],
+          answer: 1,
+          trigger: "[完全文] , _____ → 文末で全体を修飾する副詞 [-ly]"
+        }
+      ],
+
+      part67: [
+        // 1. Subject: [名詞句] -> 件名そのものが目的
+        {
+          q: "Subject: Inquiry regarding bulk order discounts\n\nDear Sales Team, ...",
+          options: ["To request pricing information", "To cancel a shipment", "To complain about a delay", "To apply for a job"],
+          answer: 0,
+          trigger: "Subject: Inquiry regarding discounts → [価格・割引の問い合わせ]"
+        },
+        {
+          q: "Subject: Rescheduling of Friday's budget meeting\n\nAll staff members, ...",
+          options: ["To approve a new budget", "To change a meeting time", "To announce a hiring", "To order office supplies"],
+          answer: 1,
+          trigger: "Subject: Rescheduling of meeting → [会議日程の変更]"
+        },
+
+        // 2. I am writing to [動詞]... -> 最重要目的トリガー
+        {
+          q: "I am writing to inquire about the warranty policy for Model X-200.",
+          options: ["To ask for policy details", "To request a full refund", "To schedule a repair", "To negotiate a contract"],
+          answer: 0,
+          trigger: "I am writing to inquire about... → [問い合わせ (To ask)]"
+        },
+        {
+          q: "I am writing to confirm our reservation for the conference room on June 5.",
+          options: ["To confirm a booking", "To cancel an event", "To invite a guest speaker", "To bill a client"],
+          answer: 0,
+          trigger: "I am writing to confirm our reservation → [予約の確認 (To confirm a booking)]"
+        },
+
+        // 3. I am writing in response to... -> 返信・対応
+        {
+          q: "I am writing in response to your advertisement for a Senior Web Developer.",
+          options: ["To submit a job application", "To place an advertisement", "To terminate a contract", "To decline an offer"],
+          answer: 0,
+          trigger: "writing in response to your advertisement for [職種] → [求人応募 (Job application)]"
+        },
+
+        // 4. We regret to inform you that... -> 不合格・中止・キャンセル
+        {
+          q: "We regret to inform you that the workshop scheduled for Monday has been canceled.",
+          options: ["To announce a cancellation", "To schedule a workshop", "To invite participants", "To request feedback"],
+          answer: 0,
+          trigger: "We regret to inform you that ... canceled → [中止の通知 (To announce a cancellation)]"
+        },
+        {
+          q: "We regret to inform you that we have chosen another candidate for the position.",
+          options: ["To notify an applicant of a decision", "To schedule an interview", "To offer a promotion", "To request references"],
+          answer: 0,
+          trigger: "We regret to inform you ... chosen another candidate → [不採用通知 (Notify of a decision)]"
+        },
+
+        // 5. Please be advised / reminded that... -> 規則・変更通知
+        {
+          q: "Please be advised that the main parking garage will undergo maintenance this weekend.",
+          options: ["To inform of maintenance work", "To sell parking passes", "To open a new facility", "To report an accident"],
+          answer: 0,
+          trigger: "Please be advised that ... maintenance → [保守・点検の案内 (Inform of maintenance)]"
+        },
+
+        // 6. This is a reminder that... -> リマインド・期日通知
+        {
+          q: "This is a friendly reminder that all timesheets must be submitted by 5:00 PM today.",
+          options: ["To remind about a submission deadline", "To introduce a new policy", "To recruit employees", "To grant time off"],
+          answer: 0,
+          trigger: "This is a reminder that ... submitted by... → [提出期限のリマインド (Submission deadline)]"
+        },
+
+        // 7. We are currently seeking / looking for... -> 求人募集
+        {
+          q: "Apex Technologies is currently seeking an energetic Sales Representative for our Tokyo branch.",
+          options: ["To advertise an open position", "To introduce a sales rep", "To open a new store", "To congratulate a worker"],
+          answer: 0,
+          trigger: "currently seeking [役職] → [求人広告 (To advertise an open position)]"
+        },
+
+        // 8. Thank you for your recent purchase / inquiry... -> 注文・問合せ礼
+        {
+          q: "Thank you for your recent purchase of the UltraClean Air Purifier.",
+          options: ["To acknowledge an order", "To process a return", "To advertise a new model", "To survey opinions"],
+          answer: 0,
+          trigger: "Thank you for your recent purchase → [注文の確認・礼 (To acknowledge an order)]"
+        },
+
+        // 9. Effective [日付]... -> 規約変更・組織改編
+        {
+          q: "Effective October 1, our customer support hours will change to 8:00 AM - 6:00 PM.",
+          options: ["To announce revised operating hours", "To hire support staff", "To celebrate an anniversary", "To close a department"],
+          answer: 0,
+          trigger: "Effective [日付], hours will change → [営業時間変更の通知 (Announce revised hours)]"
+        },
+
+        // 10. Please note that the deadline is... -> 締め切り案内
+        {
+          q: "Please note that the deadline for early registration discount is next Friday, May 12.",
+          options: ["To give a deadline for a discount", "To cancel a registration", "To change ticket prices", "To refund payments"],
+          answer: 0,
+          trigger: "deadline for ... discount is [日付] → [割引期日の案内 (Deadline for discount)]"
+        },
+
+        // 11. You are invited to... -> イベント・式典招待
+        {
+          q: "You are cordially invited to attend the grand opening ceremony of our new headquarters.",
+          options: ["To invite someone to an event", "To sell real estate", "To request funding", "To apply for membership"],
+          answer: 0,
+          trigger: "You are invited to attend [イベント名] → [招待 (To invite someone)]"
+        },
+
+        // 12. We would like to congratulate... -> 昇進・受賞祝辞
+        {
+          q: "We would like to congratulate Ms. Elena Vance on her promotion to Vice President.",
+          options: ["To recognize an employee's promotion", "To hire a new executive", "To farewell a retiree", "To announce a transfer"],
+          answer: 0,
+          trigger: "congratulate [人名] on her promotion → [昇進の祝辞 (Recognize a promotion)]"
+        },
+
+        // 13. Please find attached the... -> 添付ファイル送付
+        {
+          q: "Please find attached the finalized financial statement for the third quarter.",
+          options: ["To provide financial documents", "To request an invoice", "To delay a payment", "To correct an error"],
+          answer: 0,
+          trigger: "Please find attached the finalized financial statement → [書類送付 (To provide documents)]"
+        },
+
+        // 14. If you are unable to attend, please... -> 不参加手続き
+        {
+          q: "If you are unable to attend the mandatory seminar, please notify HR immediately.",
+          options: ["To explain procedure for absence", "To reschedule a seminar", "To cancel HR training", "To request speakers"],
+          answer: 0,
+          trigger: "If unable to attend, please notify → [不参加時の手続き案内 (Procedure for absence)]"
+        },
+
+        // 15. Do not hesitate to contact us if... -> 問い合わせ案内
+        {
+          q: "Do not hesitate to contact our technical helpdesk if you encounter any setup issues.",
+          options: ["To offer technical assistance", "To report a defect", "To sell software", "To terminate service"],
+          answer: 0,
+          trigger: "Do not hesitate to contact helpdesk if... → [サポートの案内 (Offer technical assistance)]"
+        }
+      ]
+    };
+
+    /* ==========================================================================
+       GAME STATE & ENGINE
+       ========================================================================== */
+    const STREAK_GOAL = 10;
+    const TIME_LIMIT_MS = 3000; // 3.00 seconds per question
+
+    let currentMode = 'part5'; // 'part5' | 'part67' | 'all'
+    let activeQuestionList = [];
+    let currentQuestion = null;
+    let currentStage = 1;
+    let rtaStartTime = 0;
+    let questionStartTime = 0;
+    let timerAnimFrame = null;
+    let isGameRunning = false;
+    let isResetting = false;
+
+    // LocalStorage Keys for Personal Bests
+    const PB_KEYS = {
+      part5: 'toeic600_rta_pb_part5',
+      part67: 'toeic600_rta_pb_part67',
+      all: 'toeic600_rta_pb_all'
+    };
+
+    // DOM Elements
+    const elements = {
+      startScreen: document.getElementById('startScreen'),
+      quizScreen: document.getElementById('quizScreen'),
+      clearScreen: document.getElementById('clearScreen'),
+      failOverlay: document.getElementById('failOverlay'),
+      stageDisplay: document.getElementById('stageDisplay'),
+      timerDisplay: document.getElementById('timerDisplay'),
+      timerBar: document.getElementById('timerBar'),
+      questionText: document.getElementById('questionText'),
+      failTitle: document.getElementById('failTitle'),
+      failTrigger: document.getElementById('failTrigger'),
+      clearTimeDisplay: document.getElementById('clearTimeDisplay'),
+      newPbBadge: document.getElementById('newPbBadge'),
+      pbDisplay: document.getElementById('pbDisplay'),
+      startModeTitle: document.getElementById('startModeTitle'),
+      totalQuestionsLoaded: document.getElementById('totalQuestionsLoaded')
+    };
+
+    /* ==========================================================================
+       INITIALIZATION & MODE MANAGEMENT
+       ========================================================================== */
+    function init() {
+      updateTotalQuestionsCount();
+      loadPB();
+      setupKeyboard();
+    }
+
+    function setMode(mode) {
+      if (isGameRunning && !confirm('進行中のRTAを中断してモードを切り替えますか？')) return;
+      
+      currentMode = mode;
+      
+      // Update UI Tabs
+      ['part5', 'part67', 'all'].forEach(m => {
+        const tab = document.getElementById(`tab-${m}`);
+        if (m === mode) {
+          tab.className = "px-2.5 py-1 rounded font-bold transition-colors bg-neutral-800 text-emerald-400";
+        } else {
+          tab.className = "px-2.5 py-1 rounded font-bold transition-colors text-neutral-400 hover:text-white";
+        }
+      });
+
+      // Update Start Screen Title
+      const titles = {
+        part5: 'Part 5 品詞パズル特化',
+        part67: 'Part 6 & 7 目的スナイプ特化',
+        all: 'ALL 混合 総合RTA'
+      };
+      elements.startModeTitle.textContent = titles[mode];
+
+      // Refresh PB Display
+      loadPB();
+
+      // If on clear screen or running, return to start screen
+      stopGame();
+      showScreen('start');
+    }
+
+    function loadPB() {
+      const pbKey = PB_KEYS[currentMode];
+      const savedPb = localStorage.getItem(pbKey);
+      if (savedPb) {
+        elements.pbDisplay.textContent = parseFloat(savedPb).toFixed(2) + 's';
+      } else {
+        elements.pbDisplay.textContent = '--.--s';
+      }
+    }
+
+    function updateTotalQuestionsCount() {
+      const countP5 = QUESTION_BANK.part5.length;
+      const countP67 = QUESTION_BANK.part67.length;
+      elements.totalQuestionsLoaded.textContent = `P5: ${countP5}問 | P6/7: ${countP67}問 | Total: ${countP5 + countP67}問`;
+    }
+
+    /* ==========================================================================
+       GAME LIFECYCLE
+       ========================================================================== */
+    function startGame() {
+      if (isResetting) return;
+
+      // Build Question Pool
+      if (currentMode === 'part5') {
+        activeQuestionList = shuffleArray([...QUESTION_BANK.part5]);
+      } else if (currentMode === 'part67') {
+        activeQuestionList = shuffleArray([...QUESTION_BANK.part67]);
+      } else {
+        activeQuestionList = shuffleArray([...QUESTION_BANK.part5, ...QUESTION_BANK.part67]);
+      }
+
+      currentStage = 1;
+      isGameRunning = true;
+      isResetting = false;
+      rtaStartTime = performance.now();
+
+      elements.failOverlay.classList.add('hidden');
+      elements.newPbBadge.classList.add('hidden');
+      showScreen('quiz');
+
+      nextQuestion();
+    }
+
+    function stopGame() {
+      isGameRunning = false;
+      if (timerAnimFrame) cancelAnimationFrame(timerAnimFrame);
+    }
+
+    function showScreen(screen) {
+      elements.startScreen.classList.add('hidden');
+      elements.quizScreen.classList.add('hidden');
+      elements.clearScreen.classList.add('hidden');
+
+      if (screen === 'start') elements.startScreen.classList.remove('hidden');
+      if (screen === 'quiz') elements.quizScreen.classList.remove('hidden');
+      if (screen === 'clear') elements.clearScreen.classList.remove('hidden');
+    }
+
+    function nextQuestion() {
+      if (currentStage > STREAK_GOAL) {
+        handleVictory();
+        return;
+      }
+
+      elements.stageDisplay.textContent = currentStage < 10 ? '0' + currentStage : currentStage;
+
+      // Pick question from pool (recycle pool if needed)
+      if (activeQuestionList.length === 0) {
+        if (currentMode === 'part5') activeQuestionList = shuffleArray([...QUESTION_BANK.part5]);
+        else if (currentMode === 'part67') activeQuestionList = shuffleArray([...QUESTION_BANK.part67]);
+        else activeQuestionList = shuffleArray([...QUESTION_BANK.part5, ...QUESTION_BANK.part67]);
+      }
+      currentQuestion = activeQuestionList.pop();
+
+      // Render Question
+      elements.questionText.innerHTML = formatQuestionText(currentQuestion.q);
+
+      // Render 4 Options
+      const optionTexts = document.querySelectorAll('.option-text');
+      currentQuestion.options.forEach((opt, idx) => {
+        optionTexts[idx].textContent = opt;
+      });
+
+      // Start 3.00s Countdown
+      questionStartTime = performance.now();
+      runTimer();
+    }
+
+    function formatQuestionText(rawText) {
+      // Highlight blank _____ with glowing underline
+      let formatted = rawText.replace(/_____/g, '<span class="text-amber-300 font-extrabold px-1 border-b-2 border-amber-400">_____</span>');
+      // Format newline for Part 6/7 email subjects
+      formatted = formatted.replace(/\n\n/g, '<br><span class="text-xs text-neutral-400 block mt-1">');
+      return formatted;
+    }
+
+    /* ==========================================================================
+       TIMER & ANIMATION LOOP (3.00s strict)
+       ========================================================================== */
+    function runTimer() {
+      if (timerAnimFrame) cancelAnimationFrame(timerAnimFrame);
+
+      function update() {
+        if (!isGameRunning || isResetting) return;
+
+        const now = performance.now();
+        const elapsed = now - questionStartTime;
+        const remaining = Math.max(0, TIME_LIMIT_MS - elapsed);
+
+        // Format millisecond display (e.g. 02.84)
+        const seconds = Math.floor(remaining / 1000);
+        const millis = Math.floor((remaining % 1000) / 10);
+        elements.timerDisplay.textContent = `0${seconds}.${millis < 10 ? '0' + millis : millis}`;
+
+        // Timer Bar Percentage
+        const pct = (remaining / TIME_LIMIT_MS) * 100;
+        elements.timerBar.style.width = pct + '%';
+
+        // Dynamic Color on critical time (< 1.00s)
+        if (remaining < 1000) {
+          elements.timerDisplay.className = "text-3xl md:text-5xl font-black text-red-500 tracking-tight";
+          elements.timerBar.className = "timer-bar h-full bg-red-500 w-full";
+        } else {
+          elements.timerDisplay.className = "text-3xl md:text-5xl font-black text-emerald-400 tracking-tight";
+          elements.timerBar.className = "timer-bar h-full bg-emerald-400 w-full";
+        }
+
+        if (remaining <= 0) {
+          handleTimeout();
+          return;
+        }
+
+        timerAnimFrame = requestAnimationFrame(update);
+      }
+
+      timerAnimFrame = requestAnimationFrame(update);
+    }
+
+    /* ==========================================================================
+       USER INPUT HANDLING & INSTANT RESET LOGIC
+       ========================================================================== */
+    function handleSelect(selectedIndex) {
+      if (!isGameRunning || isResetting) return;
+
+      if (selectedIndex === currentQuestion.answer) {
+        // CORRECT: 0ms zero-latency transition to next stage
+        currentStage++;
+        nextQuestion();
+      } else {
+        // WRONG: Flash red, show trigger reason for 0.8s, then reset
+        handleFail("INCORRECT CHOICE");
+      }
+    }
+
+    function handleTimeout() {
+      handleFail("TIMEOUT FAIL (0.00s)");
+    }
+
+    function handleFail(title) {
+      isResetting = true;
+      if (timerAnimFrame) cancelAnimationFrame(timerAnimFrame);
+
+      // Flash background
+      document.body.classList.add('flash-red');
+      setTimeout(() => document.body.classList.remove('flash-red'), 800);
+
+      // Show trigger popup
+      elements.failTitle.textContent = title;
+      elements.failTrigger.textContent = currentQuestion.trigger;
+      elements.failOverlay.classList.remove('hidden');
+
+      // Strict 0.8s reset delay
+      setTimeout(() => {
+        elements.failOverlay.classList.add('hidden');
+        isResetting = false;
+        startGame(); // Reset to Stage 01 immediately
+      }, 800);
+    }
+
+    function handleVictory() {
+      stopGame();
+      const totalTime = ((performance.now() - rtaStartTime) / 1000).toFixed(2);
+      elements.clearTimeDisplay.textContent = totalTime + 's';
+
+      // Check Personal Best
+      const pbKey = PB_KEYS[currentMode];
+      const oldPb = localStorage.getItem(pbKey);
+      if (!oldPb || parseFloat(totalTime) < parseFloat(oldPb)) {
+        localStorage.setItem(pbKey, totalTime);
+        elements.newPbBadge.classList.remove('hidden');
+        loadPB();
+      }
+
+      showScreen('clear');
+    }
+
+    /* ==========================================================================
+       KEYBOARD SHORTCUTS & HELPERS
+       ========================================================================== */
+    function setupKeyboard() {
+      window.addEventListener('keydown', (e) => {
+        if (e.repeat) return; // Prevent key hold repeats
+
+        const key = e.key.toLowerCase();
+
+        // Mode switch [M]
+        if (key === 'm') {
+          if (!isGameRunning) {
+            if (currentMode === 'part5') setMode('part67');
+            else if (currentMode === 'part67') setMode('all');
+            else setMode('part5');
+          }
+          return;
+        }
+
+        // Spacebar to start / retry
+        if (e.code === 'Space' || key === ' ') {
+          if (!isGameRunning && !isResetting) {
+            e.preventDefault();
+            startGame();
+            return;
+          }
+        }
+
+        // 4 Options Keyboard Bindings: [1,2,3,4] or [A,B,C,D]
+        if (isGameRunning && !isResetting) {
+          if (key === '1' || key === 'a') { e.preventDefault(); handleSelect(0); }
+          else if (key === '2' || key === 'b') { e.preventDefault(); handleSelect(1); }
+          else if (key === '3' || key === 'c') { e.preventDefault(); handleSelect(2); }
+          else if (key === '4' || key === 'd') { e.preventDefault(); handleSelect(3); }
+        }
+      });
+    }
+
+    function shuffleArray(array) {
+      for (let i = array.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [array[i], array[j]] = [array[j], array[i]];
+      }
+      return array;
+    }
+
+    // Launch
+    window.addEventListener('DOMContentLoaded', init);
+  </script>
+</body>
+</html>
