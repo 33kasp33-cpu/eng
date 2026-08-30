@@ -73,10 +73,23 @@
         </p>
       </div>
 
-      <div class="pt-4">
-        <button onclick="startGame()" class="px-8 py-4 bg-emerald-500 hover:bg-emerald-400 text-black font-extrabold text-lg md:text-xl rounded-lg shadow-lg shadow-emerald-950 transition active:scale-95 tracking-wider">
+      <div class="pt-2">
+        <button onclick="startGame()" class="cursor-pointer select-none px-8 py-4 bg-emerald-500 hover:bg-emerald-400 text-black font-extrabold text-lg md:text-xl rounded-lg shadow-lg shadow-emerald-950 transition active:scale-95 tracking-wider pointer-events-auto">
           START RTA [SPACE]
         </button>
+      </div>
+
+      <!-- Start Screen Leaderboard Preview -->
+      <div class="w-full max-w-md bg-neutral-950 border border-neutral-800 rounded-xl p-4 text-left space-y-2.5">
+        <div class="flex justify-between items-center border-b border-neutral-800 pb-2">
+          <span class="text-xs font-bold text-amber-400 uppercase tracking-wider flex items-center gap-1.5 font-mono">
+            <span>🏆</span> <span id="startLeaderboardTitle">Part 5 TOP 5 記録</span>
+          </span>
+          <button onclick="clearLeaderboard()" class="text-[10px] text-neutral-600 hover:text-red-400 transition cursor-pointer font-mono">記録クリア</button>
+        </div>
+        <div id="startLeaderboardList" class="space-y-1 text-xs font-mono">
+          <!-- Injected dynamically -->
+        </div>
       </div>
     </div>
 
@@ -176,34 +189,57 @@
 
       <!-- Action Button -->
       <div class="pt-2">
-        <button onclick="confirmFailAndRestart()" class="px-8 py-4 bg-red-600 hover:bg-red-500 active:scale-95 text-white font-black text-lg rounded-lg shadow-lg shadow-red-950 transition tracking-wider">
+        <button onclick="confirmFailAndRestart()" class="cursor-pointer px-8 py-4 bg-red-600 hover:bg-red-500 active:scale-95 text-white font-black text-lg rounded-lg shadow-lg shadow-red-950 transition tracking-wider">
           RETRY [SPACE / ENTER]
         </button>
         <div class="text-[11px] text-neutral-500 font-mono mt-2">Space / Enter またはボタンをタップして Stage 01 へ</div>
       </div>
     </div>
 
-    <!-- CLEAR SCREEN (10 Streak Achieved) -->
-    <div id="clearScreen" class="hidden flex-col items-center justify-center text-center space-y-6">
-      <div class="space-y-2">
+    <!-- CLEAR SCREEN (10 Streak Achieved + Leaderboard Record) -->
+    <div id="clearScreen" class="hidden flex-col items-center justify-center text-center space-y-5 w-full max-w-md mx-auto my-auto">
+      <div class="space-y-1">
         <div class="inline-block px-3 py-1 text-xs tracking-widest uppercase bg-amber-950 border border-amber-800 text-amber-300 font-bold rounded">
           MISSION COMPLETE
         </div>
-        <h2 class="text-3xl md:text-5xl font-black text-white">10 STREAK CLEARED!</h2>
+        <h2 class="text-3xl md:text-4xl font-black text-white">10 STREAK CLEARED!</h2>
       </div>
 
-      <div class="bg-neutral-950 border border-neutral-800 rounded-xl p-6 w-full max-w-sm space-y-4">
-        <div>
-          <div class="text-xs text-neutral-400 font-mono">TOTAL CLEAR TIME</div>
-          <div id="clearTimeDisplay" class="text-4xl md:text-5xl font-black text-emerald-400 font-mono">18.42s</div>
-        </div>
-        <div id="newPbBadge" class="hidden text-xs bg-amber-400 text-black font-extrabold py-1 px-3 rounded-full inline-block">
+      <!-- Clear Time Box -->
+      <div class="bg-neutral-950 border border-neutral-800 rounded-xl p-4 w-full space-y-2">
+        <div class="text-xs text-neutral-400 font-mono">TOTAL CLEAR TIME</div>
+        <div id="clearTimeDisplay" class="text-4xl md:text-5xl font-black text-emerald-400 font-mono">18.42s</div>
+        <div id="newPbBadge" class="hidden text-[11px] bg-amber-400 text-black font-extrabold py-0.5 px-3 rounded-full inline-block">
           ★ NEW PERSONAL BEST ★
         </div>
       </div>
 
-      <div>
-        <button onclick="startGame()" class="px-8 py-4 bg-white hover:bg-neutral-200 text-black font-black text-lg rounded-lg shadow-lg transition active:scale-95 tracking-wider">
+      <!-- Memo Record Input Form -->
+      <div id="recordFormBox" class="bg-neutral-950 border border-neutral-800 rounded-xl p-4 w-full text-left space-y-2.5">
+        <div class="text-[11px] text-neutral-400 font-mono uppercase tracking-wider">名前 / メモを記録してランキングに残す</div>
+        <div class="flex gap-2">
+          <input type="text" id="recordMemoInput" maxlength="25" placeholder="名前 or メモ（例: 朝練集中）" class="flex-1 bg-neutral-900 border border-neutral-700 rounded px-3 py-2 text-xs text-white focus:outline-none focus:border-amber-400 font-mono" onkeydown="handleMemoInputKey(event)">
+          <button onclick="saveRecord()" id="saveRecordBtn" class="px-4 py-2 bg-amber-500 hover:bg-amber-400 text-black font-extrabold text-xs rounded transition active:scale-95 cursor-pointer font-mono">
+            保存
+          </button>
+        </div>
+        <div id="recordSavedMsg" class="hidden text-[11px] text-emerald-400 font-mono">✓ ランキングに保存しました！</div>
+      </div>
+
+      <!-- Clear Screen Leaderboard Table -->
+      <div class="w-full bg-neutral-950 border border-neutral-800 rounded-xl p-4 text-left space-y-2">
+        <div class="flex justify-between items-center border-b border-neutral-800 pb-2">
+          <span class="text-xs font-bold text-amber-400 uppercase tracking-wider flex items-center gap-1.5 font-mono">
+            <span>🏆</span> <span id="clearLeaderboardTitle">Part 5 TOP 5 記録</span>
+          </span>
+        </div>
+        <div id="clearLeaderboardList" class="space-y-1 text-xs font-mono">
+          <!-- Injected dynamically -->
+        </div>
+      </div>
+
+      <div class="pt-2">
+        <button onclick="startGame()" class="cursor-pointer px-8 py-4 bg-white hover:bg-neutral-200 text-black font-black text-lg rounded-lg shadow-lg transition active:scale-95 tracking-wider">
           AGAIN [SPACE]
         </button>
       </div>
@@ -993,12 +1029,20 @@
     let isGameRunning = false;
     let isResetting = false;
 
-    // LocalStorage Keys for Personal Bests
+    // LocalStorage Keys
     const PB_KEYS = {
       part5: 'toeic600_rta_pb_part5',
       part67: 'toeic600_rta_pb_part67',
       all: 'toeic600_rta_pb_all'
     };
+
+    const LEADERBOARD_KEYS = {
+      part5: 'toeic600_rta_board_part5',
+      part67: 'toeic600_rta_board_part67',
+      all: 'toeic600_rta_board_all'
+    };
+
+    let lastClearedTotalTime = 0;
 
     // DOM Elements
     const elements = {
@@ -1019,6 +1063,12 @@
       newPbBadge: document.getElementById('newPbBadge'),
       pbDisplay: document.getElementById('pbDisplay'),
       startModeTitle: document.getElementById('startModeTitle'),
+      startLeaderboardTitle: document.getElementById('startLeaderboardTitle'),
+      startLeaderboardList: document.getElementById('startLeaderboardList'),
+      clearLeaderboardTitle: document.getElementById('clearLeaderboardTitle'),
+      clearLeaderboardList: document.getElementById('clearLeaderboardList'),
+      recordMemoInput: document.getElementById('recordMemoInput'),
+      recordSavedMsg: document.getElementById('recordSavedMsg'),
       totalQuestionsLoaded: document.getElementById('totalQuestionsLoaded')
     };
 
@@ -1028,6 +1078,7 @@
     function init() {
       updateTotalQuestionsCount();
       loadPB();
+      renderLeaderboards();
       setupKeyboard();
     }
 
@@ -1052,8 +1103,9 @@
       };
       elements.startModeTitle.textContent = titles[mode];
 
-      // Refresh PB Display
+      // Refresh PB & Leaderboards Display
       loadPB();
+      renderLeaderboards();
 
       // Reset all game state cleanly
       stopGame();
@@ -1075,6 +1127,111 @@
       const countP5 = QUESTION_BANK.part5.length;
       const countP67 = QUESTION_BANK.part67.length;
       elements.totalQuestionsLoaded.textContent = `P5: ${countP5}問 | P6/7: ${countP67}問 | Total: ${countP5 + countP67}問`;
+    }
+
+    /* ==========================================================================
+       LEADERBOARD & RECORDS SYSTEM
+       ========================================================================== */
+    function getRecords(mode) {
+      try {
+        const raw = localStorage.getItem(LEADERBOARD_KEYS[mode]);
+        return raw ? JSON.parse(raw) : [];
+      } catch (e) {
+        return [];
+      }
+    }
+
+    function saveRecord() {
+      if (lastClearedTotalTime <= 0) return;
+      const memo = elements.recordMemoInput.value.trim() || 'Player 1';
+      const now = new Date();
+      const month = String(now.getMonth() + 1).padStart(2, '0');
+      const day = String(now.getDate()).padStart(2, '0');
+      const hours = String(now.getHours()).padStart(2, '0');
+      const mins = String(now.getMinutes()).padStart(2, '0');
+      const dateStr = `${month}/${day} ${hours}:${mins}`;
+
+      const records = getRecords(currentMode);
+      records.push({
+        time: lastClearedTotalTime,
+        name: memo,
+        date: dateStr
+      });
+
+      // Sort by time ascending (fastest first)
+      records.sort((a, b) => a.time - b.time);
+      const topRecords = records.slice(0, 10);
+      localStorage.setItem(LEADERBOARD_KEYS[currentMode], JSON.stringify(topRecords));
+
+      // Update PB from top record
+      if (topRecords.length > 0) {
+        localStorage.setItem(PB_KEYS[currentMode], topRecords[0].time.toFixed(2));
+        loadPB();
+      }
+
+      elements.recordSavedMsg.classList.remove('hidden');
+      renderLeaderboards();
+    }
+
+    function handleMemoInputKey(e) {
+      e.stopPropagation();
+      if (e.key === 'Enter') {
+        e.preventDefault();
+        saveRecord();
+      }
+    }
+
+    function clearLeaderboard() {
+      if (!confirm(`現在のモード（${elements.startModeTitle.textContent}）のランキング記録を消去しますか？`)) return;
+      localStorage.removeItem(LEADERBOARD_KEYS[currentMode]);
+      localStorage.removeItem(PB_KEYS[currentMode]);
+      loadPB();
+      renderLeaderboards();
+    }
+
+    function renderLeaderboards() {
+      const modeTitles = {
+        part5: 'Part 5 品詞パズル',
+        part67: 'Part 6 & 7 目的スナイプ',
+        all: 'ALL 混合 総合RTA'
+      };
+
+      const titleText = `${modeTitles[currentMode]} TOP 5 記録`;
+      if (elements.startLeaderboardTitle) elements.startLeaderboardTitle.textContent = titleText;
+      if (elements.clearLeaderboardTitle) elements.clearLeaderboardTitle.textContent = titleText;
+
+      const records = getRecords(currentMode);
+      const renderHtml = (limit = 5) => {
+        if (records.length === 0) {
+          return '<div class="text-neutral-600 text-center py-2 text-[11px]">まだ記録がありません。10問連続正解でランクイン！</div>';
+        }
+        return records.slice(0, limit).map((r, idx) => {
+          const rankColors = ['text-amber-400 font-black', 'text-slate-300 font-bold', 'text-amber-600 font-bold'];
+          const rankColor = rankColors[idx] || 'text-neutral-500 font-normal';
+          const medals = ['🥇', '🥈', '🥉'];
+          const medal = medals[idx] ? `<span class="text-[10px] mr-1">${medals[idx]}</span>` : `<span class="w-3 inline-block"></span>`;
+
+          return `
+            <div class="flex items-center justify-between p-1.5 rounded bg-neutral-900/70 border border-neutral-800/60 hover:border-neutral-700 transition">
+              <div class="flex items-center gap-2 overflow-hidden">
+                <span class="${rankColor} text-[11px] w-5 text-center">${medal}#${idx + 1}</span>
+                <span class="text-emerald-400 font-black tracking-tight">${parseFloat(r.time).toFixed(2)}s</span>
+                <span class="text-neutral-200 truncate max-w-[120px] sm:max-w-[160px]" title="${escapeHtml(r.name)}">${escapeHtml(r.name)}</span>
+              </div>
+              <span class="text-[10px] text-neutral-500 font-mono shrink-0">${r.date}</span>
+            </div>
+          `;
+        }).join('');
+      };
+
+      if (elements.startLeaderboardList) elements.startLeaderboardList.innerHTML = renderHtml(5);
+      if (elements.clearLeaderboardList) elements.clearLeaderboardList.innerHTML = renderHtml(5);
+    }
+
+    function escapeHtml(str) {
+      return (str || '').replace(/[&<>"']/g, m => ({
+        '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#039;'
+      }[m]));
     }
 
     /* ==========================================================================
@@ -1282,7 +1439,12 @@
     function handleVictory() {
       stopGame();
       const totalTime = ((performance.now() - rtaStartTime) / 1000).toFixed(2);
+      lastClearedTotalTime = parseFloat(totalTime);
       elements.clearTimeDisplay.textContent = totalTime + 's';
+
+      // Reset record form state
+      if (elements.recordMemoInput) elements.recordMemoInput.value = '';
+      if (elements.recordSavedMsg) elements.recordSavedMsg.classList.add('hidden');
 
       // Check Personal Best
       const pbKey = PB_KEYS[currentMode];
@@ -1291,8 +1453,11 @@
         localStorage.setItem(pbKey, totalTime);
         elements.newPbBadge.classList.remove('hidden');
         loadPB();
+      } else {
+        elements.newPbBadge.classList.add('hidden');
       }
 
+      renderLeaderboards();
       showScreen('clear');
     }
 
@@ -1304,6 +1469,11 @@
         if (e.repeat) return; // Prevent key hold repeats
 
         const key = e.key.toLowerCase();
+
+        // If typing in record memo input, do not trigger space/mode hotkeys
+        if (elements.recordMemoInput && document.activeElement === elements.recordMemoInput) {
+          return;
+        }
 
         // If fail overlay is active: Space or Enter confirms and restarts
         if (isResetting) {
