@@ -1109,15 +1109,23 @@
     }
 
     function showScreen(screen) {
-      elements.startScreen.classList.add('hidden');
-      elements.quizScreen.classList.add('hidden');
-      elements.clearScreen.classList.add('hidden');
-      elements.failScreen.classList.add('hidden');
+      const screenMap = {
+        start: elements.startScreen,
+        quiz: elements.quizScreen,
+        clear: elements.clearScreen,
+        fail: elements.failScreen
+      };
 
-      if (screen === 'start') elements.startScreen.classList.remove('hidden');
-      if (screen === 'quiz') elements.quizScreen.classList.remove('hidden');
-      if (screen === 'clear') elements.clearScreen.classList.remove('hidden');
-      if (screen === 'fail') elements.failScreen.classList.remove('hidden');
+      Object.entries(screenMap).forEach(([name, el]) => {
+        if (!el) return;
+        if (name === screen) {
+          el.classList.remove('hidden');
+          el.classList.add('flex');
+        } else {
+          el.classList.add('hidden');
+          el.classList.remove('flex');
+        }
+      });
     }
 
     function nextQuestion() {
@@ -1136,6 +1144,10 @@
       }
       
       const rawQ = activeQuestionList.pop();
+      if (!rawQ) {
+        startGame();
+        return;
+      }
 
       // DYNAMIC OPTION SHUFFLING (Prevent positional bias / A button spamming)
       const correctAnswerText = rawQ.options[rawQ.answer];
@@ -1155,7 +1167,7 @@
       // Render 4 Options
       const optionTexts = document.querySelectorAll('.option-text');
       currentQuestion.options.forEach((opt, idx) => {
-        optionTexts[idx].textContent = opt;
+        if (optionTexts[idx]) optionTexts[idx].textContent = opt;
       });
 
       // Start 3.00s Countdown
@@ -1263,7 +1275,6 @@
     }
 
     function confirmFailAndRestart() {
-      if (!isResetting) return;
       isResetting = false;
       startGame(); // Reset to Stage 01 immediately on user confirmation
     }
@@ -1321,7 +1332,7 @@
         }
 
         // 4 Options Keyboard Bindings: [1,2,3,4] or [A,B,C,D]
-        if (isGameRunning && !isResetting) {
+        if (isGameRunning && !isResetting && currentQuestion) {
           if (key === '1' || key === 'a') { e.preventDefault(); handleSelect(0); }
           else if (key === '2' || key === 'b') { e.preventDefault(); handleSelect(1); }
           else if (key === '3' || key === 'c') { e.preventDefault(); handleSelect(2); }
@@ -1338,8 +1349,12 @@
       return array;
     }
 
-    // Launch
-    window.addEventListener('DOMContentLoaded', init);
+    // Launch - Robust instant initialization
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', init);
+    } else {
+      init();
+    }
   </script>
 </body>
 </html>
