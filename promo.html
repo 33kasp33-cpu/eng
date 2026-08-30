@@ -251,7 +251,7 @@
     }
 
     /* ==========================================================================
-       SCENE SEQUENCER (With Randomized Human-Like Timings & Shuffled Options)
+       SCENE SEQUENCER (With Randomized Human-Like Timings & Dynamic Mode Titles)
        ========================================================================== */
     async function runPromoSequence() {
       const mode = document.getElementById('videoModeSelect').value;
@@ -262,14 +262,14 @@
       const humanDurations = [1450, 1100, 1850, 1250, 1600, 1150, 2050, 1300, 1500, 1200];
       let accumulatedTimeMs = 0;
 
-      // 1. Hook Intro Scene (1.8s)
-      await renderIntroScene(1800);
+      // 1. Hook Intro Scene (1.8s) with Mode-Specific Title
+      await renderIntroScene(mode, 1800);
 
       // 2. 10 Questions Solving Sequence
       for (let i = 0; i < totalStages; i++) {
         const rawQ = rawQuestions[i % rawQuestions.length];
         
-        // DYNAMIC OPTION SHUFFLE (Eliminates 'B only' bias, spreads evenly to A,B,C,D)
+        // DYNAMIC OPTION SHUFFLE (Eliminates positional bias, spreads across A,B,C,D)
         const correctAnswerText = rawQ.opts[rawQ.ans];
         const shuffledOpts = shuffleArray([...rawQ.opts]);
         const newAnswerIndex = shuffledOpts.indexOf(correctAnswerText);
@@ -284,12 +284,12 @@
         const duration = humanDurations[i] || (1100 + Math.random() * 800);
         accumulatedTimeMs += duration;
 
-        await renderQuestionScene(currentQ, i + 1, totalStages, duration);
+        await renderQuestionScene(currentQ, i + 1, totalStages, duration, mode);
       }
 
-      // 3. Victory Outro Scene (Calculated Total Time)
+      // 3. Victory Outro Scene (Calculated Total Time & Mode URL)
       const totalClearSec = (accumulatedTimeMs / 1000).toFixed(2);
-      await renderOutroScene(totalClearSec);
+      await renderOutroScene(totalClearSec, mode);
     }
 
     function wait(ms) {
@@ -305,11 +305,17 @@
     }
 
     /* ==========================================================================
-       SCENE 1: HOOK INTRO SCENE
+       SCENE 1: HOOK INTRO SCENE (Mode Dynamic)
        ========================================================================== */
-    async function renderIntroScene(durationMs) {
+    async function renderIntroScene(mode, durationMs) {
       const start = performance.now();
       playBeep(440, 0.1);
+
+      const isP67 = (mode === 'part67');
+      const warningText = isP67 ? "※ 長文は全部読むな ※" : "※ TOEICは英語を読むな ※";
+      const hookLine1 = isP67 ? "冒頭1行スナイプで" : "0.5秒の記号処理で";
+      const hookLine2 = isP67 ? "Part 6&7 を秒殺する" : "Part 5 を秒殺する";
+      const cardSub = isP67 ? "🎯 Part 6 & 7 目的スナイプ RTA 🎯" : "⚡ TOEIC 600 HACK RTA ⚡";
 
       while (performance.now() - start < durationMs) {
         const progress = (performance.now() - start) / durationMs;
@@ -321,32 +327,34 @@
 
         // Red Warning Badge
         drawRoundRect(60, 200, W - 120, 60, 10, "#991b1b", "#ef4444", 2);
-        drawText("※ TOEICは英語を読むな ※", W / 2, 230, "bold 28px sans-serif", "#ffffff");
+        drawText(warningText, W / 2, 230, "bold 28px sans-serif", "#ffffff");
 
         // Main Punch Title
-        drawText("0.5秒の記号処理で", W / 2, 350, "bold 46px sans-serif", "#ffffff");
-        drawText("Part 5 を秒殺する", W / 2, 420, "bold 52px sans-serif", "#10b981");
+        drawText(hookLine1, W / 2, 350, "bold 46px sans-serif", "#ffffff");
+        drawText(hookLine2, W / 2, 420, "bold 50px sans-serif", isP67 ? "#38bdf8" : "#10b981");
 
         // Sub Card
         drawRoundRect(50, 520, W - 100, 260, 20, "#111827", "#374151", 2);
-        drawText("⚡ TOEIC 600 HACK RTA ⚡", W / 2, 580, "bold 30px sans-serif", "#fbbf24");
+        drawText(cardSub, W / 2, 580, "bold 28px sans-serif", "#fbbf24");
         drawText("10問連続正解ストリーク実演", W / 2, 650, "bold 26px sans-serif", "#e5e7eb");
         drawText("（ミス・時間切れは即Stage 1リセット）", W / 2, 710, "20px sans-serif", "#9ca3af");
 
         // Ready CTA
-        drawText("▶ STARTING DEMO ...", W / 2, 900, "bold 36px sans-serif", "#10b981");
+        drawText("▶ STARTING DEMO ...", W / 2, 900, "bold 36px sans-serif", isP67 ? "#38bdf8" : "#10b981");
 
         await wait(16);
       }
     }
 
     /* ==========================================================================
-       SCENE 2: QUESTION SOLVING SCENE (With Human Think Delay & Varied Button Clicks)
+       SCENE 2: QUESTION SOLVING SCENE (Mode Header & Layout)
        ========================================================================== */
-    async function renderQuestionScene(qData, stageNum, totalStages, qDuration) {
+    async function renderQuestionScene(qData, stageNum, totalStages, qDuration, mode) {
       const start = performance.now();
       let hasClicked = false;
       const clickPoint = 0.78; // Click happens around 78% of the question duration (human reaction)
+      const isP67 = (mode === 'part67');
+      const headerTitle = isP67 ? "🎯 TOEIC 600 Part 6&7 目的スナイプ [実演] 🎯" : "⚡ TOEIC 600 Part 5 品詞パズル [実演] ⚡";
 
       while (performance.now() - start < qDuration) {
         const elapsed = performance.now() - start;
@@ -360,7 +368,7 @@
 
         // Header Top Bar
         drawRoundRect(0, 0, W, 120, 0, "#09090b", "#27272a", 1);
-        drawText("⚡ TOEIC 600 記号処理 RTA [実演] ⚡", W / 2, 60, "bold 24px sans-serif", "#10b981");
+        drawText(headerTitle, W / 2, 60, "bold 22px sans-serif", isP67 ? "#38bdf8" : "#10b981");
 
         // Stage & Millisecond Timer (Strict 3.00s countdown)
         drawText(`STAGE 0${stageNum} / 10`, 60, 175, "bold 24px sans-serif", "#a1a1aa", "left");
@@ -395,7 +403,7 @@
             drawRoundRect(50, y, W - 100, optH, 14, "#064e3b", "#34d399", 4);
             drawRoundRect(70, y + 23, 46, 46, 8, "#10b981");
             drawText(['A', 'B', 'C', 'D'][idx], 93, y + 46, "bold 22px sans-serif", "#000000");
-            drawText(opt, 140, y + 46, "bold 28px sans-serif", "#6ee7b7", "left");
+            drawText(opt, 140, y + 46, "bold 26px sans-serif", "#6ee7b7", "left");
             // Animated Checkmark
             drawText("✓", W - 90, y + 46, "bold 32px sans-serif", "#34d399");
           } else {
@@ -403,7 +411,7 @@
             drawRoundRect(50, y, W - 100, optH, 14, "#18181b", "#27272a", 2);
             drawRoundRect(70, y + 23, 46, 46, 8, "#27272a");
             drawText(['A', 'B', 'C', 'D'][idx], 93, y + 46, "bold 22px sans-serif", "#a1a1aa");
-            drawText(opt, 140, y + 46, "bold 26px sans-serif", "#f4f4f5", "left");
+            drawText(opt, 140, y + 46, "bold 24px sans-serif", "#f4f4f5", "left");
           }
         });
 
@@ -416,7 +424,7 @@
         // Trigger Rule Box (Bottom)
         drawRoundRect(50, 1030, W - 100, 160, 16, "#18181b", "#854d0e", 2);
         drawText("⚡ TRIGGER RULE（瞬殺判定根拠）", 80, 1070, "bold 19px sans-serif", "#fbbf24", "left");
-        drawText(qData.trigger, 80, 1125, "bold 22px sans-serif", "#fef08a", "left");
+        drawText(qData.trigger, 80, 1125, "bold 21px sans-serif", "#fef08a", "left");
 
         await wait(16);
       }
@@ -451,12 +459,14 @@
     }
 
     /* ==========================================================================
-       SCENE 3: OUTRO CLEAR & CTA SCENE
+       SCENE 3: OUTRO CLEAR & CTA SCENE (Mode URL)
        ========================================================================== */
-    async function renderOutroScene(clearTimeSec) {
+    async function renderOutroScene(clearTimeSec, mode) {
       const duration = 3500;
       const start = performance.now();
       playFanfare();
+
+      const targetUrl = `https://33kasp33-cpu.github.io/eng/rta.html?mode=${mode}`;
 
       while (performance.now() - start < duration) {
         const progress = (performance.now() - start) / duration;
@@ -489,7 +499,7 @@
         drawText("プロフのリンクから 👉", W / 2, 915, "bold 32px sans-serif", "#000000");
 
         // Bottom Watermark URL
-        drawText("https://33kasp33-cpu.github.io/eng/rta.html", W / 2, 1140, "20px monospace", "#6b7280");
+        drawText(targetUrl, W / 2, 1140, "20px monospace", "#6b7280");
 
         await wait(16);
       }
