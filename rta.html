@@ -1099,15 +1099,26 @@
        INITIALIZATION & MODE MANAGEMENT
        ========================================================================== */
     function init() {
+      // 1. Detect URL Query Param (?mode=part5 | part67 | all)
+      const params = new URLSearchParams(window.location.search);
+      const queryMode = params.get('mode');
+      if (queryMode && ['part5', 'part67', 'all'].includes(queryMode)) {
+        currentMode = queryMode;
+      }
+
       updateTotalQuestionsCount();
-      loadPB();
-      fetchOnlineLeaderboard(currentMode);
-      renderLeaderboards();
+      setMode(currentMode, false);
       setupKeyboard();
     }
 
-    function setMode(mode) {
+    function setMode(mode, updateUrl = true) {
       currentMode = mode;
+
+      // Update browser URL query parameter seamlessly
+      if (updateUrl && window.history && window.history.replaceState) {
+        const newUrl = `${window.location.pathname}?mode=${mode}`;
+        window.history.replaceState(null, '', newUrl);
+      }
       
       // Update UI Tabs
       ['part5', 'part67', 'all'].forEach(m => {
@@ -1290,7 +1301,8 @@
         all: 'ALL 混合 総合RTA'
       };
       const timeStr = lastClearedTotalTime > 0 ? lastClearedTotalTime.toFixed(2) : '--.--';
-      const text = `【TOEIC 600 HACK RTA】\n⚡ ${modeTitles[currentMode]} を ${timeStr}秒 で10連クリア達成！\n\n意味を読むな、記号で解け。ミス即Stage 1リセットの反射ギプス🔥\n誰かこの記録抜ける？🏆\n\n#TOEIC #TOEIC600 #TOEICRTA\nhttps://33kasp33-cpu.github.io/eng/rta.html`;
+      const targetUrl = `https://33kasp33-cpu.github.io/eng/rta.html?mode=${currentMode}`;
+      const text = `【TOEIC 600 HACK RTA】\n⚡ ${modeTitles[currentMode]} を ${timeStr}秒 で10連クリア達成！\n\n意味を読むな、記号で解け。ミス即Stage 1リセットの反射ギプス🔥\n誰かこの記録抜ける？🏆\n\n#TOEIC #TOEIC600 #TOEICRTA\n${targetUrl}`;
       const url = `https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}`;
       window.open(url, '_blank', 'noopener,noreferrer');
     }
