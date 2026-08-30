@@ -1032,8 +1032,6 @@
     }
 
     function setMode(mode) {
-      if (isGameRunning && !confirm('進行中のRTAを中断してモードを切り替えますか？')) return;
-      
       currentMode = mode;
       
       // Update UI Tabs
@@ -1057,8 +1055,9 @@
       // Refresh PB Display
       loadPB();
 
-      // If on clear screen or running, return to start screen
+      // Reset all game state cleanly
       stopGame();
+      activeQuestionList = [];
       showScreen('start');
     }
 
@@ -1082,7 +1081,7 @@
        GAME LIFECYCLE
        ========================================================================== */
     function startGame() {
-      if (isResetting) return;
+      isResetting = false; // Ensure fail state is cleared
 
       // Build Question Pool
       if (currentMode === 'part5') {
@@ -1095,7 +1094,6 @@
 
       currentStage = 1;
       isGameRunning = true;
-      isResetting = false;
       rtaStartTime = performance.now();
 
       elements.newPbBadge.classList.add('hidden');
@@ -1106,6 +1104,7 @@
 
     function stopGame() {
       isGameRunning = false;
+      isResetting = false;
       if (timerAnimFrame) cancelAnimationFrame(timerAnimFrame);
     }
 
@@ -1306,17 +1305,15 @@
 
         // Mode switch [M]
         if (key === 'm') {
-          if (!isGameRunning && !isResetting) {
-            if (currentMode === 'part5') setMode('part67');
-            else if (currentMode === 'part67') setMode('all');
-            else setMode('part5');
-          }
+          if (currentMode === 'part5') setMode('part67');
+          else if (currentMode === 'part67') setMode('all');
+          else setMode('part5');
           return;
         }
 
         // Spacebar to start / retry from start or clear screen
         if (e.code === 'Space' || key === ' ') {
-          if (!isGameRunning && !isResetting) {
+          if (!isGameRunning) {
             e.preventDefault();
             startGame();
             return;
