@@ -198,7 +198,7 @@
 
   <script>
     /* ==========================================================================
-       QUESTION DATABASE (Part 5 & Part 6/7 Symbol Processing Data)
+       QUESTION DATABASE (Part 5: 70+ Questions, Part 6/7: 55+ Questions, Total 125+)
        ========================================================================== */
     const QUESTION_BANK = {
       part5: [
@@ -221,6 +221,18 @@
           answer: 2,
           trigger: "冠詞 an の後ろ（目的語）→ 名詞 [-tion]"
         },
+        {
+          q: "The architect presented an innovative _____ to reduce heating costs.",
+          options: ["solve", "solution", "soluble", "solubly"],
+          answer: 1,
+          trigger: "冠詞 an + 形容詞 innovative の後 → 名詞 [-tion]"
+        },
+        {
+          q: "Overseas market _____ is the primary goal for this fiscal year.",
+          options: ["expand", "expansion", "expansive", "expansively"],
+          answer: 1,
+          trigger: "複合名詞の主語（market _____ is）→ 名詞 [-sion]"
+        },
 
         // 2. -ment -> 名詞
         {
@@ -240,6 +252,18 @@
           options: ["equip", "equipment", "equipped", "equipping"],
           answer: 1,
           trigger: "名詞修飾 / 目的語の位置 → 不可算名詞 [-ment]"
+        },
+        {
+          q: "Executive _____ announced new guidelines regarding remote work.",
+          options: ["manage", "manager", "management", "manageable"],
+          answer: 2,
+          trigger: "主語の位置（経営陣・管理部門）→ 名詞 [-ment]"
+        },
+        {
+          q: "Winning the contract was a major _____ for the consulting team.",
+          options: ["achieve", "achievement", "achievable", "achieving"],
+          answer: 1,
+          trigger: "冠詞 a + 形容詞 major の後（補語）→ 名詞 [-ment]"
         },
 
         // 3. -ance / -ence -> 名詞
@@ -261,6 +285,18 @@
           answer: 2,
           trigger: "冠詞 a + 形容詞 significant の後ろ → 名詞 [-ence]"
         },
+        {
+          q: "Strict _____ with safety regulations is mandatory for all workers.",
+          options: ["comply", "compliance", "compliant", "compliantly"],
+          answer: 1,
+          trigger: "形容詞 Strict の後ろ（主語）→ 名詞 [-ance]"
+        },
+        {
+          q: "Routine vehicle _____ prevents costly breakdowns on the road.",
+          options: ["maintain", "maintenance", "maintainable", "maintained"],
+          answer: 1,
+          trigger: "複合名詞（vehicle _____）主語 → 名詞 [-ance]"
+        },
 
         // 4. -ity / -ness -> 名詞
         {
@@ -280,6 +316,18 @@
           options: ["aware", "awareness", "awarely", "awarenesses"],
           answer: 1,
           trigger: "動詞 raised + 形容詞 environmental の後（目的語）→ 名詞 [-ness]"
+        },
+        {
+          q: "The warranty covers repairs but excludes user _____ for damage.",
+          options: ["responsible", "responsibility", "responsibly", "responsibilities"],
+          answer: 1,
+          trigger: "名詞 user の直後（目的語）→ 名詞 [-ity]"
+        },
+        {
+          q: "The company evaluates suppliers based on pricing and _____.",
+          options: ["reliable", "reliability", "reliably", "relies"],
+          answer: 1,
+          trigger: "接続詞 and の並列（名詞 pricing and _____）→ 名詞 [-ity]"
         },
 
         // 5. -able / -ible -> 形容詞
@@ -301,13 +349,25 @@
           answer: 2,
           trigger: "be動詞 is + 副詞 remarkably の後 → 補語の形容詞 [-ible]"
         },
+        {
+          q: "The airline offers _____ fares for travelers on a budget.",
+          options: ["afford", "affordable", "affordability", "affordably"],
+          answer: 1,
+          trigger: "動詞 offers + _____ + 名詞 fares → 空欄は形容詞 [-able]"
+        },
+        {
+          q: "Only full-time employees are _____ for the annual health bonus.",
+          options: ["eligible", "eligibility", "eligibly", "eligibles"],
+          answer: 0,
+          trigger: "be動詞 are + _____ + 前置詞 for → 補語の形容詞 [-ible / -able]"
+        },
 
         // 6. -ive -> 形容詞
         {
           q: "The marketing team launched a highly _____ advertising campaign.",
           options: ["effect", "effective", "effectively", "effectiveness"],
           answer: 1,
-          trigger: "副詞 highly + _____ + 名詞 advertising → 空欄は形容詞 [-ive]"
+          trigger: "副詞 highly + _____ + 名詞 campaign → 空欄は形容詞 [-ive]"
         },
         {
           q: "The enterprise offers _____ prices to attract budget-conscious buyers.",
@@ -320,6 +380,18 @@
           options: ["produce", "product", "productive", "productively"],
           answer: 2,
           trigger: "冠詞 an + 副詞 exceptionally + _____ + 名詞 manager → 形容詞 [-ive]"
+        },
+        {
+          q: "The firm implemented an _____ design to optimize battery life.",
+          options: ["innovate", "innovative", "innovation", "innovatively"],
+          answer: 1,
+          trigger: "冠詞 an + _____ + 名詞 design → 形容詞 [-ive]"
+        },
+        {
+          q: "The handbook provides a _____ overview of all company policies.",
+          options: ["comprehend", "comprehensive", "comprehension", "comprehensively"],
+          answer: 1,
+          trigger: "冠詞 a + _____ + 名詞 overview → 形容詞 [-ive]"
         },
 
         // 7. -al / -ful / -ous -> 形容詞
@@ -341,6 +413,18 @@
           answer: 1,
           trigger: "動詞 create + _____ + 名詞 opportunities → 形容詞 [-ous]"
         },
+        {
+          q: "Tax incentives provide _____ benefits for small businesses.",
+          options: ["substance", "substantial", "substantially", "substantiate"],
+          answer: 1,
+          trigger: "動詞 provide + _____ + 名詞 benefits → 形容詞 [-al]"
+        },
+        {
+          q: "Proper ventilation is _____ to worker health in the factory.",
+          options: ["benefit", "beneficial", "beneficially", "benefiting"],
+          answer: 1,
+          trigger: "be動詞 is + _____ + 前置詞 to → 補語の形容詞 [-al]"
+        },
 
         // 8. -ly -> 副詞
         {
@@ -361,6 +445,18 @@
           answer: 1,
           trigger: "助動詞 will + 本動詞 review の間 → 副詞 [-ly]"
         },
+        {
+          q: "The CEO spoke _____ regarding the upcoming corporate restructuring.",
+          options: ["brief", "briefly", "briefness", "briefing"],
+          answer: 1,
+          trigger: "自動詞 spoke の直後（動詞修飾）→ 副詞 [-ly]"
+        },
+        {
+          q: "Demand for solar panels has increased _____ over the past year.",
+          options: ["dramatic", "dramatically", "drama", "dramatize"],
+          answer: 1,
+          trigger: "現在完了 has increased の後（動詞修飾）→ 副詞 [-ly]"
+        },
 
         // 9. [冠詞 a/an/the] _____ [前置詞 of/in/for] -> 名詞
         {
@@ -374,6 +470,18 @@
           options: ["select", "selection", "selective", "selectively"],
           answer: 1,
           trigger: "[冠詞 A + 形容詞 wide] _____ [前置詞 of] → 空欄は名詞 [-tion]"
+        },
+        {
+          q: "The rapid _____ of mobile payments surprised industry experts.",
+          options: ["grow", "growth", "growing", "growingly"],
+          answer: 1,
+          trigger: "[冠詞 The + 形容詞 rapid] _____ [前置詞 of] → 空欄は名詞 [growth]"
+        },
+        {
+          q: "An accurate _____ of property values was conducted by the assessor.",
+          options: ["evaluate", "evaluation", "evaluative", "evaluated"],
+          answer: 1,
+          trigger: "[冠詞 An + 形容詞 accurate] _____ [前置詞 of] → 空欄は名詞 [-tion]"
         },
 
         // 10. [所有格 my/their/company's] _____ [名詞] -> 形容詞
@@ -389,6 +497,18 @@
           answer: 1,
           trigger: "[所有格 your] _____ [名詞 assistance] → 空欄は形容詞 [-ous]"
         },
+        {
+          q: "The hospital updated its _____ equipment to improve diagnosis.",
+          options: ["medicine", "medical", "medically", "medicate"],
+          answer: 1,
+          trigger: "[所有格 its] _____ [名詞 equipment] → 空欄は形容詞 [-al]"
+        },
+        {
+          q: "The bank announced its _____ report for the past fiscal year.",
+          options: ["annually", "annual", "annals", "anniversary"],
+          answer: 1,
+          trigger: "[所有格 its] _____ [名詞 report] → 空欄は形容詞 [-al]"
+        },
 
         // 11. [所有格] _____ [前置詞/ピリオド] -> 名詞
         {
@@ -402,6 +522,18 @@
           options: ["reliable", "reliability", "reliably", "relied"],
           answer: 1,
           trigger: "[所有格 brand's] _____ [ピリオド] → 空欄は名詞 [-ity]"
+        },
+        {
+          q: "The department submitted their _____ ahead of the deadline.",
+          options: ["propose", "proposal", "proposed", "proposing"],
+          answer: 1,
+          trigger: "[所有格 their] _____ [前置詞 ahead] → 空欄は名詞 [-al（提案書）]"
+        },
+        {
+          q: "We deeply appreciate your _____ to our environmental campaign.",
+          options: ["contribute", "contribution", "contributory", "contributed"],
+          answer: 1,
+          trigger: "[所有格 your] _____ [前置詞 to] → 空欄は名詞 [-tion]"
         },
 
         // 12. [be動詞 is/are/was] _____ [ピリオド/前置詞] -> 形容詞
@@ -417,6 +549,18 @@
           answer: 1,
           trigger: "[be動詞 is + 副詞 completely] _____ [前置詞 by] → 形容詞 [-ible]"
         },
+        {
+          q: "Senior managers are fully _____ of the pending merger.",
+          options: ["aware", "awareness", "awarely", "unawarely"],
+          answer: 0,
+          trigger: "[be動詞 are + 副詞 fully] _____ [前置詞 of] → 形容詞 [aware]"
+        },
+        {
+          q: "The banquet room is currently _____ for private reservations.",
+          options: ["avail", "available", "availability", "availably"],
+          answer: 1,
+          trigger: "[be動詞 is + 副詞 currently] _____ [前置詞 for] → 形容詞 [-able]"
+        },
 
         // 13. [助動詞 will/can/must] _____ [本動詞] -> 副詞
         {
@@ -430,6 +574,18 @@
           options: ["thorough", "thoroughly", "thoroughness", "thoroughfare"],
           answer: 1,
           trigger: "[助動詞 must] _____ [本動詞 inspect] の間 → 空欄は副詞 [-ly]"
+        },
+        {
+          q: "Authorized users can _____ download the latest security patch.",
+          options: ["easy", "easily", "ease", "easiness"],
+          answer: 1,
+          trigger: "[助動詞 can] _____ [本動詞 download] の間 → 空欄は副詞 [-ly]"
+        },
+        {
+          q: "All employees should _____ verify their payroll details online.",
+          options: ["proper", "properly", "property", "properness"],
+          answer: 1,
+          trigger: "[助動詞 should] _____ [本動詞 verify] の間 → 空欄は副詞 [-ly]"
         },
 
         // 14. [have/has] _____ [過去分詞 p.p.] -> 副詞
@@ -445,6 +601,18 @@
           answer: 1,
           trigger: "[完了形 have] _____ [過去分詞 increased] の間 → 空欄は副詞 [-ly]"
         },
+        {
+          q: "The engineering division has _____ completed the safety audit.",
+          options: ["successful", "successfully", "success", "succeed"],
+          answer: 1,
+          trigger: "[完了形 has] _____ [過去分詞 completed] の間 → 空欄は副詞 [-ly]"
+        },
+        {
+          q: "The logistics provider has _____ resolved the shipping delay.",
+          options: ["already", "alright", "also", "almostly"],
+          answer: 0,
+          trigger: "[完了形 has] _____ [過去分詞 resolved] の間 → 副詞 [already]"
+        },
 
         // 15. [完全文], _____ または _____ , [完全文] -> 副詞
         {
@@ -458,6 +626,18 @@
           options: ["surprising", "surprisingly", "surprise", "surprised"],
           answer: 1,
           trigger: "[完全文] , _____ → 文末で全体を修飾する副詞 [-ly]"
+        },
+        {
+          q: "_____, production costs dropped following the supplier switch.",
+          options: ["Consequent", "Consequently", "Consequence", "Consequential"],
+          answer: 1,
+          trigger: "_____ , [完全文] → 文全体を修飾する接続副詞 [-ly]"
+        },
+        {
+          q: "The hotel staff handled the emergency _____, ensuring guest safety.",
+          options: ["calm", "calmly", "calmness", "calmer"],
+          answer: 1,
+          trigger: "[完全文] + 分詞構文 の間（動詞修飾）→ 副詞 [-ly]"
         }
       ],
 
@@ -475,6 +655,18 @@
           answer: 1,
           trigger: "Subject: Rescheduling of meeting → [会議日程の変更]"
         },
+        {
+          q: "Subject: Urgent notice regarding software upgrade\n\nTo all system users, ...",
+          options: ["To announce IT maintenance", "To sell new computers", "To hire a programmer", "To terminate network access"],
+          answer: 0,
+          trigger: "Subject: Urgent notice regarding software upgrade → [IT更新・保守の告知]"
+        },
+        {
+          q: "Subject: Confirmation of Hotel Riverside booking #4892\n\nDear Guest, ...",
+          options: ["To confirm a room reservation", "To cancel a flight", "To advertise hotel amenities", "To request payment"],
+          answer: 0,
+          trigger: "Subject: Confirmation of booking → [予約の確認]"
+        },
 
         // 2. I am writing to [動詞]... -> 最重要目的トリガー
         {
@@ -489,6 +681,18 @@
           answer: 0,
           trigger: "I am writing to confirm our reservation → [予約の確認 (To confirm a booking)]"
         },
+        {
+          q: "I am writing to complain about the subpar cleaning service provided yesterday.",
+          options: ["To express dissatisfaction with a service", "To hire a cleaner", "To recommend a vendor", "To renew a contract"],
+          answer: 0,
+          trigger: "I am writing to complain about... → [苦情・不満の伝達 (Express dissatisfaction)]"
+        },
+        {
+          q: "I am writing to request a catalog of your upcoming autumn furniture line.",
+          options: ["To request product materials", "To place a bulk order", "To return damaged goods", "To apply for credit"],
+          answer: 0,
+          trigger: "I am writing to request a catalog → [資料請求 (To request product materials)]"
+        },
 
         // 3. I am writing in response to... -> 返信・対応
         {
@@ -496,6 +700,18 @@
           options: ["To submit a job application", "To place an advertisement", "To terminate a contract", "To decline an offer"],
           answer: 0,
           trigger: "writing in response to your advertisement for [職種] → [求人応募 (Job application)]"
+        },
+        {
+          q: "I am writing in response to your inquiry regarding our catering packages.",
+          options: ["To answer a customer's question", "To cater an event", "To change a restaurant menu", "To order groceries"],
+          answer: 0,
+          trigger: "in response to your inquiry regarding... → [問い合わせへの回答]"
+        },
+        {
+          q: "I am writing in response to your letter dated March 12 concerning invoice #551.",
+          options: ["To address a billing issue", "To request a discount", "To hire an accountant", "To close a bank account"],
+          answer: 0,
+          trigger: "in response to your letter ... concerning invoice → [請求書の件についての返答]"
         },
 
         // 4. We regret to inform you that... -> 不合格・中止・キャンセル
@@ -511,6 +727,12 @@
           answer: 0,
           trigger: "We regret to inform you ... chosen another candidate → [不採用通知 (Notify of a decision)]"
         },
+        {
+          q: "We regret to inform you that your preferred delivery date cannot be met.",
+          options: ["To inform a customer of a shipping delay", "To confirm an order", "To reduce product prices", "To close a warehouse"],
+          answer: 0,
+          trigger: "regret to inform ... delivery date cannot be met → [納期遅延の通知]"
+        },
 
         // 5. Please be advised / reminded that... -> 規則・変更通知
         {
@@ -518,6 +740,18 @@
           options: ["To inform of maintenance work", "To sell parking passes", "To open a new facility", "To report an accident"],
           answer: 0,
           trigger: "Please be advised that ... maintenance → [保守・点検の案内 (Inform of maintenance)]"
+        },
+        {
+          q: "Please be advised that our subscription fees will increase by 5% next month.",
+          options: ["To notify subscribers of a price change", "To promote a new plan", "To refund a payment", "To cancel a membership"],
+          answer: 0,
+          trigger: "Please be advised ... fees will increase → [料金改定の通知 (Price change)]"
+        },
+        {
+          q: "Please be reminded that all visitors must sign the security log at reception.",
+          options: ["To remind about a security procedure", "To hire security guards", "To invite visitors", "To register a company"],
+          answer: 0,
+          trigger: "Please be reminded ... sign the security log → [セキュリティ手順の周知]"
         },
 
         // 6. This is a reminder that... -> リマインド・期日通知
@@ -527,6 +761,18 @@
           answer: 0,
           trigger: "This is a reminder that ... submitted by... → [提出期限のリマインド (Submission deadline)]"
         },
+        {
+          q: "This is a reminder that your annual medical checkup is scheduled for Thursday.",
+          options: ["To confirm an appointment date", "To prescribe medication", "To hire medical staff", "To cancel an insurance policy"],
+          answer: 0,
+          trigger: "This is a reminder ... scheduled for [曜日] → [予約日のリマインド]"
+        },
+        {
+          q: "This is a reminder to RSVP for the regional branch luncheon by Friday.",
+          options: ["To request confirmation of attendance", "To change a restaurant venue", "To order luncheon food", "To cancel an event"],
+          answer: 0,
+          trigger: "reminder to RSVP ... by Friday → [出欠返答の督促 (Confirm attendance)]"
+        },
 
         // 7. We are currently seeking / looking for... -> 求人募集
         {
@@ -534,6 +780,18 @@
           options: ["To advertise an open position", "To introduce a sales rep", "To open a new store", "To congratulate a worker"],
           answer: 0,
           trigger: "currently seeking [役職] → [求人広告 (To advertise an open position)]"
+        },
+        {
+          q: "Our publishing house is looking for an experienced freelance copyeditor.",
+          options: ["To recruit a contractor", "To sell a book", "To promote an editor", "To announce a publishing award"],
+          answer: 0,
+          trigger: "looking for an experienced freelance [職種] → [外部人材・求人募集]"
+        },
+        {
+          q: "We are currently hiring qualified drivers for regional distribution routes.",
+          options: ["To recruit driving personnel", "To buy delivery trucks", "To repair vehicles", "To change shipping routes"],
+          answer: 0,
+          trigger: "currently hiring qualified drivers → [求人募集]"
         },
 
         // 8. Thank you for your recent purchase / inquiry... -> 注文・問合せ礼
@@ -543,6 +801,18 @@
           answer: 0,
           trigger: "Thank you for your recent purchase → [注文の確認・礼 (To acknowledge an order)]"
         },
+        {
+          q: "Thank you for contacting our customer assistance desk regarding warranty registration.",
+          options: ["To follow up on a customer inquiry", "To sell insurance", "To reject a claim", "To repair an appliance"],
+          answer: 0,
+          trigger: "Thank you for contacting our assistance desk → [問い合わせへのフォローアップ]"
+        },
+        {
+          q: "Thank you for renewing your annual gym membership with FitPro Club.",
+          options: ["To acknowledge a membership renewal", "To sell fitness equipment", "To schedule a training session", "To close a facility"],
+          answer: 0,
+          trigger: "Thank you for renewing your membership → [会員更新の受領・礼]"
+        },
 
         // 9. Effective [日付]... -> 規約変更・組織改編
         {
@@ -550,6 +820,18 @@
           options: ["To announce revised operating hours", "To hire support staff", "To celebrate an anniversary", "To close a department"],
           answer: 0,
           trigger: "Effective [日付], hours will change → [営業時間変更の通知 (Announce revised hours)]"
+        },
+        {
+          q: "Effective immediately, Ms. Sarah Jenkins will serve as Interim Chief Financial Officer.",
+          options: ["To announce a personnel appointment", "To recruit an accountant", "To retire an executive", "To publish financial data"],
+          answer: 0,
+          trigger: "Effective immediately, [人名] will serve as [役職] → [人事任命の告知]"
+        },
+        {
+          q: "Effective next Monday, badge scanning will be required at all side doors.",
+          options: ["To introduce a building security update", "To replace door keys", "To renovate hallways", "To fire security staff"],
+          answer: 0,
+          trigger: "Effective next Monday, badge scanning required → [入退館ルールの改定]"
         },
 
         // 10. Please note that the deadline is... -> 締め切り案内
@@ -559,6 +841,18 @@
           answer: 0,
           trigger: "deadline for ... discount is [日付] → [割引期日の案内 (Deadline for discount)]"
         },
+        {
+          q: "Please note that the deadline for submitting grant proposals is strict and cannot be extended.",
+          options: ["To emphasize a submission deadline", "To reject a grant", "To award funding", "To change application forms"],
+          answer: 0,
+          trigger: "deadline for submitting ... is strict → [提出期日の強調・案内]"
+        },
+        {
+          q: "Please note that contest entries must be received no later than midnight on June 30.",
+          options: ["To inform participants of an entry deadline", "To announce contest winners", "To change contest rules", "To distribute prizes"],
+          answer: 0,
+          trigger: "entries must be received no later than [日付] → [応募締め切りの案内]"
+        },
 
         // 11. You are invited to... -> イベント・式典招待
         {
@@ -566,6 +860,18 @@
           options: ["To invite someone to an event", "To sell real estate", "To request funding", "To apply for membership"],
           answer: 0,
           trigger: "You are invited to attend [イベント名] → [招待 (To invite someone)]"
+        },
+        {
+          q: "You are invited to join us for an evening reception honoring our international partners.",
+          options: ["To extend an invitation to a reception", "To book a venue", "To cancel a partnership", "To sign a contract"],
+          answer: 0,
+          trigger: "You are invited to join us for a reception → [祝賀会への招待]"
+        },
+        {
+          q: "All team leaders are invited to participate in the quarterly leadership roundtable.",
+          options: ["To invite staff to a meeting", "To elect team leaders", "To cancel a seminar", "To hire managers"],
+          answer: 0,
+          trigger: "leaders are invited to participate in [会議] → [社内会議・研修の招待]"
         },
 
         // 12. We would like to congratulate... -> 昇進・受賞祝辞
@@ -575,6 +881,18 @@
           answer: 0,
           trigger: "congratulate [人名] on her promotion → [昇進の祝辞 (Recognize a promotion)]"
         },
+        {
+          q: "We would like to congratulate the research lab on receiving the National Tech Innovation Award.",
+          options: ["To celebrate a team's achievement", "To apply for a patent", "To fund a laboratory", "To publish research papers"],
+          answer: 0,
+          trigger: "congratulate [組織] on receiving [賞名] → [受賞・実績の祝辞]"
+        },
+        {
+          q: "The department wishes to congratulate Mr. Tanaka on reaching 25 years of service.",
+          options: ["To honor an employee's milestone anniversary", "To host a retirement party", "To hire a veteran", "To transfer a worker"],
+          answer: 0,
+          trigger: "congratulate on reaching 25 years of service → [勤続表彰の祝辞]"
+        },
 
         // 13. Please find attached the... -> 添付ファイル送付
         {
@@ -582,6 +900,18 @@
           options: ["To provide financial documents", "To request an invoice", "To delay a payment", "To correct an error"],
           answer: 0,
           trigger: "Please find attached the finalized financial statement → [書類送付 (To provide documents)]"
+        },
+        {
+          q: "Please find attached the updated building floor plan for your review.",
+          options: ["To send an updated layout drawing", "To purchase office furniture", "To schedule an inspection", "To demolish a wall"],
+          answer: 0,
+          trigger: "Please find attached the updated floor plan → [図面・レイアウトの送付]"
+        },
+        {
+          q: "Please find attached the itinerary for next week's corporate conference in Chicago.",
+          options: ["To share a business travel schedule", "To book airline tickets", "To reserve conference rooms", "To cancel a trip"],
+          answer: 0,
+          trigger: "Please find attached the itinerary → [旅程表・スケジュール送付]"
         },
 
         // 14. If you are unable to attend, please... -> 不参加手続き
@@ -591,6 +921,18 @@
           answer: 0,
           trigger: "If unable to attend, please notify → [不参加時の手続き案内 (Procedure for absence)]"
         },
+        {
+          q: "If you cannot attend Friday's luncheon, please delegate a representative from your team.",
+          options: ["To instruct on appointing a proxy", "To cancel luncheon food", "To reserve dining tables", "To recruit representatives"],
+          answer: 0,
+          trigger: "If cannot attend, please delegate a representative → [代理人出席の手続き案内]"
+        },
+        {
+          q: "If you are unable to make the scheduled interview time, please email us alternate dates.",
+          options: ["To provide instructions for rescheduling an interview", "To offer a job", "To conduct an interview", "To reject a candidate"],
+          answer: 0,
+          trigger: "If unable to make interview time, email alternate dates → [面接日程変更の手続き]"
+        },
 
         // 15. Do not hesitate to contact us if... -> 問い合わせ案内
         {
@@ -598,6 +940,18 @@
           options: ["To offer technical assistance", "To report a defect", "To sell software", "To terminate service"],
           answer: 0,
           trigger: "Do not hesitate to contact helpdesk if... → [サポートの案内 (Offer technical assistance)]"
+        },
+        {
+          q: "Do not hesitate to reach out if you have further inquiries about shipping rates.",
+          options: ["To invite questions regarding freight costs", "To invoice a customer", "To increase cargo rates", "To delay shipment"],
+          answer: 0,
+          trigger: "Do not hesitate to reach out if inquiries about rates → [問い合わせ窓口の案内]"
+        },
+        {
+          q: "Do not hesitate to call our billing department should you notice any discrepancy.",
+          options: ["To provide assistance for payment questions", "To issue a fine", "To cancel an account", "To audit expenses"],
+          answer: 0,
+          trigger: "Do not hesitate to call billing department → [請求関連の問い合わせ案内]"
         }
       ]
     };
@@ -757,9 +1111,22 @@
         else if (currentMode === 'part67') activeQuestionList = shuffleArray([...QUESTION_BANK.part67]);
         else activeQuestionList = shuffleArray([...QUESTION_BANK.part5, ...QUESTION_BANK.part67]);
       }
-      currentQuestion = activeQuestionList.pop();
+      
+      const rawQ = activeQuestionList.pop();
 
-      // Render Question
+      // DYNAMIC OPTION SHUFFLING (Prevent positional bias / A button spamming)
+      const correctAnswerText = rawQ.options[rawQ.answer];
+      const shuffledOptions = shuffleArray([...rawQ.options]);
+      const newAnswerIndex = shuffledOptions.indexOf(correctAnswerText);
+
+      currentQuestion = {
+        q: rawQ.q,
+        options: shuffledOptions,
+        answer: newAnswerIndex,
+        trigger: rawQ.trigger
+      };
+
+      // Render Question Text
       elements.questionText.innerHTML = formatQuestionText(currentQuestion.q);
 
       // Render 4 Options
@@ -824,7 +1191,7 @@
     }
 
     /* ==========================================================================
-       USER INPUT HANDLING & INSTANT RESET LOGIC
+       USER INPUT HANDLING & MANUAL RESET CONFIRMATION
        ========================================================================== */
     function handleSelect(selectedIndex) {
       if (!isGameRunning || isResetting) return;
@@ -834,7 +1201,7 @@
         currentStage++;
         nextQuestion();
       } else {
-        // WRONG: Flash red, show trigger reason for 0.8s, then reset
+        // WRONG: Flash red, show trigger reason with OK confirmation
         handleFail("INCORRECT CHOICE");
       }
     }
