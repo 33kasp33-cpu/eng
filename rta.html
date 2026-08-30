@@ -136,29 +136,50 @@
       </div>
     </div>
 
-    <!-- FAIL OVERLAY (Manual OK Confirmation) -->
-    <div id="failOverlay" class="hidden absolute inset-0 bg-neutral-950/98 border-2 border-red-800 rounded-xl flex flex-col items-center justify-center p-6 text-center z-20 space-y-4">
-      <div>
-        <div class="text-red-500 font-black text-2xl md:text-3xl tracking-wider mb-1" id="failTitle">
+    <!-- FAIL SCREEN (Standalone Dedicated Screen - Zero Background Overlap) -->
+    <div id="failScreen" class="hidden flex-col items-center justify-center text-center space-y-6 w-full max-w-2xl mx-auto my-auto">
+      <div class="space-y-1">
+        <div class="inline-block px-3 py-1 text-xs tracking-widest uppercase bg-red-950 border border-red-800 text-red-400 font-bold rounded" id="failStageBadge">
+          STAGE 01 で失敗
+        </div>
+        <h2 class="text-3xl md:text-4xl font-black text-red-500 tracking-wider" id="failTitle">
           MISSED / TIMEOUT
+        </h2>
+      </div>
+
+      <!-- Problem Review Card -->
+      <div class="w-full bg-neutral-950 border border-neutral-800 rounded-xl p-4 md:p-6 text-left space-y-4 shadow-xl">
+        <!-- Question Sentence with completed answer -->
+        <div>
+          <div class="text-[11px] text-neutral-500 font-mono uppercase tracking-wider mb-1">Question Review</div>
+          <div id="failQuestionText" class="text-base md:text-lg font-bold text-white leading-relaxed">
+            <!-- Review Question Text injected here -->
+          </div>
         </div>
-        <div id="correctAnswerDisplay" class="text-xs md:text-sm text-emerald-400 font-bold font-mono">
-          <!-- Correct Answer injected here -->
+
+        <!-- Correct Answer -->
+        <div class="flex items-center gap-2 p-3 bg-emerald-950/60 border border-emerald-800/80 rounded-lg">
+          <span class="px-2 py-0.5 bg-emerald-500 text-black text-xs font-black rounded uppercase">Correct</span>
+          <span id="correctAnswerDisplay" class="text-sm md:text-base font-bold text-emerald-300 font-mono">
+            <!-- Correct Answer text here -->
+          </span>
+        </div>
+
+        <!-- Trigger Rule -->
+        <div class="p-3.5 bg-neutral-900 border border-amber-900/60 rounded-lg space-y-1">
+          <div class="text-[11px] text-amber-400/80 font-mono uppercase font-bold tracking-wider">Trigger Rule（判定根拠）</div>
+          <div id="failTrigger" class="text-sm md:text-base font-bold text-amber-300 leading-relaxed font-mono">
+            <!-- Trigger text injected here -->
+          </div>
         </div>
       </div>
 
-      <div class="w-full max-w-lg space-y-1.5">
-        <div class="text-[11px] text-neutral-400 font-mono uppercase tracking-wider">Trigger Rule（判定根拠）</div>
-        <div id="failTrigger" class="text-sm md:text-base font-bold text-amber-300 bg-neutral-900 px-4 py-3.5 rounded-lg border border-amber-800/50 leading-relaxed text-left">
-          <!-- Trigger text injected here -->
-        </div>
-      </div>
-
+      <!-- Action Button -->
       <div class="pt-2">
-        <button onclick="confirmFailAndRestart()" class="px-8 py-3.5 bg-red-600 hover:bg-red-500 text-white font-black text-base md:text-lg rounded-lg shadow-lg shadow-red-950 active:scale-95 transition tracking-wider">
-          OK - RETRY [SPACE]
+        <button onclick="confirmFailAndRestart()" class="px-8 py-4 bg-red-600 hover:bg-red-500 active:scale-95 text-white font-black text-lg rounded-lg shadow-lg shadow-red-950 transition tracking-wider">
+          RETRY [SPACE / ENTER]
         </button>
-        <div class="text-[11px] text-neutral-500 font-mono mt-2">Space / Enter または [OK] タップで Stage 01 へ</div>
+        <div class="text-[11px] text-neutral-500 font-mono mt-2">Space / Enter またはボタンをタップして Stage 01 へ</div>
       </div>
     </div>
 
@@ -984,12 +1005,14 @@
       startScreen: document.getElementById('startScreen'),
       quizScreen: document.getElementById('quizScreen'),
       clearScreen: document.getElementById('clearScreen'),
-      failOverlay: document.getElementById('failOverlay'),
+      failScreen: document.getElementById('failScreen'),
       stageDisplay: document.getElementById('stageDisplay'),
       timerDisplay: document.getElementById('timerDisplay'),
       timerBar: document.getElementById('timerBar'),
       questionText: document.getElementById('questionText'),
+      failStageBadge: document.getElementById('failStageBadge'),
       failTitle: document.getElementById('failTitle'),
+      failQuestionText: document.getElementById('failQuestionText'),
       failTrigger: document.getElementById('failTrigger'),
       correctAnswerDisplay: document.getElementById('correctAnswerDisplay'),
       clearTimeDisplay: document.getElementById('clearTimeDisplay'),
@@ -1075,7 +1098,6 @@
       isResetting = false;
       rtaStartTime = performance.now();
 
-      elements.failOverlay.classList.add('hidden');
       elements.newPbBadge.classList.add('hidden');
       showScreen('quiz');
 
@@ -1091,10 +1113,12 @@
       elements.startScreen.classList.add('hidden');
       elements.quizScreen.classList.add('hidden');
       elements.clearScreen.classList.add('hidden');
+      elements.failScreen.classList.add('hidden');
 
       if (screen === 'start') elements.startScreen.classList.remove('hidden');
       if (screen === 'quiz') elements.quizScreen.classList.remove('hidden');
       if (screen === 'clear') elements.clearScreen.classList.remove('hidden');
+      if (screen === 'fail') elements.failScreen.classList.remove('hidden');
     }
 
     function nextQuestion() {
@@ -1218,19 +1242,29 @@
       document.body.classList.add('flash-red');
       setTimeout(() => document.body.classList.remove('flash-red'), 800);
 
-      // Show trigger popup & correct answer
+      // Format question review text (filling in the blank with the correct answer in emerald)
       const correctOptionLetter = ['A', 'B', 'C', 'D'][currentQuestion.answer];
       const correctOptionText = currentQuestion.options[currentQuestion.answer];
-      
+
+      let reviewText = currentQuestion.q;
+      if (reviewText.includes('_____')) {
+        reviewText = reviewText.replace(/_____/g, `<span class="text-emerald-400 font-extrabold underline underline-offset-4 decoration-2 decoration-emerald-500">${correctOptionText}</span>`);
+      } else {
+        reviewText = formatQuestionText(reviewText);
+      }
+
+      elements.failStageBadge.textContent = `STAGE 0${currentStage} で失敗`;
       elements.failTitle.textContent = title;
-      elements.correctAnswerDisplay.textContent = `正解: [${correctOptionLetter}] ${correctOptionText}`;
+      elements.failQuestionText.innerHTML = reviewText;
+      elements.correctAnswerDisplay.textContent = `[${correctOptionLetter}] ${correctOptionText}`;
       elements.failTrigger.textContent = currentQuestion.trigger;
-      elements.failOverlay.classList.remove('hidden');
+
+      // Switch completely to standalone failScreen (Zero background overlap)
+      showScreen('fail');
     }
 
     function confirmFailAndRestart() {
       if (!isResetting) return;
-      elements.failOverlay.classList.add('hidden');
       isResetting = false;
       startGame(); // Reset to Stage 01 immediately on user confirmation
     }
