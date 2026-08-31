@@ -1076,9 +1076,9 @@
        GAME STATE & ENGINE
        ========================================================================== */
     const STREAK_GOAL = 10;
-    const TIME_LIMIT_MS = 3000; // 3.00 seconds per question
+    let currentTimeLimitMs = 3000; // Dynamic: 3000ms (reading) or 5500ms (listening)
 
-    let currentMode = 'part5'; // 'part5' | 'part67' | 'all'
+    let currentMode = 'part5'; // 'part5' | 'part67' | 'part2' | 'part34' | 'all'
     let activeQuestionList = [];
     let currentQuestion = null;
     let currentStage = 1;
@@ -1175,7 +1175,7 @@
         }
       });
 
-      // Update Start Screen Title
+      // Update Start Screen Title & Subtitle
       const titles = {
         part5: 'Part 5 品詞パズル特化',
         part67: 'Part 6 & 7 目的スナイプ特化',
@@ -1184,6 +1184,9 @@
         all: 'ALL 混合 総合RTA'
       };
       elements.startModeTitle.textContent = titles[mode];
+
+      currentTimeLimitMs = (mode === 'part2' || mode === 'part34') ? 5500 : 3000;
+      elements.timerDisplay.textContent = (mode === 'part2' || mode === 'part34') ? '05.50' : '03.00';
 
       // Refresh PB & Leaderboards Display
       loadPB();
@@ -1618,7 +1621,7 @@
     }
 
     /* ==========================================================================
-       TIMER & ANIMATION LOOP (3.00s strict)
+       TIMER & ANIMATION LOOP (Dynamic 3.00s / 5.50s)
        ========================================================================== */
     function runTimer() {
       if (timerAnimFrame) cancelAnimationFrame(timerAnimFrame);
@@ -1628,19 +1631,20 @@
 
         const now = performance.now();
         const elapsed = now - questionStartTime;
-        const remaining = Math.max(0, TIME_LIMIT_MS - elapsed);
+        const limit = currentTimeLimitMs || 3000;
+        const remaining = Math.max(0, limit - elapsed);
 
-        // Format millisecond display (e.g. 02.84)
+        // Format millisecond display (e.g. 05.42 or 02.84)
         const seconds = Math.floor(remaining / 1000);
         const millis = Math.floor((remaining % 1000) / 10);
         elements.timerDisplay.textContent = `0${seconds}.${millis < 10 ? '0' + millis : millis}`;
 
         // Timer Bar Percentage
-        const pct = (remaining / TIME_LIMIT_MS) * 100;
+        const pct = (remaining / limit) * 100;
         elements.timerBar.style.width = pct + '%';
 
-        // Dynamic Color on critical time (< 1.00s)
-        if (remaining < 1000) {
+        // Dynamic Color on critical time (< 1.20s)
+        if (remaining < 1200) {
           elements.timerDisplay.className = "text-3xl md:text-5xl font-black text-red-500 tracking-tight";
           elements.timerBar.className = "timer-bar h-full bg-red-500 w-full";
         } else {
