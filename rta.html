@@ -1494,6 +1494,7 @@
     function stopGame() {
       isGameRunning = false;
       isResetting = false;
+      if (window.speechSynthesis) window.speechSynthesis.cancel();
       if (timerAnimFrame) cancelAnimationFrame(timerAnimFrame);
     }
 
@@ -1523,8 +1524,10 @@
         return;
       }
 
-      // Stop previous speech if any
-      if (window.speechSynthesis) window.speechSynthesis.cancel();
+      // Stop previous speech cleanly
+      if (window.speechSynthesis) {
+        window.speechSynthesis.cancel();
+      }
 
       elements.stageDisplay.textContent = currentStage < 10 ? '0' + currentStage : currentStage;
 
@@ -1543,25 +1546,26 @@
         return;
       }
 
-      // DYNAMIC OPTION SHUFFLING
-      const correctAnswerText = rawQ.options[rawQ.answer];
-      const shuffledOptions = shuffleArray([...rawQ.options]);
+      // Filter out empty options if any
+      const validOptions = (rawQ.options || []).filter(o => o !== "");
+      const correctAnswerText = rawQ.options[rawQ.answer] || validOptions[0];
+      const shuffledOptions = shuffleArray([...validOptions]);
       const newAnswerIndex = shuffledOptions.indexOf(correctAnswerText);
 
       currentQuestion = {
         part: rawQ.part || (currentMode === 'part2' ? 2 : (currentMode === 'part34' ? 3 : 5)),
         q: rawQ.q,
         options: shuffledOptions,
-        answer: newAnswerIndex,
+        answer: newAnswerIndex >= 0 ? newAnswerIndex : 0,
         trigger: rawQ.trigger
       };
 
-      // Render Options & Button Visibility (Part 2 uses 3 options)
+      // Render Options & Button Visibility (Part 2 uses 3 options, Part 3/4 uses 4 options)
       const optionButtons = document.querySelectorAll('.option-btn');
       const optionTexts = document.querySelectorAll('.option-text');
 
       optionButtons.forEach((btn, idx) => {
-        if (idx < currentQuestion.options.length && currentQuestion.options[idx] !== "") {
+        if (idx < currentQuestion.options.length) {
           btn.classList.remove('hidden');
           if (optionTexts[idx]) optionTexts[idx].textContent = currentQuestion.options[idx];
         } else {
@@ -1569,38 +1573,40 @@
         }
       });
 
-      // Handle Listening Mode (Part 2 or Part 3/4)
+      // Listening mode check & dynamic time limit (Reading: 3.00s, Listening: 5.50s)
       const isListening = (currentMode === 'part2' || currentMode === 'part34' || currentQuestion.part === 2 || currentQuestion.part === 3 || currentQuestion.part === 4);
+      currentTimeLimitMs = isListening ? 5500 : 3000;
 
-      if (isListening && window.speechSynthesis) {
+      if (isListening) {
         if (elements.audioStatusBadge) elements.audioStatusBadge.classList.remove('hidden');
+        
         if (currentMode === 'part2' || currentQuestion.part === 2) {
-          elements.questionText.innerHTML = '<span class=\"text-emerald-400 font-mono text-base md:text-xl\">🎧 音声を聞いて即答せよ！</span>';
+          elements.questionText.innerHTML = '<span class=\"text-emerald-400 font-mono text-base md:text-xl font-black tracking-wide\">🎧 音声を聞いて即答せよ！</span>';
         } else {
-          elements.questionText.innerHTML = '<span class=\"text-neutral-400 text-xs block mb-1\">Q. 冒頭のシグナルから即スナイプせよ</span>' + formatQuestionText(currentQuestion.q);
+          elements.questionText.innerHTML = '<span class=\"text-amber-400 font-bold text-xs uppercase tracking-wider block mb-1.5\">⚡ Part 3/4 冒頭スナイプ</span><span class=\"text-sm md:text-base text-neutral-300\">Q. 会話・アナウンスの【目的 / 要件】を選択せよ</span>';
         }
 
-        // Play SpeechSynthesis
-        const utter = new SpeechSynthesisUtterance(currentQuestion.q);
-        utter.lang = 'en-US';
-        utter.rate = 1.15;
-        utter.onend = () => {
-          if (elements.audioStatusBadge) elements.audioStatusBadge.classList.add('hidden');
-          questionStartTime = performance.now();
-          runTimer();
-        };
-        utter.onerror = () => {
-          if (elements.audioStatusBadge) elements.audioStatusBadge.classList.add('hidden');
-          questionStartTime = performance.now();
-          runTimer();
-        };
-        window.speechSynthesis.speak(utter);
+        // Trigger Audio Playback
+        if (window.speechSynthesis) {
+          const utter = new SpeechSynthesisUtterance(currentQuestion.q);
+          utter.lang = 'en-US';
+          utter.rate = 1.15;
+          utter.onend = () => {
+            if (elements.audioStatusBadge) elements.audioStatusBadge.classList.add('hidden');
+          };
+          utter.onerror = () => {
+            if (elements.audioStatusBadge) elements.audioStatusBadge.classList.add('hidden');
+          };
+          window.speechSynthesis.speak(utter);
+        }
       } else {
         if (elements.audioStatusBadge) elements.audioStatusBadge.classList.add('hidden');
         elements.questionText.innerHTML = formatQuestionText(currentQuestion.q);
-        questionStartTime = performance.now();
-        runTimer();
       }
+
+      // Start Countdown Timer immediately
+      questionStartTime = performance.now();
+      runTimer();
     }
 
     function formatQuestionText(rawText) {
@@ -1675,6 +1681,7 @@
 
     function handleFail(title) {
       isResetting = true;
+      if (window.speechSynthesis) window.speechSynthesis.cancel();
       if (timerAnimFrame) cancelAnimationFrame(timerAnimFrame);
 
       // Flash background red
