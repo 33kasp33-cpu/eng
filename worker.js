@@ -1,9 +1,9 @@
-/**
+Ôªø/**
  * SpeedTOEIC 600 RTA - Cloudflare Worker API
  * Endpoints:
- *   GET  /api/questions?mode=part5|part67|all
+ *   GET  /api/questions?mode=part5|part67|part2|part34|all
  *   POST /api/rankings
- *   GET  /api/rankings?mode=part5|part67|all
+ *   GET  /api/rankings?mode=part5|part67|part2|part34|all
  */
 
 const SECRET_SALT = "speed_toeic_rta_hmac_secret_2026";
@@ -75,6 +75,10 @@ export default {
           query = "SELECT * FROM questions WHERE part = 5 ORDER BY RANDOM() LIMIT 10;";
         } else if (mode === "part67") {
           query = "SELECT * FROM questions WHERE part IN (6, 7) ORDER BY RANDOM() LIMIT 10;";
+        } else if (mode === "part2") {
+          query = "SELECT * FROM questions WHERE part = 2 ORDER BY RANDOM() LIMIT 10;";
+        } else if (mode === "part34") {
+          query = "SELECT * FROM questions WHERE part IN (3, 4) ORDER BY RANDOM() LIMIT 10;";
         } else {
           query = "SELECT * FROM questions ORDER BY RANDOM() LIMIT 10;";
         }
@@ -82,13 +86,18 @@ export default {
         const stmt = env.DB.prepare(query);
         const { results } = await stmt.all();
 
-        const formatted = (results || []).map(r => ({
-          id: r.id,
-          q: r.question_text,
-          options: [r.option_0, r.option_1, r.option_2, r.option_3],
-          answer: r.answer_index,
-          trigger: r.trigger_text
-        }));
+        const formatted = (results || []).map(r => {
+          const opts = [r.option_0, r.option_1, r.option_2];
+          if (r.option_3) opts.push(r.option_3);
+          return {
+            id: r.id,
+            part: r.part,
+            q: r.question_text,
+            options: opts,
+            answer: r.answer_index,
+            trigger: r.trigger_text
+          };
+        });
 
         const sessionPayload = {
           mode,
@@ -141,8 +150,9 @@ export default {
           }
         }
 
-        const cleanName = (player_name || "ñºñ≥Çµ").toString().slice(0, 16);
-        const cleanMode = ["part5", "part67", "all"].includes(mode) ? mode : "part5";
+        const cleanName = (player_name || "ÂêçÁÑ°„Åó").toString().slice(0, 16);
+        const validModes = ["part5", "part67", "part2", "part34", "all"];
+        const cleanMode = validModes.includes(mode) ? mode : "part5";
         const id = crypto.randomUUID();
 
         const insertStmt = env.DB.prepare(
