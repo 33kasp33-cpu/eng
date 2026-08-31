@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="ja" class="h-full bg-black">
 <head>
   <meta charset="UTF-8">
@@ -1166,10 +1166,10 @@
     }
 
     /* ==========================================================================
-       ONLINE / LOCAL LEADERBOARD SYSTEM (Cloud Sync)
+       ONLINE / LOCAL LEADERBOARD & D1 API SYSTEM
        ========================================================================== */
-    const CLOUD_API_BASE = 'https://keyvalue.immanuel.co/api/KeyVal';
-    const CLOUD_APP_PREFIX = 'toeic600rta_v3_';
+    const CLOUD_API_BASE = 'https://speed-toeic-api.33-kasp-33.workers.dev/api';
+    let currentSessionToken = null;
 
     function getLocalRecords(mode) {
       try {

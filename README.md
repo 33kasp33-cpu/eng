@@ -1,4 +1,4 @@
-# ⚡ AI English Mastery Suite | 3画面完全独立システム
+﻿# ⚡ AI English Mastery Suite | 3画面完全独立システム
 
 日常の英会話習得（5つの原則）、TOEIC® L&R 試験対策、および銀フレ特化のルー語＆言い換えマスターをそれぞれ独立した **専用HTMLページ** として提供しています。
 

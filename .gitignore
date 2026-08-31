@@ -1,0 +1,8 @@
+# Secrets & Environment Variables
+api.txt
+cloudflare.txt
+.env
+.env.*
+node_modules/
+dist/
+.wrangler/

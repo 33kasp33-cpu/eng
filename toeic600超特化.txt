@@ -1,0 +1,81 @@
+**Part 2：出だしの音・反射トリガー（15パターン）**
+意味の翻訳を捨て、冒頭0.5秒の「音の塊」に対して正解の型を反射させる。
+
+* **When [ウェン]** $\rightarrow$ 時・日付・曜日・期限（Next week, By Friday, Not until tomorrow）
+* **Where [ウェア]** $\rightarrow$ 場所・方向・担当者（In the lobby, On the 3rd floor, Talk to Jane）
+* **Who [フー]** $\rightarrow$ 人名・役職・部署（Mr. Smith, The marketing director, Accounting department）
+* **Why [ワイ]** $\rightarrow$ 理由・原因（Because, Due to, To pick up the package）
+* **How long [ハウロン]** $\rightarrow$ 期間・数字＋時間単位（For two hours, About three weeks）
+* **How much / many [ハウマッチ / メニ]** $\rightarrow$ 金額・数量（Fifty dollars, Ten copies）
+* **How often [ハウオフン]** $\rightarrow$ 頻度（Once a week, Every Monday）
+* **Why don't you [ワイドンチュー]** $\rightarrow$ 提案承諾（Sounds good, Sure, I'd love to）
+* **Would you like to [ウッジューライクトゥ]** $\rightarrow$ 提案承諾・辞退（That would be great, I already have plans）
+* **Could you / Can you [クッジュー / キャンユー]** $\rightarrow$ 依頼承諾（Certainly, No problem, Of course）
+* **Have you seen [ハヴユーシーン]** $\rightarrow$ Yes/No または所在（Yes, on your desk / No, I haven't）
+* **間接応答：確認指示 [Check / Ask]** $\rightarrow$ 「〜を見て / 聞いて」（Check the website, Ask Sarah）※無条件で正解率9割
+* **間接応答：未定 [Not yet / Haven't decided]** $\rightarrow$ 「まだ決まってない」（It hasn't been finalized yet）※無条件で正解率9割
+* **間接応答：無知 [No idea / Not that I know of]** $\rightarrow$ 「知らない」（I was out of the office yesterday）
+* **間接応答：第三者依存 [Someone else]** $\rightarrow$ 「別の人が担当」（Mike is handling that）
+
+---
+
+**Part 3 & 4：冒頭5秒・設問1問目スナイプトリガー（15パターン）**
+音声の第1文〜第2文で以下のシグナルが鳴った直後の名詞・動詞だけを拾う。
+
+* **I'm calling to / about...** $\rightarrow$ [電話の用件] 直後の動詞・名詞がそのまま選択肢
+* **The reason for my visit is...** $\rightarrow$ [訪問目的]
+* **I'd like to announce / inform...** $\rightarrow$ [発表・告知]
+* **We are pleased to introduce...** $\rightarrow$ [新製品・新サービスの案内]
+* **Unfortunately / I'm sorry to say...** $\rightarrow$ [問題発生・トラブル]
+* **There has been a delay in...** $\rightarrow$ [遅延・スケジュール変更]
+* **The machine is out of order / not working...** $\rightarrow$ [機器故障・修理依頼]
+* **Welcome to [施設名/社名]...** $\rightarrow$ [場所の特定]
+* **Thank you for attending today's [イベント名]...** $\rightarrow$ [イベント・会議の目的]
+* **As the manager of...** $\rightarrow$ [話者の職業・立場]
+* **Here is the traffic / weather report...** $\rightarrow$ [放送の種類]
+* **Attention all passengers / passengers on flight...** $\rightarrow$ [空港・駅のアナウンス]
+* **Please remember to...** $\rightarrow$ [指示・義務事項]
+* **Before we begin, please make sure...** $\rightarrow$ [準備・注意事項]
+* **If you have any questions, please...** $\rightarrow$ [次のアクション・連絡先]
+
+---
+
+**Part 5：品詞判定・接尾辞＆配置ルール（15パターン）**
+文脈・意味を一切無視し、文字の末尾と空欄の前後だけで機械処理する。
+
+* **-tion / -sion** $\rightarrow$ 名詞（information, decision）
+* **-ment** $\rightarrow$ 名詞（agreement, development）
+* **-ance / -ence** $\rightarrow$ 名詞（performance, difference）
+* **-ity / -ness** $\rightarrow$ 名詞（availability, awareness）
+* **-able / -ible** $\rightarrow$ 形容詞（reliable, accessible）
+* **-ive** $\rightarrow$ 形容詞（effective, competitive）
+* **-al / -ful / -ous** $\rightarrow$ 形容詞（professional, successful, continuous）
+* **-ly** $\rightarrow$ 副詞（quickly, significantly）※形容詞+ly
+* **[冠詞 a/an/the] _____ [前置詞 of/in/for]** $\rightarrow$ 空欄は名詞
+* **[所有格 my/their/company's] _____ [名詞]** $\rightarrow$ 空欄は形容詞
+* **[所有格 my/their/company's] _____ [前置詞/ピリオド]** $\rightarrow$ 空欄は名詞
+* **[be動詞 is/are/was] _____ [ピリオド/前置詞]** $\rightarrow$ 空欄は形容詞
+* **[助動詞 will/can/must] _____ [本動詞]** $\rightarrow$ 空欄は副詞
+* **[have/has] _____ [過去分詞 p.p.]** $\rightarrow$ 空欄は副詞
+* **[完全な文（S+V+O）] , _____** または **_____ , [完全な文]** $\rightarrow$ 空欄は副詞
+
+---
+
+**Part 6 & 7：冒頭3行・文書目的スナイプトリガー（15パターン）**
+文書の「件名（Subject）」と「第1段落の冒頭2文」だけをスキャンし、該当箇所を見つけたら即マークする。
+
+* **Subject: [名詞句]** $\rightarrow$ 件名そのものが1問目の正解（Inquiry, Reschedule, Order confirmation）
+* **I am writing to [動詞]...** $\rightarrow$ 「〜するために書いています」（最重要目的トリガー）
+* **I am writing in response to...** $\rightarrow$ 「〜への返信・対応」
+* **We regret to inform you that...** $\rightarrow$ 「残念ながら〜をお知らせします（不合格・キャンセル・中止）」
+* **Please be advised / reminded that...** $\rightarrow$ 「〜をご留意・ご確認ください（規則・変更の通知）」
+* **This is a reminder that...** $\rightarrow$ 「〜のリマインド・期日の通知」
+* **We are currently seeking / looking for...** $\rightarrow$ 「求人・人材募集」
+* **Thank you for your recent purchase / inquiry...** $\rightarrow$ 「注文・問い合わせへの礼」
+* **Effective [日付]...** $\rightarrow$ 「[日付]以降、適用される（規約変更・組織改編）」
+* **Please note that the deadline is...** $\rightarrow$ 「締め切り・期日の案内」
+* **You are invited to...** $\rightarrow$ 「イベント・式典への招待」
+* **We would like to congratulate...** $\rightarrow$ 「昇進・受賞の祝辞」
+* **Please find attached the...** $\rightarrow$ 「添付ファイルの送付」
+* **If you are unable to attend, please...** $\rightarrow$ 「不参加時の手続き」
+* **Do not hesitate to contact us if...** $\rightarrow$ 「問い合わせ先の案内」
