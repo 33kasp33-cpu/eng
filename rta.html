@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="ja" class="h-full bg-black">
 <head>
   <meta charset="UTF-8">
@@ -1204,19 +1204,23 @@
       renderLeaderboards();
 
       try {
-        const url = `${CLOUD_API_BASE}/GetValue/${CLOUD_APP_PREFIX}${mode}`;
+        const url = `${CLOUD_API_BASE}/rankings?mode=${mode}`;
         const res = await fetch(url, { cache: 'no-cache' });
         if (res.ok) {
-          const text = await res.text();
-          if (text && text !== 'null' && text !== '""') {
-            const data = JSON.parse(JSON.parse(text)); // Handle double stringified if needed
-            if (Array.isArray(data)) {
-              // Sanitize and sort
-              onlineLeaderboardsCache[mode] = data
-                .filter(r => r && r.time >= 3.0)
-                .sort((a, b) => a.time - b.time)
-                .slice(0, 15);
-            }
+          const json = await res.json();
+          if (json && json.success && Array.isArray(json.rankings)) {
+            onlineLeaderboardsCache[mode] = json.rankings.map(r => {
+              const dt = r.created_at ? new Date(r.created_at.replace(' ', 'T') + 'Z') : new Date();
+              const month = String(dt.getMonth() + 1).padStart(2, '0');
+              const day = String(dt.getDate()).padStart(2, '0');
+              const hours = String(dt.getHours()).padStart(2, '0');
+              const mins = String(dt.getMinutes()).padStart(2, '0');
+              return {
+                time: (r.clear_time_ms / 1000),
+                name: r.player_name,
+                date: `${month}/${day} ${hours}:${mins}`
+              };
+            });
           }
         }
       } catch (e) {
@@ -1229,7 +1233,7 @@
 
     async function saveRecord() {
       if (lastClearedTotalTime <= 0) return;
-      const memo = elements.recordMemoInput.value.trim() || 'No Name';
+      const memo = (elements.recordMemoInput.value.trim() || '名無し').substring(0, 16);
       const now = new Date();
       const month = String(now.getMonth() + 1).padStart(2, '0');
       const day = String(now.getDate()).padStart(2, '0');
@@ -1239,7 +1243,7 @@
 
       const newRecord = {
         time: lastClearedTotalTime,
-        name: memo.substring(0, 20),
+        name: memo,
         date: dateStr
       };
 
@@ -1256,36 +1260,44 @@
         loadPB();
       }
 
-      // 2. Submit to Online Cloud API
+      // 2. Submit to Cloudflare Workers / D1 API
       if (elements.saveBtnText) elements.saveBtnText.textContent = "送信中...";
       if (elements.saveRecordBtn) elements.saveRecordBtn.disabled = true;
 
       try {
-        let currentOnline = onlineLeaderboardsCache[currentMode] || [];
-        // Fetch fresh online
-        const getUrl = `${CLOUD_API_BASE}/GetValue/${CLOUD_APP_PREFIX}${currentMode}`;
-        const getRes = await fetch(getUrl, { cache: 'no-cache' });
-        if (getRes.ok) {
-          const text = await getRes.text();
-          if (text && text !== 'null' && text !== '""') {
-            const parsed = JSON.parse(JSON.parse(text));
-            if (Array.isArray(parsed)) currentOnline = parsed;
+        const payload = {
+          player_name: memo,
+          mode: currentMode,
+          clear_time_ms: Math.round(lastClearedTotalTime * 1000),
+          streak_count: 10,
+          session_token: currentSessionToken
+        };
+
+        const postRes = await fetch(`${CLOUD_API_BASE}/rankings`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+        });
+
+        if (postRes.ok) {
+          const json = await postRes.json();
+          if (json && json.success && Array.isArray(json.rankings)) {
+            onlineLeaderboardsCache[currentMode] = json.rankings.map(r => {
+              const dt = r.created_at ? new Date(r.created_at.replace(' ', 'T') + 'Z') : new Date();
+              const m = String(dt.getMonth() + 1).padStart(2, '0');
+              const d = String(dt.getDate()).padStart(2, '0');
+              const h = String(dt.getHours()).padStart(2, '0');
+              const mi = String(dt.getMinutes()).padStart(2, '0');
+              return {
+                time: (r.clear_time_ms / 1000),
+                name: r.player_name,
+                date: `${m}/${d} ${h}:${mi}`
+              };
+            });
           }
         }
-
-        currentOnline.push(newRecord);
-        currentOnline = currentOnline
-          .filter(r => r && r.time >= 3.0)
-          .sort((a, b) => a.time - b.time)
-          .slice(0, 20);
-
-        onlineLeaderboardsCache[currentMode] = currentOnline;
-
-        // Post back to Cloud KeyVal
-        const postUrl = `${CLOUD_API_BASE}/SetValue/${CLOUD_APP_PREFIX}${currentMode}/${encodeURIComponent(JSON.stringify(currentOnline))}`;
-        await fetch(postUrl, { method: 'POST' });
       } catch (err) {
-        console.warn("Failed to sync to cloud:", err);
+        console.warn("Failed to sync to Cloudflare D1:", err);
       } finally {
         if (elements.saveBtnText) elements.saveBtnText.textContent = "全国登録";
         if (elements.saveRecordBtn) elements.saveRecordBtn.disabled = false;
@@ -1386,16 +1398,10 @@
       }[m]));
     }
 
-    function escapeHtml(str) {
-      return (str || '').replace(/[&<>"']/g, m => ({
-        '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#039;'
-      }[m]));
-    }
-
     /* ==========================================================================
        GAME LIFECYCLE
        ========================================================================== */
-    function startGame() {
+    async function startGame() {
       isResetting = false; // Ensure fail state is cleared
 
       // Build Question Pool
@@ -1413,6 +1419,18 @@
 
       elements.newPbBadge.classList.add('hidden');
       showScreen('quiz');
+
+      // Fetch fresh questions & session token in background for anti-cheat verification
+      try {
+        fetch(`${CLOUD_API_BASE}/questions?mode=${currentMode}`)
+          .then(r => r.json())
+          .then(json => {
+            if (json && json.success && json.session_token) {
+              currentSessionToken = json.session_token;
+            }
+          })
+          .catch(() => {});
+      } catch (e) {}
 
       nextQuestion();
     }
