@@ -3,18 +3,26 @@
  * Supports Part 5, Part 6/7, Part 2 (Listening), Part 3/4 (Listening)
  */
 
-const GEMINI_API_KEY = process.env.GEMINI_API_KEY;
+const GEMINI_API_KEY = process.env.GEMINI_API_KEY || process.env.GEMINI_KEY || process.env.GOOGLE_API_KEY || process.env.API_KEY;
 const CLOUDFLARE_ACCOUNT_ID = process.env.CLOUDFLARE_ACCOUNT_ID || "1af4debb9e11e210757d95082b23a0a8";
-const CLOUDFLARE_API_TOKEN = process.env.CLOUDFLARE_API_TOKEN;
+const CLOUDFLARE_API_TOKEN = process.env.CLOUDFLARE_API_TOKEN || process.env.CF_API_TOKEN || process.env.CLOUDFLARE_TOKEN;
 const D1_DATABASE_ID = "45bfa3c3-6fe7-43f9-8e70-2067df606cf5";
 
 if (!GEMINI_API_KEY) {
-  console.error("Error: GEMINI_API_KEY environment variable is required.");
+  console.error("===============================================================");
+  console.error("🚨 Error: GEMINI_API_KEY is not configured in GitHub Secrets.");
+  console.error("Please add 'GEMINI_API_KEY' in repository Settings -> Secrets -> Actions.");
+  console.error("URL: https://github.com/33kasp33-cpu/eng/settings/secrets/actions");
+  console.error("===============================================================");
   process.exit(1);
 }
 
 if (!CLOUDFLARE_API_TOKEN) {
-  console.error("Error: CLOUDFLARE_API_TOKEN environment variable is required.");
+  console.error("===============================================================");
+  console.error("🚨 Error: CLOUDFLARE_API_TOKEN is not configured in GitHub Secrets.");
+  console.error("Please add 'CLOUDFLARE_API_TOKEN' in repository Settings -> Secrets -> Actions.");
+  console.error("URL: https://github.com/33kasp33-cpu/eng/settings/secrets/actions");
+  console.error("===============================================================");
   process.exit(1);
 }
 
