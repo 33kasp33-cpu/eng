@@ -377,6 +377,17 @@
       return String(str).replace(/'/g, "\\'").replace(/"/g, '&quot;');
     }
 
+    window.addEventListener('error', (event) => {
+      console.error('Global Error caught:', event.error || event.message);
+      showBanner(`エラーが発生しました: ${event.message || 'スクリプト実行時例外'}`, 'error');
+    });
+
+    window.addEventListener('unhandledrejection', (event) => {
+      console.error('Unhandled Promise Rejection:', event.reason);
+      const msg = event.reason?.message || (typeof event.reason === 'string' ? event.reason : 'Async operation failed');
+      showBanner(`エラーが発生しました: ${msg}`, 'error');
+    });
+
     // --- State Store ---
     let savedModel = localStorage.getItem('eng_gemini_model') || 'gemini-3.5-flash-lite';
     if (savedModel === 'gemini-2.5-flash-lite' || savedModel === 'gemini-2.0-flash-lite') {
@@ -1264,6 +1275,17 @@
       closeToeicSettings();
       showBanner('設定を保存しました！', 'success');
     }
+
+    window.addEventListener('storage', (e) => {
+      if (e.key === 'eng_saved_phrases') {
+        Store.savedPhrases = safeJsonParse(e.newValue, []);
+      } else if (e.key === 'eng_gemini_key') {
+        Store.config.geminiKey = e.newValue || '';
+      } else if (e.key === 'toeic_best_times') {
+        Store.bestTimes = safeJsonParse(e.newValue, {});
+        renderBestTimes();
+      }
+    });
 
     document.addEventListener('DOMContentLoaded', () => {
       initToeicModule();

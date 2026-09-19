@@ -717,13 +717,23 @@
 
     window.addEventListener('error', (event) => {
       console.error('Global Error caught:', event.error || event.message);
+      showEmergencyBanner(event.message || 'Script execution error');
+    });
+
+    window.addEventListener('unhandledrejection', (event) => {
+      console.error('Unhandled Promise Rejection:', event.reason);
+      const msg = event.reason?.message || (typeof event.reason === 'string' ? event.reason : 'Async operation failed');
+      showEmergencyBanner(msg);
+    });
+
+    function showEmergencyBanner(msg) {
       const banner = document.getElementById('global-banner');
       if (banner) {
         banner.className = 'rounded-xl p-3.5 sm:p-4 text-xs sm:text-sm flex items-start justify-between gap-3 bg-rose-950/90 border border-rose-700 text-rose-200 transition-all';
         banner.innerHTML = `
           <div class="flex items-center gap-2">
-            <span>⚠️</span>
-            <span>エラーが発生しました (${escapeHtml(event.message || 'スクリプト実行時例外')})</span>
+            <span>🚨</span>
+            <span>エラーが発生しました (${escapeHtml(msg)})</span>
           </div>
           <button onclick="emergencyClearCache()" class="bg-rose-900 hover:bg-rose-800 text-white font-bold px-2.5 py-1 rounded text-xs">
             🔄 キャッシュクリアして復帰
@@ -731,7 +741,7 @@
         `;
         banner.classList.remove('hidden');
       }
-    });
+    }
 
     function emergencyClearCache() {
       if (confirm('ローカルキャッシュをリセットして初期状態に復帰しますか？')) {
@@ -1854,7 +1864,9 @@ Schema:
           if (!apiKey) {
             return 'API Key not set. Zero-Config Mock Engine is active and responding.';
           }
-          const res = await GeminiClient.call('Return a JSON object {"status": "ok"}', 'Reply in JSON', true);
+          const callPromise = GeminiClient.call('Return a JSON object {"status": "ok"}', 'Reply in JSON', true);
+          const timeoutPromise = new Promise((_, reject) => setTimeout(() => reject(new Error('API Timeout (5000ms)')), 5000));
+          const res = await Promise.race([callPromise, timeoutPromise]);
           if (res && res.status === 'ok') {
             return `Gemini API (${Store.config.geminiModel}) connected and JSON response validated.`;
           }
@@ -2044,6 +2056,16 @@ Schema:
         input.type = input.type === 'password' ? 'text' : 'password';
       }
     }
+
+    window.addEventListener('storage', (e) => {
+      if (e.key === 'eng_saved_phrases') {
+        Store.savedPhrases = safeJsonParse(e.newValue, []);
+        renderSavedDesk();
+      } else if (e.key === 'eng_gemini_key') {
+        Store.config.geminiKey = e.newValue || '';
+        document.getElementById('setting-gemini-key').value = Store.config.geminiKey;
+      }
+    });
 
     document.addEventListener('DOMContentLoaded', () => {
       // Load saved settings into form

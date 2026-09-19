@@ -1,4 +1,4 @@
-﻿/**
+/**
  * SpeedTOEIC 600 RTA - Cloudflare Worker API
  * Endpoints:
  *   GET  /api/questions?mode=part5|part67|part2|part34|all
@@ -128,7 +128,12 @@ export default {
 
       // 3. POST /api/rankings
       if (path === "/api/rankings" && request.method === "POST") {
-        const body = await request.json();
+        let body;
+        try {
+          body = await request.json();
+        } catch (e) {
+          return new Response(JSON.stringify({ success: false, error: "Invalid JSON format" }), { status: 400, headers: corsHeaders() });
+        }
         const { player_name, mode, clear_time_ms, streak_count, session_token } = body;
 
         // Anti-Cheat: Validate token

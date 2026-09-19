@@ -359,6 +359,17 @@
       }
     }
 
+    window.addEventListener('error', (event) => {
+      console.error('Global Error caught:', event.error || event.message);
+      showBanner(`エラーが発生しました: ${event.message || 'スクリプト実行時例外'}`, 'error');
+    });
+
+    window.addEventListener('unhandledrejection', (event) => {
+      console.error('Unhandled Promise Rejection:', event.reason);
+      const msg = event.reason?.message || (typeof event.reason === 'string' ? event.reason : 'Async operation failed');
+      showBanner(`エラーが発生しました: ${msg}`, 'error');
+    });
+
     function escapeHtml(str) {
       if (!str) return '';
       return String(str).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
@@ -950,6 +961,14 @@ Strictly output JSON with this schema:
       closeLouSettings();
       showBanner('設定を保存しました！', 'success');
     }
+
+    window.addEventListener('storage', (e) => {
+      if (e.key === 'eng_saved_phrases') {
+        Store.savedPhrases = safeJsonParse(e.newValue, []);
+      } else if (e.key === 'eng_gemini_key') {
+        Store.config.geminiKey = e.newValue || '';
+      }
+    });
 
     document.addEventListener('DOMContentLoaded', () => {
       initLouModule();

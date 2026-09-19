@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="ja" class="h-full bg-black">
 <head>
   <meta charset="UTF-8">
@@ -74,7 +74,7 @@
           <span id="startModeTitle" class="text-emerald-400">Part 5 品詞パズル</span>
         </h1>
         <p class="text-xs md:text-sm text-neutral-400 max-w-md mx-auto leading-relaxed">
-          意味を読むな。接尾辞と配置だけで<span class="text-emerald-400 font-bold">1問3秒</span>で機械処理せよ。<br>
+          意味を読むな。接尾辞と配置だけで<span class="text-emerald-400 font-bold">1問10秒</span>で機械処理せよ。<br>
           <span class="text-neutral-300 font-semibold">10問連続正解</span>でクリア。ミス・時間切れは即時 Stage 1 リセット。
         </p>
       </div>
@@ -192,6 +192,14 @@
           <span id="correctAnswerDisplay" class="text-sm md:text-base font-bold text-emerald-300 font-mono">
             <!-- Correct Answer text here -->
           </span>
+        </div>
+
+        <!-- Translation (Gemini) -->
+        <div class="p-3 bg-sky-950/40 border border-sky-800/60 rounded-lg">
+          <div class="text-[11px] text-sky-400 font-mono uppercase tracking-wider mb-1">直訳・意訳（チャラめ/語順通り）</div>
+          <div id="failTranslation" class="text-sm md:text-base font-medium text-sky-200 leading-relaxed">
+            <span class="animate-pulse text-sky-500/80">AIが意訳を生成中...</span>
+          </div>
         </div>
 
         <!-- Trigger Rule -->
@@ -1136,7 +1144,7 @@
        GAME STATE & ENGINE
        ========================================================================== */
     const STREAK_GOAL = 10;
-    let currentTimeLimitMs = 3000; // Dynamic: 3000ms (reading) or 5500ms (listening)
+    let currentTimeLimitMs = 10000; // Dynamic: 10000ms (reading) or 15000ms (listening)
 
     let currentMode = 'part5'; // 'part5' | 'part67' | 'part2' | 'part34' | 'all'
     let activeQuestionList = [];
@@ -1180,6 +1188,7 @@
       failStageBadge: document.getElementById('failStageBadge'),
       failTitle: document.getElementById('failTitle'),
       failQuestionText: document.getElementById('failQuestionText'),
+      failTranslation: document.getElementById('failTranslation'),
       failTrigger: document.getElementById('failTrigger'),
       correctAnswerDisplay: document.getElementById('correctAnswerDisplay'),
       clearTimeDisplay: document.getElementById('clearTimeDisplay'),
@@ -1245,8 +1254,8 @@
       };
       elements.startModeTitle.textContent = titles[mode];
 
-      currentTimeLimitMs = (mode === 'part2' || mode === 'part34') ? 5500 : 3000;
-      elements.timerDisplay.textContent = (mode === 'part2' || mode === 'part34') ? '05.50' : '03.00';
+      currentTimeLimitMs = (mode === 'part2' || mode === 'part34') ? 15000 : 10000;
+      elements.timerDisplay.textContent = (mode === 'part2' || mode === 'part34') ? '15.00' : '10.00';
 
       // Refresh PB & Leaderboards Display
       loadPB();
@@ -1636,9 +1645,9 @@
         }
       });
 
-      // Listening mode check & dynamic time limit (Reading: 3.00s, Listening: 5.50s)
+      // Listening mode check & dynamic time limit (Reading: 10.00s, Listening: 15.00s)
       const isListening = (currentMode === 'part2' || currentMode === 'part34' || currentQuestion.part === 2 || currentQuestion.part === 3 || currentQuestion.part === 4);
-      currentTimeLimitMs = isListening ? 5500 : 3000;
+      currentTimeLimitMs = isListening ? 15000 : 10000;
 
       if (isListening) {
         if (elements.audioStatusBadge) elements.audioStatusBadge.classList.remove('hidden');
@@ -1691,13 +1700,13 @@
 
         const now = performance.now();
         const elapsed = now - questionStartTime;
-        const limit = currentTimeLimitMs || 3000;
+        const limit = currentTimeLimitMs || 10000;
         const remaining = Math.max(0, limit - elapsed);
 
-        // Format millisecond display (e.g. 05.42 or 02.84)
+        // Format millisecond display (e.g. 15.42 or 09.84)
         const seconds = Math.floor(remaining / 1000);
         const millis = Math.floor((remaining % 1000) / 10);
-        elements.timerDisplay.textContent = `0${seconds}.${millis < 10 ? '0' + millis : millis}`;
+        elements.timerDisplay.textContent = `${seconds < 10 ? '0' + seconds : seconds}.${millis < 10 ? '0' + millis : millis}`;
 
         // Timer Bar Percentage
         const pct = (remaining / limit) * 100;
@@ -1768,9 +1777,45 @@
       elements.failQuestionText.innerHTML = reviewText;
       elements.correctAnswerDisplay.textContent = `[${correctOptionLetter}] ${correctOptionText}`;
       elements.failTrigger.textContent = currentQuestion.trigger;
+      elements.failTranslation.innerHTML = '<span class="animate-pulse text-sky-500/80">AIが意訳を生成中...</span>';
 
       // Switch completely to standalone failScreen (Zero background overlap)
       showScreen('fail');
+      fetchTranslation(currentQuestion.q, correctOptionText);
+    }
+
+    async function fetchTranslation(q, a) {
+      try {
+        const apiKey = localStorage.getItem('eng_gemini_key') || '';
+        if (!apiKey) {
+          elements.failTranslation.textContent = 'APIキー未設定のため意訳を表示できません。';
+          return;
+        }
+        const model = localStorage.getItem('eng_gemini_model') || 'gemini-3.5-flash-lite';
+        let fullSentence = q;
+        if (fullSentence.includes('_____')) {
+          fullSentence = fullSentence.replace(/_____/g, a);
+        }
+        
+        const prompt = `以下の英語の文章を、堅苦しくない直訳（英語の語順を意識した訳）か、少しチャラめの砕けた意訳にしてください。\n\n英文: ${fullSentence}\n\n条件:\n- 短く簡潔に\n- 解説は一切不要\n- 訳文のみを出力`;
+
+        const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${apiKey}`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            contents: [{ parts: [{ text: prompt }] }],
+            generationConfig: { temperature: 0.9 }
+          })
+        });
+        
+        if (!res.ok) throw new Error('API Error');
+        const data = await res.json();
+        const text = data.candidates?.[0]?.content?.parts?.[0]?.text || '生成に失敗しました';
+        elements.failTranslation.textContent = text.trim();
+      } catch (e) {
+        elements.failTranslation.textContent = '意訳の取得に失敗しました。';
+        console.error(e);
+      }
     }
 
     function confirmFailAndRestart() {
