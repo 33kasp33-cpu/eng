@@ -197,7 +197,7 @@
         <!-- Translation (Gemini) -->
         <div class="p-3 bg-sky-950/40 border border-sky-800/60 rounded-lg">
           <div class="text-[11px] text-sky-400 font-mono uppercase tracking-wider mb-1">直訳・意訳（チャラめ/語順通り）</div>
-          <div id="failTranslation" class="text-sm md:text-base font-medium text-sky-200 leading-relaxed">
+          <div id="failTranslation" class="text-sm md:text-base font-medium text-sky-200 leading-relaxed whitespace-pre-wrap">
             <span class="animate-pulse text-sky-500/80">AIが意訳を生成中...</span>
           </div>
         </div>
@@ -1797,7 +1797,7 @@
           fullSentence = fullSentence.replace(/_____/g, a);
         }
         
-        const prompt = `以下の英文を英語の語順のまま前から順に細切れで日本語に直してください。絶対にきれいな日本語の語順に並べ替えないでください。\n少しチャラめ・砕けた口調にしてください。\n\n英文: ${fullSentence}\n\n出力例: 俺は電話してる / ネットの障害について / 俺らが食らった / 今朝\n\n【厳守事項】\n- 意味の塊ごとにスラッシュ（/）で区切る\n- 元の英文は絶対に出力しないこと（日本語の訳文のみを返す）\n- 矢印（↓）などの記号は不要\n- 挨拶や解説は一切不要`;
+        const prompt = `以下の英文を、少しチャラめ・砕けた口調で「英語の語順のままのスラッシュ意訳」と「自然な語順の意訳」の2パターンで出力してください。\n\n英文: ${fullSentence}\n\n出力フォーマット例:\n【スラッシュ意訳】\n急なバク伸びがさ / モバイル決済のさ / びびらせたわ / 業界のプロたちをさ\n\n【自然な意訳】\nモバイル決済の急激なバク伸びが、業界のプロたちをビビらせたわ。\n\n【厳守事項】\n- 必ず上記の2段構成で出力すること\n- 元の英文は絶対に出力しないこと\n- 挨拶や解説は一切不要`;
 
         const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${apiKey}`, {
           method: 'POST',
