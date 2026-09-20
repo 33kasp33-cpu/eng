@@ -1797,7 +1797,7 @@
           fullSentence = fullSentence.replace(/_____/g, a);
         }
         
-        const prompt = `以下の英文を、少しチャラめ・砕けた口調で「英語の語順のままのスラッシュ意訳」と「自然な語順の意訳」の2パターンで出力してください。\n\n英文: ${fullSentence}\n\n出力フォーマット例:\n【スラッシュ意訳】\n急なバク伸びがさ / モバイル決済のさ / びびらせたわ / 業界のプロたちをさ\n\n【自然な意訳】\nモバイル決済の急激なバク伸びが、業界のプロたちをビビらせたわ。\n\n【厳守事項】\n- 必ず上記の2段構成で出力すること\n- 元の英文は絶対に出力しないこと\n- 挨拶や解説は一切不要`;
+        const prompt = `以下の英文を、少しチャラめ・砕けた口調で「英語の語順のままのスラッシュ意訳」と「自然な語順の意訳」の2パターンで出力してください。\nさらに、問題の正解となった英単語「${a}」に相当する日本語の訳語部分を、半角の二重アスタリスク（**）で囲んで強調してください。\n\n英文: ${fullSentence}\n\n出力フォーマット例 (正解単語が growth の場合):\n【スラッシュ意訳】\n急な**バク伸び**がさ / モバイル決済のさ / びびらせたわ / 業界のプロたちをさ\n\n【自然な意訳】\nモバイル決済の急激な**バク伸び**が、業界のプロたちをビビらせたわ。\n\n【厳守事項】\n- 必ず上記の2段構成で出力すること\n- 正解単語の訳語を ** で囲むこと\n- 元の英文は絶対に出力しないこと\n- 挨拶や解説は一切不要`;
 
         const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${apiKey}`, {
           method: 'POST',
@@ -1810,8 +1810,11 @@
         
         if (!res.ok) throw new Error('API Error');
         const data = await res.json();
-        const text = data.candidates?.[0]?.content?.parts?.[0]?.text || '生成に失敗しました';
-        elements.failTranslation.textContent = text.trim();
+        let text = data.candidates?.[0]?.content?.parts?.[0]?.text || '生成に失敗しました';
+        text = text.trim();
+        text = text.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+        text = text.replace(/\*\*(.*?)\*\*/g, '<span class="text-emerald-400 font-extrabold underline decoration-emerald-500 underline-offset-4">$1</span>');
+        elements.failTranslation.innerHTML = text;
       } catch (e) {
         elements.failTranslation.textContent = '意訳の取得に失敗しました。';
         console.error(e);
