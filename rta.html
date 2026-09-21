@@ -1781,10 +1781,10 @@
 
       // Switch completely to standalone failScreen (Zero background overlap)
       showScreen('fail');
-      fetchTranslation(currentQuestion.q, correctOptionText);
+      fetchTranslation(currentQuestion.q, correctOptionText, currentQuestion.part);
     }
 
-    async function fetchTranslation(q, a) {
+    async function fetchTranslation(q, a, part) {
       try {
         const apiKey = localStorage.getItem('eng_gemini_key') || '';
         if (!apiKey) {
@@ -1792,12 +1792,17 @@
           return;
         }
         const model = localStorage.getItem('eng_gemini_model') || 'gemini-3.5-flash-lite';
-        let fullSentence = q;
-        if (fullSentence.includes('_____')) {
-          fullSentence = fullSentence.replace(/_____/g, a);
-        }
         
-        const prompt = `以下の英文を、少しチャラめ・砕けた口調で「英語の語順のままのスラッシュ意訳」と「自然な語順の意訳」の2パターンで出力してください。\nさらに、問題の正解となった英単語「${a}」に相当する日本語の訳語部分を、半角の二重アスタリスク（**）で囲んで強調してください。\n\n英文: ${fullSentence}\n\n出力フォーマット例 (正解単語が growth の場合):\n【スラッシュ意訳】\n急な**バク伸び**がさ / モバイル決済のさ / びびらせたわ / 業界のプロたちをさ\n\n【自然な意訳】\nモバイル決済の急激な**バク伸び**が、業界のプロたちをビビらせたわ。\n\n【厳守事項】\n- 必ず上記の2段構成で出力すること\n- 正解単語の訳語を ** で囲むこと\n- 元の英文は絶対に出力しないこと\n- 挨拶や解説は一切不要`;
+        let prompt = '';
+        if (part === 5) {
+          let fullSentence = q;
+          if (fullSentence.includes('_____')) {
+            fullSentence = fullSentence.replace(/_____/g, a);
+          }
+          prompt = `以下の英文を、少しチャラめ・砕けた口調で「英語の語順のままのスラッシュ意訳」と「自然な語順の意訳」の2パターンで出力してください。\nさらに、問題の正解となった英単語「${a}」に相当する日本語の訳語部分を、半角の二重アスタリスク（**）で囲んで強調してください。\n\n英文: ${fullSentence}\n\n出力フォーマット例 (正解単語が growth の場合):\n【スラッシュ意訳】\n急な**バク伸び**がさ / モバイル決済のさ / びびらせたわ / 業界のプロたちをさ\n\n【自然な意訳】\nモバイル決済の急激な**バク伸び**が、業界のプロたちをビビらせたわ。\n\n【厳守事項】\n- 必ず上記の2段構成で出力すること\n- 正解単語の訳語を ** で囲むこと\n- 元の英文は絶対に出力しないこと\n- 挨拶や解説は一切不要`;
+        } else {
+          prompt = `以下の「問題文」と「正解の選択肢」をそれぞれ、少しチャラめ・砕けた口調で「英語の語順のままのスラッシュ意訳」と「自然な語順の意訳」で出力してください。\n\n【問題文】\n${q}\n\n【正解の選択肢】\n${a}\n\n出力フォーマット例:\n■ 問題文の意訳\n【スラッシュ意訳】\nあの街中のオフィスビルってさ / めっちゃ行きやすいわ / 地下鉄でさ\n【自然な意訳】\n街中のあのオフィスビル、地下鉄ですっげー行きやすいんだよね。\n\n■ 正解の選択肢\n【自然な意訳】\n簡単にアクセスできる\n\n【厳守事項】\n- 必ず上記のフォーマットで出力すること\n- 正解の選択肢は短いためスラッシュ意訳は省略可\n- 元の英文は絶対に出力しないこと\n- 挨拶や解説は一切不要`;
+        }
 
         const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${apiKey}`, {
           method: 'POST',
