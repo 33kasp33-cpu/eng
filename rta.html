@@ -1259,8 +1259,8 @@
       };
       elements.startModeTitle.textContent = titles[mode];
 
-      currentTimeLimitMs = (mode === 'part2' || mode === 'part34') ? 15000 : 10000;
-      elements.timerDisplay.textContent = (mode === 'part2' || mode === 'part34') ? '15.00' : '10.00';
+      currentTimeLimitMs = (mode === 'part2' || mode === 'part34' || mode === 'part67') ? 15000 : 10000;
+      elements.timerDisplay.textContent = (mode === 'part2' || mode === 'part34' || mode === 'part67') ? '15.00' : '10.00';
 
       // Refresh PB & Leaderboards Display
       loadPB();
@@ -1652,7 +1652,8 @@
 
       // Listening mode check & dynamic time limit (Reading: 10.00s, Listening: 15.00s)
       const isListening = (currentMode === 'part2' || currentMode === 'part34' || currentQuestion.part === 2 || currentQuestion.part === 3 || currentQuestion.part === 4);
-      currentTimeLimitMs = isListening ? 15000 : 10000;
+      const isLongReading = (currentMode === 'part67' || currentQuestion.part === 6 || currentQuestion.part === 7);
+      currentTimeLimitMs = (isListening || isLongReading) ? 15000 : 10000;
 
       if (isListening) {
         if (elements.audioStatusBadge) elements.audioStatusBadge.classList.remove('hidden');
