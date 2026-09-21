@@ -1140,6 +1140,11 @@
       ]
     };
 
+    if (QUESTION_BANK.part5) QUESTION_BANK.part5.forEach(q => q.part = 5);
+    if (QUESTION_BANK.part67) QUESTION_BANK.part67.forEach(q => q.part = 6);
+    if (QUESTION_BANK.part2) QUESTION_BANK.part2.forEach(q => q.part = 2);
+    if (QUESTION_BANK.part34) QUESTION_BANK.part34.forEach(q => q.part = 3);
+
     /* ==========================================================================
        GAME STATE & ENGINE
        ========================================================================== */
@@ -1625,7 +1630,7 @@
       const newAnswerIndex = shuffledOptions.indexOf(correctAnswerText);
 
       currentQuestion = {
-        part: (rawQ.part !== undefined ? rawQ.part : (currentMode === 'part2' ? 2 : (currentMode === 'part34' ? 3 : 5))),
+        part: rawQ.part !== undefined ? rawQ.part : 5,
         q: rawQ.q,
         options: shuffledOptions,
         answer: newAnswerIndex >= 0 ? newAnswerIndex : 0,
