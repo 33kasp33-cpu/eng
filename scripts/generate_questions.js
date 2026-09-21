@@ -1,4 +1,4 @@
-﻿/**
+/**
  * Automated Question Generator using Gemini 3.5 Flash Lite & Cloudflare D1
  * Supports Part 5, Part 6/7, Part 2 (Listening), Part 3/4 (Listening)
  */
@@ -32,11 +32,13 @@ const SYSTEM_INSTRUCTION = `
 
 【パート別生成ルール】
 1. Part 5 (品詞): 空欄前後と接尾辞(-tion, -able, -ly等)で解ける問題（4択）
-2. Part 6/7 (目的): 冒頭2行の定型文(Subject, I am writing to等)で解ける問題（4択）
+2. Part 6/7 (長文スキャニング): 以下の2パターンのどちらかを生成すること
+   A. 冒頭2行の定型文(Subject, I am writing to等)で目的が解ける問題
+   B. チャットやメールの往復（あえて読まなくていいダミーのノイズ文を意図的に多く含む長文）。特定の時刻（例: [10:05 AM]）や人物の発言意図だけを「ウォーリーを探せ」のようにスキャニングして探し出す問題。
 3. Part 2 (リスニング即答): 冒頭0.5秒の音の塊(When, Where, Who, Why, 間接応答Check/Ask等)で解ける応答問題（3択：optionsの4つ目は空文字 ""）
 4. Part 3/4 (リスニングスナイプ): 冒頭第1文のシグナル(I'm calling about, Unfortunately, Welcome to等)で解ける問題（4択）
 
-5. triggerは「20〜40文字の秒殺ルール解説」（例: "When [ウェン] ➔ 期限・日時 [By Friday] を秒殺！"）。
+5. triggerは「20〜40文字の秒殺ルール解説」（例: "[10:05]の時間をスキャン ➔ 提案への同意を秒殺！"）。
 `;
 
 const PROMPT = `
